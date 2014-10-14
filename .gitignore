@@ -1,4 +1,5 @@
 .idea/
-.pyc
-.pyo
-
+*.pyc
+*.pyo
+*.sqlite3
+*.sqlite
