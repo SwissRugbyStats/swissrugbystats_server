@@ -1,0 +1,1 @@
+('lna', [u'Gen\xe8ve PLO', u'Hermance', u'Lugano', u'GC Z\xfcrich', u'Nyon', u'Lausanne UC', u'Avusy', u'Basel', u'Cern', u'Yverdon'])
