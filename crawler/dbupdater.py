@@ -38,7 +38,7 @@ def initLeagueDB():
         print "Leagues already initialized"
 
 
-def createTeamDB():
+def updateTeamDB():
     print "create TeamDB"
 
 #initLeagueDB()

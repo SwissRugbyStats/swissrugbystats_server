@@ -1,6 +1,18 @@
 import requests
 from BeautifulSoup import BeautifulSoup
 
+leagues = [
+    "u16-east",
+    "u16-west",
+    "u18",
+    "league-1-east",
+    "league-1-west",
+    "lnc-east",
+    "lnc-west",
+    "lnb",
+    "lna"
+]
+
 def crawlLeagueResults(leagues):
     results = []
     leagueResults = [(l, "http://www.suisserugby.com/competitions/" + l + "/lt/results.html") for l in leagues]
@@ -92,7 +104,7 @@ def crawlLeagueFixtures(leagues):
 
     return fixtures
 
-'''
+
 print "Teams:\n"
 
 for url in leagueTeams:
@@ -122,4 +134,3 @@ for url in leagueFixtures:
     file.write(fixtures)
     file.close()
     print fixtures
-'''
