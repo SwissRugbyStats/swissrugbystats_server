@@ -58,18 +58,20 @@ def updateAll():
 
             host = Team.objects.filter(name=game[3])
             if not host:
+                logging.error("Hostteam not found: "+game[3])
                 print "Hostteam not found: "+game[3]
 
             guest = Team.objects.filter(name=game[4])
             if not guest:
+                logging.error("Guestteam not found: "+game[3])
                 print "Guestteam not found: "+game[4]
 
-            print game
+            logging.info("Fixture: " + str(game))
+
             if not Game.objects.filter(fsrUrl=game[1]):
                 g = Game(league=l, fsrID=game[0], fsrUrl=game[1], date=d2, hostTeam=host[0], guestTeam=guest[0])
                 g.save()
             else:
-                print game[1]
                 g = Game.objects.filter(fsrUrl=game[1])[0]
                 g.league = l
                 g.date = d2
@@ -83,6 +85,8 @@ def updateAll():
             # parse date and set timezone
             d1 = timezone.get_current_timezone().localize(datetime.strptime(game[2], '%d.%m.%Y %H:%M'))
             d2 = d1.strftime('%Y-%m-%d %H:%M%z')
+
+            logging.info("Result: " + str(game))
 
             if not Game.objects.filter(fsrUrl=game[1]):
                 g = Game(league=l, fsrID=game[0], fsrUrl=game[1], date=d2, hostTeam=Team.objects.filter(name=game[3])[0], guestTeam=Team.objects.filter(name=game[4])[0], hostScore=game[5], guestScore=game[6])
