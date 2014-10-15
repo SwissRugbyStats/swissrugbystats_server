@@ -5,3 +5,4 @@
 *.sqlite
 *.pid
 *.log
+celerybeat-schedule
