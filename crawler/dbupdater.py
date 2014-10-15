@@ -1,11 +1,19 @@
 import os
 import sys
 import django
+import logging
+import pytz
 from datetime import datetime
+from django.utils import timezone
 
 sys.path.append("/home/chregi/Documents/git/swissrugbystats")
 os.environ["DJANGO_SETTINGS_MODULE"] = "swissrugbystats.settings"
+timezone.activate(pytz.timezone("Europe/Zurich"))
 django.setup()
+
+
+# create logger
+logging.basicConfig(filename='crawler.log', level=logging.INFO, format='%(asctime)s- %(message)s', datefmt='%d.%m.%Y %I:%M:%S ')
 
 import crawler
 
@@ -27,8 +35,9 @@ leagues = [
 
 def updateAll():
 
-    # update team table
+    logging.info("update started")
 
+    # update team table
     teams = crawler.crawlLeagueTeams([(l.shortCode, l.getLeagueUrl()) for l in League.objects.all()])
     for league in teams:
         for team in league[1]:
@@ -43,8 +52,9 @@ def updateAll():
     for league in gameFixtures:
         for game in league[1]:
             l = League.objects.filter(shortCode=league[0])[0]
-            d1 = datetime.strptime(game[2], '%d.%m.%Y %H:%M')
-            d2 = d1.strftime('%Y-%m-%d %H:%M')
+            # parse date and set timezone
+            d1 = timezone.get_current_timezone().localize(datetime.strptime(game[2], '%d.%m.%Y %H:%M'))
+            d2 = d1.strftime('%Y-%m-%d %H:%M%z')
 
             host = Team.objects.filter(name=game[3])
             if not host:
@@ -70,8 +80,9 @@ def updateAll():
     for league in gameResults:
         for game in league[1]:
             l = League.objects.filter(shortCode=league[0])[0]
-            d1 = datetime.strptime(game[2], '%d.%m.%Y %H:%M')
-            d2 = d1.strftime('%Y-%m-%d %H:%M')
+            # parse date and set timezone
+            d1 = timezone.get_current_timezone().localize(datetime.strptime(game[2], '%d.%m.%Y %H:%M'))
+            d2 = d1.strftime('%Y-%m-%d %H:%M%z')
 
             if not Game.objects.filter(fsrUrl=game[1]):
                 g = Game(league=l, fsrID=game[0], fsrUrl=game[1], date=d2, hostTeam=Team.objects.filter(name=game[3])[0], guestTeam=Team.objects.filter(name=game[4])[0], hostScore=game[5], guestScore=game[6])
@@ -92,7 +103,7 @@ def initLeagueDB():
     if League.objects.count() == 0:
         print "Initialize leagues"
         for league in leagues:
-            print league + created
+            print league + "created"
             l = League(name=league, shortCode=league)
             l.save()
     else:

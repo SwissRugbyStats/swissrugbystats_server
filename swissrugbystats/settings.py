@@ -70,7 +70,7 @@ DATABASES = {
 
 LANGUAGE_CODE = 'de-ch'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Zurich'
 
 USE_I18N = True
 
