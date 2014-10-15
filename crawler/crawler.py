@@ -13,13 +13,17 @@ leagues = [
     "lna"
 ]
 
-def crawlLeagueResults(leagues):
+leagueResults = [(l, "http://www.suisserugby.com/competitions/" + l + "/lt/results.html") for l in leagues]
+leagueTeams = [(l, "http://www.suisserugby.com/competitions/" + l + ".html") for l in leagues]
+leagueFixtures = [(l, "http://www.suisserugby.com/competitions/" + l + "/lt/fixtures.html") for l in leagues]
+
+
+def crawlLeagueResults(leagueResultsUrl):
     results = []
-    leagueResults = [(l, "http://www.suisserugby.com/competitions/" + l + "/lt/results.html") for l in leagues]
     headers = {
         'User-Agent': 'Mozilla 5.0'
     }
-    for url in leagueResults:
+    for url in leagueResultsUrl:
         r = requests.get(url[1], headers=headers)
         soup = BeautifulSoup(r.text)
         data = []
@@ -29,30 +33,32 @@ def crawlLeagueResults(leagues):
             cells = row.findAll('td')
             if len(cells) > 0:
                 game = []
-                game.append(cells[0].find(text=True))
-                game.append(cells[0].find('a')['href'])
+                game.append(cells[0].find(text=True))   # fsrID
+                game.append(cells[0].find('a')['href']) # fsrUrl
 
-                teams = cells[2].find(text=True)
-                teams2 = teams.split('-')
-                game.append(teams2[0].rstrip())
-                game.append(teams2[1].lstrip())
+                game.append(cells[1].find(text=True))   # date
 
-                score = cells[3].find(text=True)
+                teams = cells[2].find(text=True)        # teams
+                teams2 = teams.split(' - ')
+                game.append(teams2[0].strip())
+                game.append(teams2[1].strip())
+
+                score = cells[3].find(text=True)        # scores
                 score2 = score.split('-')
-                game.append(score2[0].rstrip())
-                game.append(score2[1].lstrip())
+                game.append(score2[0].strip())
+                game.append(score2[1].strip())
 
                 data.append(game)
         results.append((url[0], data))
     return results
 
-def crawlLeagueTeams(leagues):
+def crawlLeagueTeams(leagueUrl):
     teams = []
-    leagueTeams = [(l, "http://www.suisserugby.com/competitions/" + l + ".html") for l in leagues]
+
     headers = {
         'User-Agent': 'Mozilla 5.0'
     }
-    for url in leagueTeams:
+    for url in leagueUrl:
         r = requests.get(url[1], headers=headers)
         soup = BeautifulSoup(r.text)
         data = []
@@ -61,19 +67,19 @@ def crawlLeagueTeams(leagues):
         for row in table.findAll('tr'):
             cells = row.findAll('td')
             if len(cells) > 0:
-                data.append(cells[1].find(text=True))
+                # parse Teamname and remove leading and tailing spaces
+                data.append(cells[1].find(text=True).strip())
         teams.append((url[0], data))
 
     return teams
 
 
-def crawlLeagueFixtures(leagues):
+def crawlLeagueFixtures(leagueFixturesUrl):
     fixtures = []
-    leagueFixtures = [(l, "http://www.suisserugby.com/competitions/" + l + "/lt/fixtures.html") for l in leagues]
     headers = {
         'User-Agent': 'Mozilla 5.0'
     }
-    for url in leagueFixtures:
+    for url in leagueFixturesUrl:
         r = requests.get(url[1], headers=headers)
         soup = BeautifulSoup(r.text)
         data = []
@@ -81,11 +87,15 @@ def crawlLeagueFixtures(leagues):
         for row in table.findAll('tr'):
             cells = row.findAll('td')
             if len(cells) > 0:
+                teams = cells[2].find(text=True)        # teams
+                teams2 = teams.split(' - ')
+
                 fixture = [
-                    fixture.append(cells[0].find('a').find(text=True)),
-                    fixture.append(cells[0].find('a')['href']),
-                    fixture.append(cells[1].find(text=True)),
-                    fixture.append(cells[2].find(text=True))
+                    cells[0].find('a').find(text=True), # fsrId
+                    cells[0].find('a')['href'],         # fsrUrl
+                    cells[1].find(text=True),           # date
+                    teams2[0].strip(),                 # host
+                    teams2[1].strip()                  # guest
                 ]
                 data.append(fixture)
 
@@ -96,41 +106,28 @@ def crawlLeagueFixtures(leagues):
         if current == 1:
             for page in pagination.findAll('a', attrs={'class': 'inactive'}):
                 if int(page.find(text=True)) > current:
-                    nextUrl = "blubb", page['href']
+                    nextUrl = [("blubb", page['href'])]
                     x = crawlLeagueFixtures(nextUrl)
-                    data+x[1]
+                    data+x
 
         fixtures.append((url[0], data))
 
     return fixtures
 
-
+'''
 print "Teams:\n"
 
-for url in leagueTeams:
-    teams = str(crawlLeagueTeams(url))
-    file = open("teams.txt", "w")
-    file.write(teams)
-    file.close()
-    print teams
+#print str(crawlLeagueTeams(leagues))
+
 
 print "\n------------------\n"
 
 print "League Scores:\n"
-for url in leagueScores:
-    scores = str(crawlLeagueResults(url))
-    file = open("scores.txt", "w")
-    file.write(scores)
-    file.close()
-    print scores
 
+#print str(crawlLeagueResults(leagues))
 
 print "\n------------------\n"
 
 print "League Fixtures:\n"
-for url in leagueFixtures:
-    fixtures = str(crawlLeagueFixtures(url))
-    file = open("fixtures.txt", "w")
-    file.write(fixtures)
-    file.close()
-    print fixtures
+'''
+#print str(crawlLeagueFixtures(leagueFixtures))

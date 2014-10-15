@@ -10,8 +10,14 @@ class League(models.Model):
     name = models.CharField(max_length=50, null=True)
     shortCode = models.CharField(max_length=50)
 
-    def getUrl(self):
+    def getLeagueUrl(self):
         return "http://www.suisserugby.com/competitions/" + self.shortCode + ".html"
+
+    def getFixturesUrl(self):
+        return "http://www.suisserugby.com/competitions/" + self.shortCode + "/lt/fixtures.html"
+
+    def getResultsUrl(self):
+        return "http://www.suisserugby.com/competitions/" + self.shortCode + "/lt/results.html"
 
     def __unicode__(self):
         return self.name
@@ -45,4 +51,4 @@ class Game(models.Model):
     guestScore = models.IntegerField(verbose_name="Guest Score", blank=True, null=True)
 
     def __unicode__(self):
-        return self.date + ": " + self.hostTeam + "vs" +self.guestTeam
+        return self.date.strftime('%Y-%m-%d %H:%M') + ": " + str(self.hostTeam) + " vs " + str(self.guestTeam)
