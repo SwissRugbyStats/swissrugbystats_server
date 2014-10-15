@@ -7,7 +7,7 @@ from django.db import models
 
 
 class League(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, null=True)
     shortCode = models.CharField(max_length=50)
 
     def getUrl(self):
