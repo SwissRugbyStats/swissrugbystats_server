@@ -40,15 +40,29 @@ class Team(models.Model):
 '''
 
 
+class GameParticipation(models.Model):
+    team = models.ForeignKey(Team, verbose_name="Team", related_name="Team_set")
+    score = models.IntegerField(verbose_name="Score", blank=True, null=True)
+    tries = models.IntegerField(verbose_name="Score", blank=True, null=True)
+    redCards = models.IntegerField(verbose_name="Red Cards", blank=True, null=True)
+    points = models.IntegerField(verbose_name="Score", blank=True, null=True)
+
+    def __unicode__(self):
+        return self.team.name + " " + str(self.score) + " (" + str(self.tries) + "/" + str(self.redCards) + "/" + str(self.points) + ")"
+
+
+'''
+-------------------------------------------
+'''
+
+
 class Game(models.Model):
     fsrID = models.CharField(max_length=10, blank=True, null=True, verbose_name="FSR ID")
     fsrUrl = models.CharField(max_length=100, blank=True, null=True, verbose_name="FSR Url")
     league = models.ForeignKey(League, verbose_name="League")
     date = models.DateTimeField(verbose_name="KickOff")
-    hostTeam = models.ForeignKey(Team, verbose_name="Host", related_name="hostTeam_set")
-    guestTeam = models.ForeignKey(Team, verbose_name="Guest", related_name="guestTeam_set")
-    hostScore = models.IntegerField(verbose_name="Host Score", blank=True, null=True)
-    guestScore = models.IntegerField(verbose_name="Guest Score", blank=True, null=True)
+    host = models.ForeignKey(GameParticipation, verbose_name="Host Participation", related_name="hostTeam_set")
+    guest = models.ForeignKey(GameParticipation, verbose_name="Guest Participation", related_name="guestTeam_set")
 
     def __unicode__(self):
-        return self.date.strftime('%Y-%m-%d %H:%M') + ": " + str(self.hostTeam) + " vs " + str(self.guestTeam)
+        return self.date.strftime('%d.%m.%Y') + ": " + self.host.team.name + " vs " + self.guest.team.name

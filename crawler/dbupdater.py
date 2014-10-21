@@ -6,6 +6,7 @@ import pytz
 from datetime import datetime
 from django.utils import timezone
 
+# import models from swissrugbystats
 sys.path.append("/home/chregi/Documents/git/swissrugbystats")
 os.environ["DJANGO_SETTINGS_MODULE"] = "swissrugbystats.settings"
 timezone.activate(pytz.timezone("Europe/Zurich"))
@@ -17,9 +18,7 @@ logging.basicConfig(filename='crawler.log', level=logging.INFO, format='%(asctim
 
 import crawler
 
-from swissrugby.models import Team
-from swissrugby.models import League
-from swissrugby.models import Game
+from swissrugby.models import Team, League, Game, GameParticipation
 
 leagues = [
     "u16-east",
@@ -69,7 +68,11 @@ def updateAll():
             logging.info("Fixture: " + str(game))
 
             if not Game.objects.filter(fsrUrl=game[1]):
-                g = Game(league=l, fsrID=game[0], fsrUrl=game[1], date=d2, hostTeam=host[0], guestTeam=guest[0])
+                hostP = GameParticipation(team=host[0])
+                guestP = GameParticipation(team=guest[0])
+                hostP.save()
+                guestP.save()
+                g = Game(league=l, fsrID=game[0], fsrUrl=game[1], date=d2, host=hostP, guest=guestP)
                 g.save()
             else:
                 g = Game.objects.filter(fsrUrl=game[1])[0]
@@ -89,14 +92,18 @@ def updateAll():
             logging.info("Result: " + str(game))
 
             if not Game.objects.filter(fsrUrl=game[1]):
-                g = Game(league=l, fsrID=game[0], fsrUrl=game[1], date=d2, hostTeam=Team.objects.filter(name=game[3])[0], guestTeam=Team.objects.filter(name=game[4])[0], hostScore=game[5], guestScore=game[6])
+                hostP = GameParticipation(team=Team.objects.filter(name=game[3])[0], score=game[5])
+                guestP = GameParticipation(team=Team.objects.filter(name=game[4])[0], score=game[6])
+                hostP.save()
+                guestP.save()
+                g = Game(league=l, fsrID=game[0], fsrUrl=game[1], date=d2, host=hostP, guest=guestP)
                 g.save()
             else:
                 g = Game.objects.filter(fsrUrl=game[1])[0]
                 g.league = l
                 g.date = d2
-                g.hostScore = game[5]
-                g.guestScore = game[6]
+                g.host.score = game[5]
+                g.guest.score = game[6]
                 g.save()
 
 
