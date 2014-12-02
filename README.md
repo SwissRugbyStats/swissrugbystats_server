@@ -14,6 +14,7 @@ required python packages
 - celery
 - rabbitmq
 - requests
+- pygments
 - BeautifulSoup
 
 some notes
