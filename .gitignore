@@ -8,3 +8,4 @@ env/
 *.log
 celerybeat-schedule
 .swp
+*~

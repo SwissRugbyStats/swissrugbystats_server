@@ -17,8 +17,16 @@ required python packages
 - pygments
 - BeautifulSoup
 
+required tools
+--------------
+- less
+- grunt-cli
+
 some notes
 ----------
+
+### detect css changes and compile less automatically
+grunt watch
 
 ### activate virtualenv
 source env/bin/activate

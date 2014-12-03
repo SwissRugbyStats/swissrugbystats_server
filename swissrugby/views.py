@@ -4,6 +4,10 @@ from swissrugby.serializer import LeagueSerializer, GameSerializer, TeamSerializ
 from rest_framework import generics
 
 
+
+
+
+
 ''' --------------------------------
 
     API
