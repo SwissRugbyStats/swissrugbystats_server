@@ -16,6 +16,8 @@ required python packages
 - requests
 - pygments
 - BeautifulSoup
+- djangorestframework
+- django-cors-headers
 
 required tools
 --------------
