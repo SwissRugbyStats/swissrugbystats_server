@@ -36,78 +36,19 @@ def updateAll():
 
     logging.info("update started")
 
+    initLeagueDB()
+
     # update team table
-    teams = crawler.crawlLeagueTeams([(l.shortCode, l.getLeagueUrl()) for l in League.objects.all()])
-    for league in teams:
-        for team in league[1]:
-            if not Team.objects.filter(name=team):
-                t = Team(name=team)
-                t.save()
-                print "Team " + str(t) + " created"
-
-
-    # update game table with fixtures
-    gameFixtures = crawler.crawlLeagueFixtures([(l.shortCode, l.getFixturesUrl()) for l in League.objects.all()])
-    for league in gameFixtures:
-        for game in league[1]:
-            l = League.objects.filter(shortCode=league[0])[0]
-            # parse date and set timezone
-            d1 = timezone.get_current_timezone().localize(datetime.strptime(game[2], '%d.%m.%Y %H:%M'))
-            d2 = d1.strftime('%Y-%m-%d %H:%M%z')
-
-            host = Team.objects.filter(name=game[3])
-            if not host:
-                logging.error("Hostteam not found: "+game[3])
-                print "Hostteam not found: "+game[3]
-
-            guest = Team.objects.filter(name=game[4])
-            if not guest:
-                logging.error("Guestteam not found: "+game[3])
-                print "Guestteam not found: "+game[4]
-
-            logging.info("Fixture: " + str(game))
-
-            if not Game.objects.filter(fsrUrl=game[1]):
-                hostP = GameParticipation(team=host[0])
-                guestP = GameParticipation(team=guest[0])
-                hostP.save()
-                guestP.save()
-                g = Game(league=l, fsrID=game[0], fsrUrl=game[1], date=d2, host=hostP, guest=guestP)
-                g.save()
-            else:
-                g = Game.objects.filter(fsrUrl=game[1])[0]
-                g.league = l
-                g.date = d2
-                g.save()
+    crawler.crawlLeagueTeams([(l.shortCode, l.getLeagueUrl()) for l in League.objects.all()])
 
     # update game table with results
-    gameResults = crawler.crawlLeagueResults([(l.shortCode, l.getResultsUrl()) for l in League.objects.all()])
-    for league in gameResults:
-        for game in league[1]:
-            l = League.objects.filter(shortCode=league[0])[0]
-            # parse date and set timezone
-            d1 = timezone.get_current_timezone().localize(datetime.strptime(game[2], '%d.%m.%Y %H:%M'))
-            d2 = d1.strftime('%Y-%m-%d %H:%M%z')
+    crawler.crawlLeagueResults([(l.shortCode, l.getResultsUrl()) for l in League.objects.all()])
 
-            logging.info("Result: " + str(game))
-
-            if not Game.objects.filter(fsrUrl=game[1]):
-                hostP = GameParticipation(team=Team.objects.filter(name=game[3])[0], score=game[5])
-                guestP = GameParticipation(team=Team.objects.filter(name=game[4])[0], score=game[6])
-                hostP.save()
-                guestP.save()
-                g = Game(league=l, fsrID=game[0], fsrUrl=game[1], date=d2, host=hostP, guest=guestP)
-                g.save()
-            else:
-                g = Game.objects.filter(fsrUrl=game[1])[0]
-                g.league = l
-                g.date = d2
-                g.host.score = game[5]
-                g.guest.score = game[6]
-                g.save()
-
+    # update game table with fixtures
+    crawler.crawlLeagueFixtures([(l.shortCode, l.getFixturesUrl()) for l in League.objects.all()])
 
     print "updateAll"
+
 
 def initLeagueDB():
     # initialize if still empty

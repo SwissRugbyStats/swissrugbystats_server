@@ -1,5 +1,13 @@
 import requests
+import logging
+from datetime import datetime
+from django.utils import timezone
 from BeautifulSoup import BeautifulSoup
+from swissrugby.models import Team, League, Game, GameParticipation, Venue, Referee
+
+# create logger
+logging.basicConfig(filename='crawler.log', level=logging.INFO, format='%(asctime)s- %(message)s', datefmt='%d.%m.%Y %I:%M:%S ')
+
 
 leagues = [
     "u16-east",
@@ -13,47 +21,12 @@ leagues = [
     "lna"
 ]
 
-leagueResults = [(l, "http://www.suisserugby.com/competitions/" + l + "/lt/results.html") for l in leagues]
 leagueTeams = [(l, "http://www.suisserugby.com/competitions/" + l + ".html") for l in leagues]
 leagueFixtures = [(l, "http://www.suisserugby.com/competitions/" + l + "/lt/fixtures.html") for l in leagues]
+leagueResults = [(l, "http://www.suisserugby.com/competitions/" + l + "/lt/results.html") for l in leagues]
 
-
-def crawlLeagueResults(leagueResultsUrl):
-    results = []
-    headers = {
-        'User-Agent': 'Mozilla 5.0'
-    }
-    for url in leagueResultsUrl:
-        r = requests.get(url[1], headers=headers)
-        soup = BeautifulSoup(r.text)
-        data = []
-        table = soup.find('table', attrs={'class': 'table'})
-
-        for row in table.findAll('tr'):
-            cells = row.findAll('td')
-            if len(cells) > 0:
-                game = []
-                game.append(cells[0].find(text=True))   # fsrID
-                game.append(cells[0].find('a')['href']) # fsrUrl
-
-                game.append(cells[1].find(text=True))   # date
-
-                teams = cells[2].find(text=True)        # teams
-                teams2 = teams.split(' - ')
-                game.append(teams2[0].strip())
-                game.append(teams2[1].strip())
-
-                score = cells[3].find(text=True)        # scores
-                score2 = score.split('-')
-                game.append(score2[0].strip())
-                game.append(score2[1].strip())
-
-                data.append(game)
-        results.append((url[0], data))
-    return results
 
 def crawlLeagueTeams(leagueUrl):
-    teams = []
 
     headers = {
         'User-Agent': 'Mozilla 5.0'
@@ -61,58 +34,244 @@ def crawlLeagueTeams(leagueUrl):
     for url in leagueUrl:
         r = requests.get(url[1], headers=headers)
         soup = BeautifulSoup(r.text)
-        data = []
         table = soup.find('table', attrs={'class': 'table'})
 
         for row in table.findAll('tr'):
             cells = row.findAll('td')
             if len(cells) > 0:
                 # parse Teamname and remove leading and tailing spaces
-                data.append(cells[1].find(text=True).strip())
-        teams.append((url[0], data))
+                team = cells[1].find(text=True).strip()
+                if not Team.objects.filter(name=team):
+                    t = Team(name=team)
+                    t.save()
+                    print "Team " + str(t) + " created"
 
-    return teams
+# leagueResultsUrl is an array of [leagueShortCode, leagueUrl] tuples
+def crawlLeagueResults(leagueResultsUrl):
+    headers = {
+        'User-Agent': 'Mozilla 5.0'
+    }
+    # url is tupel of [leagueName, leagueUrl]
+    for url in leagueResultsUrl:
+        r = requests.get(url[1], headers=headers)
+        soup = BeautifulSoup(r.text)
+        table = soup.find('table', attrs={'class': 'table'})
+        league = League.objects.filter(shortCode=url[0])[0]
+
+        for row in table.findAll('tr'):
+            cells = row.findAll('td')
+            if len(cells) > 0:
+
+                # get host and guest team
+                teams = cells[2].find(text=True)        # teams
+                teams2 = teams.split(' - ')
+
+                host = Team.objects.filter(name=teams2[0].strip())
+                if not host:
+                    logging.error("Hostteam not found: "+teams2[0].strip())
+                    logging.error(row)
+                    print "Hostteam not found: "+teams2[0].strip()
+                    continue
+                else:
+                    host = host[0]
+                guest = Team.objects.filter(name=teams2[1].strip())
+                if not guest:
+                    logging.error("Guestteam not found: "+teams2[1].strip())
+                    logging.error(row)
+                    print "Guestteam not found: "+teams2[1].strip()
+                    continue
+                else:
+                    guest = guest[0]
+
+                # check if game is already stored, if so, update the existing one
+                fsrUrl = cells[0].find('a')['href']
+                if not Game.objects.filter(fsrUrl=fsrUrl):
+                    game = Game()
+                    hostParticipant = GameParticipation(team=host)
+                    guestParticipant = GameParticipation(team=guest)
+                    venue = Venue()
+                    referee = Referee()
+                else:
+                    game = Game.objects.filter(fsrUrl=fsrUrl)[0]
+                    hostParticipant = game.host
+                    guestParticipant = game.guest
+                    if not game.referee:
+                        referee = Referee()
+                    else:
+                        referee = game.referee
+
+                    if not game.venue:
+                        venue = Venue()
+                    else:
+                        venue = game.venue
+
+                # parse date and set timezone
+                date = cells[1].find(text=True)
+                d1 = timezone.get_current_timezone().localize(datetime.strptime(date, '%d.%m.%Y %H:%M'))
+                d2 = d1.strftime('%Y-%m-%d %H:%M%z')
+                game.date = d2
+
+                game.league = league
+                game.fsrID = cells[0].find(text=True)
+                game.fsrUrl = cells[0].find('a')['href']
+
+                # Game details & team logos
+
+                # make new request to game detail page
+                r2 = requests.get(game.fsrUrl, headers=headers)
+                soup2 = BeautifulSoup(r2.text)
+                table2 = soup2.find('table')
+                rows = table2.findAll('tr')
+
+                host.logo = rows[1].findAll('td')[0].find('img')['src']   # logo host
+                guest.logo = rows[1].findAll('td')[2].find('img')['src']  # logo guest
+                venue.name = rows[3].findAll('td')[1].find(text=True)               # venue
+
+                scoreRow = 4
+                if (rows[4].findAll('td')[1].find(text=True).strip() == "Forfait"):
+                    scoreRow += 1
+                    #TODO: save forfait in db
+
+                hostParticipant.score = int(rows[scoreRow].findAll('td')[0].find(text=True))          # score host
+                guestParticipant.score = int(rows[scoreRow].findAll('td')[2].find(text=True))         # score guest
+                hostParticipant.tries = int(rows[scoreRow+1].findAll('td')[0].find(text=True))          # tries host
+                guestParticipant.tries = int(rows[scoreRow+1].findAll('td')[2].find(text=True))         # tries guest
+                hostParticipant.redCards = int(rows[scoreRow+2].findAll('td')[0].find(text=True))       # red cards host
+                guestParticipant.redCards = int(rows[scoreRow+2].findAll('td')[2].find(text=True))      # red cards guest
+
+                # referee is not always there
+                if (len(rows)>=9):
+                    referee.name = rows[8].findAll('td')[1].find(text=True).strip()     # referee
+                    referee.save()
+                    game.referee = referee
+
+                host.save()
+                guest.save()
+                hostParticipant.team = host
+                hostParticipant.save()
+                guestParticipant.team = guest
+                guestParticipant.save()
+                game.host = hostParticipant
+                game.guest = guestParticipant
+
+                venue.save()
+                game.venue = venue
+
+                game.save()
+
+            # recursively parse all next sites if there are any
+            pagination = soup.find('div', attrs={'class': 'pagination'})
+            current = int(pagination.find('span', attrs={'class': 'current'}).find(text=True))
+            if current == 1:
+                for page in pagination.findAll('a', attrs={'class': 'inactive'}):
+                    if int(page.find(text=True)) > current:
+                        nextUrl = [(league.shortCode, page['href'])]
+                        crawlLeagueResults(nextUrl)
 
 
 def crawlLeagueFixtures(leagueFixturesUrl):
-    fixtures = []
     headers = {
         'User-Agent': 'Mozilla 5.0'
     }
     for url in leagueFixturesUrl:
         r = requests.get(url[1], headers=headers)
         soup = BeautifulSoup(r.text)
-        data = []
         table = soup.find('table', attrs={'class': 'table'})
+        league = League.objects.filter(shortCode=url[0])[0]
+
         for row in table.findAll('tr'):
             cells = row.findAll('td')
             if len(cells) > 0:
+
+                # get host and guest team
                 teams = cells[2].find(text=True)        # teams
                 teams2 = teams.split(' - ')
 
-                fixture = [
-                    cells[0].find('a').find(text=True), # fsrId
-                    cells[0].find('a')['href'],         # fsrUrl
-                    cells[1].find(text=True),           # date
-                    teams2[0].strip(),                 # host
-                    teams2[1].strip()                  # guest
-                ]
-                data.append(fixture)
+                host = Team.objects.filter(name=teams2[0].strip())
+                if not host:
+                    logging.error("Hostteam not found: "+teams2[0].strip())
+                    logging.error(row)
+                    print "Hostteam not found: "+teams2[0].strip()
+                    continue
+                else:
+                    host = host[0]
+                guest = Team.objects.filter(name=teams2[1].strip())
+                if not guest:
+                    logging.error("Guestteam not found: "+teams2[1].strip())
+                    logging.error(row)
+                    print "Guestteam not found: "+teams2[1].strip()
+                    continue
+                else:
+                    guest = guest[0]
 
+                # check if game is already stored, if so, update the existing one
+                fsrUrl = cells[0].find('a')['href']
+                if not Game.objects.filter(fsrUrl=fsrUrl):
+                    game = Game()
+                    hostParticipant = GameParticipation(team=host)
+                    guestParticipant = GameParticipation(team=guest)
+                    venue = Venue()
+                    referee = Referee()
+                else:
+                    game = Game.objects.filter(fsrUrl=fsrUrl)[0]
+                    hostParticipant = game.host
+                    guestParticipant = game.guest
+                    if not game.referee:
+                        referee = Referee()
+                    else:
+                        referee = game.referee
 
-        # recursively parse all next sites
-        pagination = soup.find('div', attrs={'class': 'pagination'})
-        current = int(pagination.find('span', attrs={'class': 'current'}).find(text=True))
-        if current == 1:
-            for page in pagination.findAll('a', attrs={'class': 'inactive'}):
-                if int(page.find(text=True)) > current:
-                    nextUrl = [("blubb", page['href'])]
-                    x = crawlLeagueFixtures(nextUrl)
-                    data+x
+                    if not game.venue:
+                        venue = Venue()
+                    else:
+                        venue = game.venue
 
-        fixtures.append((url[0], data))
+                # parse date and set timezone
+                date = cells[1].find(text=True)
+                d1 = timezone.get_current_timezone().localize(datetime.strptime(date, '%d.%m.%Y %H:%M'))
+                d2 = d1.strftime('%Y-%m-%d %H:%M%z')
+                game.date = d2
 
-    return fixtures
+                game.league = league
+                game.fsrID = cells[0].find(text=True)
+                game.fsrUrl = cells[0].find('a')['href']
+
+                # Game details & team logos
+
+                # make new request to game detail page
+                r2 = requests.get(game.fsrUrl, headers=headers)
+                soup2 = BeautifulSoup(r2.text)
+                table2 = soup2.find('table')
+                rows = table2.findAll('tr')
+
+                host.logo = rows[1].findAll('td')[0].find('img')['src']   # logo host
+                guest.logo = rows[1].findAll('td')[2].find('img')['src']  # logo guest
+                venue.name = rows[3].findAll('td')[1].find(text=True)               # venue
+
+                host.save()
+                guest.save()
+                hostParticipant.team = host
+                hostParticipant.save()
+                guestParticipant.team = guest
+                guestParticipant.save()
+                game.host = hostParticipant
+                game.guest = guestParticipant
+
+                venue.save()
+                game.venue = venue
+                referee.save()
+                game.referee = referee
+
+                game.save()
+
+            # recursively parse all next sites if there are any
+            pagination = soup.find('div', attrs={'class': 'pagination'})
+            current = int(pagination.find('span', attrs={'class': 'current'}).find(text=True))
+            if current == 1:
+                for page in pagination.findAll('a', attrs={'class': 'inactive'}):
+                    if int(page.find(text=True)) > current:
+                        nextUrl = [(league.shortCode, page['href'])]
+                        crawlLeagueFixtures(nextUrl)
 
 '''
 print "Teams:\n"
