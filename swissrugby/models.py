@@ -40,6 +40,18 @@ class Team(models.Model):
 '''
 
 
+class Venue(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __unicode__(self):
+        return self.name
+
+
+'''
+-------------------------------------------
+'''
+
+
 class GameParticipation(models.Model):
     team = models.ForeignKey(Team, verbose_name="Team", related_name="Team_set")
     score = models.IntegerField(verbose_name="Score", blank=True, null=True)

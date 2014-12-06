@@ -129,5 +129,6 @@ print "League Scores:\n"
 print "\n------------------\n"
 
 print "League Fixtures:\n"
-'''
+
 #print str(crawlLeagueFixtures(leagueFixtures))
+'''

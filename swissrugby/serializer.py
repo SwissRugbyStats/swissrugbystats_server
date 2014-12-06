@@ -8,20 +8,21 @@ class LeagueSerializer(serializers.ModelSerializer):
         model = League
         #fields = ('name', 'shortCode')
 
-
-class GameSerializer(serializers.ModelSerializer):
+class TeamSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Game
+        model = Team
         #fields = ('name', 'shortcode')
 
-
 class GameParticipationSerializer(serializers.ModelSerializer):
+    team = TeamSerializer(many=False, read_only=True)
     class Meta:
         model = GameParticipation
         #fields = ('name', 'shortcode')
 
-
-class TeamSerializer(serializers.ModelSerializer):
+class GameSerializer(serializers.ModelSerializer):
+    host = GameParticipationSerializer(many=False, read_only=True)
+    guest = GameParticipationSerializer(many=False, read_only=True)
+    league = LeagueSerializer(many=False, read_only=True)
     class Meta:
-        model = Team
+        model = Game
         #fields = ('name', 'shortcode')
