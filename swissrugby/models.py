@@ -30,6 +30,7 @@ class League(models.Model):
 
 class Team(models.Model):
     name = models.CharField(max_length=50)
+    logo = models.CharField(max_length=200) # move to club class, once it exists
 
     def __unicode__(self):
         return self.name
@@ -41,6 +42,18 @@ class Team(models.Model):
 
 
 class Venue(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __unicode__(self):
+        return self.name
+
+
+'''
+-------------------------------------------
+'''
+
+
+class Referee(models.Model):
     name = models.CharField(max_length=100)
 
     def __unicode__(self):
@@ -72,6 +85,7 @@ class Game(models.Model):
     fsrID = models.CharField(max_length=10, blank=True, null=True, verbose_name="FSR ID")
     fsrUrl = models.CharField(max_length=100, blank=True, null=True, verbose_name="FSR Url")
     league = models.ForeignKey(League, verbose_name="League")
+    venue = models.ForeignKey(Venue, verbose_name="Venue")
     date = models.DateTimeField(verbose_name="KickOff")
     host = models.ForeignKey(GameParticipation, verbose_name="Host Participation", related_name="hostTeam_set")
     guest = models.ForeignKey(GameParticipation, verbose_name="Guest Participation", related_name="guestTeam_set")
