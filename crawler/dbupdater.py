@@ -18,7 +18,7 @@ logging.basicConfig(filename='crawler.log', level=logging.INFO, format='%(asctim
 
 import crawler
 
-from swissrugby.models import Team, League, Game, GameParticipation
+from swissrugby.models import League
 
 leagues = [
     "u16-east",
@@ -61,8 +61,5 @@ def initLeagueDB():
     else:
         print "Leagues already initialized"
 
-
-def updateTeamDB():
-    print "create TeamDB"
 
 updateAll()

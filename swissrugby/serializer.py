@@ -13,6 +13,13 @@ class TeamSerializer(serializers.ModelSerializer):
         model = Team
         #fields = ('name', 'shortcode')
 
+class TeamInsightSerializer(serializers.ModelSerializer):
+    pointCount = serializers.Field(source='getPointCount')
+    gameCount = serializers.Field(source='getGameCount')
+    class Meta:
+        model = Team
+        fields = ('id', 'name', 'pointCount', 'gameCount')
+
 class GameParticipationSerializer(serializers.ModelSerializer):
     team = TeamSerializer(many=False, read_only=True)
     class Meta:

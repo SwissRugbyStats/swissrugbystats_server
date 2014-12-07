@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from swissrugby.models import League, Game, Team, GameParticipation
-from swissrugby.serializer import LeagueSerializer, GameSerializer, TeamSerializer, GameParticipationSerializer
+from swissrugby.serializer import LeagueSerializer, GameSerializer, TeamSerializer, GameParticipationSerializer, TeamInsightSerializer
 from rest_framework import generics
 
 
