@@ -8,6 +8,11 @@ from swissrugby.models import Team, League, Game, GameParticipation, Venue, Refe
 # create logger
 logging.basicConfig(filename='crawler.log', level=logging.INFO, format='%(asctime)s- %(message)s', datefmt='%d.%m.%Y %I:%M:%S ')
 
+# TODO: option to choose if wanting to make a deep crawl (all games), or just a shallow one (only first page of every league)
+# TODO: try to combine crawlLeagueFixtures and crawlLeagueResults into one function
+# TODO: add verbose option, don't show all the print() messages per default
+# TODO: log count of objects at beginning, count of objects created / updated and count of objects after script completion
+# TODO: save forfaits
 
 leagues = [
     "u16-east",
@@ -139,7 +144,7 @@ def crawlLeagueResults(leagueResultsUrl):
 
                 # referee is not always there
                 if len(rows)>=scoreRow+5:
-                    refName = rows[scoreRow+3].findAll('td')[1].find(text=True).strip()     # referee
+                    refName = rows[scoreRow+4].findAll('td')[1].find(text=True).strip()     # referee
                     # TODO: save performance by not doing reassigning referee if aready set
                     if not Referee.objects.filter(name=refName):
                         referee = Referee()
