@@ -89,21 +89,11 @@ def crawlLeagueResults(leagueResultsUrl):
                     game = Game()
                     hostParticipant = GameParticipation(team=host)
                     guestParticipant = GameParticipation(team=guest)
-                    venue = Venue()
-                    referee = Referee()
                 else:
                     game = Game.objects.filter(fsrUrl=fsrUrl)[0]
                     hostParticipant = game.host
                     guestParticipant = game.guest
-                    if not game.referee:
-                        referee = Referee()
-                    else:
-                        referee = game.referee
 
-                    if not game.venue:
-                        venue = Venue()
-                    else:
-                        venue = game.venue
 
                 # parse date and set timezone
                 date = cells[1].find(text=True)
@@ -125,10 +115,18 @@ def crawlLeagueResults(leagueResultsUrl):
 
                 host.logo = rows[1].findAll('td')[0].find('img')['src']   # logo host
                 guest.logo = rows[1].findAll('td')[2].find('img')['src']  # logo guest
-                venue.name = rows[3].findAll('td')[1].find(text=True)               # venue
+
+                venueName = rows[3].findAll('td')[1].find(text=True)     # venue
+                if not Venue.objects.filter(name=venueName):
+                    venue = Venue()
+                    venue.name = venueName
+                    print("Venue " + venueName + " created")
+                else:
+                    venue = Venue.objects.filter(name=venueName)[0]
+
 
                 scoreRow = 4
-                if (rows[4].findAll('td')[1].find(text=True).strip() == "Forfait"):
+                if rows[4].findAll('td')[1].find(text=True).strip() == "Forfait":
                     scoreRow += 1
                     #TODO: save forfait in db
 
@@ -140,8 +138,15 @@ def crawlLeagueResults(leagueResultsUrl):
                 guestParticipant.redCards = int(rows[scoreRow+2].findAll('td')[2].find(text=True))      # red cards guest
 
                 # referee is not always there
-                if (len(rows)>=9):
-                    referee.name = rows[8].findAll('td')[1].find(text=True).strip()     # referee
+                if len(rows)>=scoreRow+5:
+                    refName = rows[scoreRow+3].findAll('td')[1].find(text=True).strip()     # referee
+                    # TODO: save performance by not doing reassigning referee if aready set
+                    if not Referee.objects.filter(name=refName):
+                        referee = Referee()
+                        referee.name = refName
+                        print("Referee " + refName + " created")
+                    else:
+                        referee = Referee.objects.filter(name=refName)[0]
                     referee.save()
                     game.referee = referee
 
@@ -159,7 +164,7 @@ def crawlLeagueResults(leagueResultsUrl):
 
                 game.save()
 
-                print "Game " + str(game) + " created / updated"
+                print "GameResult " + str(Game.objects.get(id=game.id)) + " created / updated"
 
             # recursively parse all next sites if there are any
             pagination = soup.find('div', attrs={'class': 'pagination'})
@@ -212,21 +217,11 @@ def crawlLeagueFixtures(leagueFixturesUrl):
                     game = Game()
                     hostParticipant = GameParticipation(team=host)
                     guestParticipant = GameParticipation(team=guest)
-                    venue = Venue()
-                    referee = Referee()
                 else:
                     game = Game.objects.filter(fsrUrl=fsrUrl)[0]
                     hostParticipant = game.host
                     guestParticipant = game.guest
-                    if not game.referee:
-                        referee = Referee()
-                    else:
-                        referee = game.referee
 
-                    if not game.venue:
-                        venue = Venue()
-                    else:
-                        venue = game.venue
 
                 # parse date and set timezone
                 date = cells[1].find(text=True)
@@ -248,7 +243,13 @@ def crawlLeagueFixtures(leagueFixturesUrl):
 
                 host.logo = rows[1].findAll('td')[0].find('img')['src']   # logo host
                 guest.logo = rows[1].findAll('td')[2].find('img')['src']  # logo guest
-                venue.name = rows[3].findAll('td')[1].find(text=True)               # venue
+                venueName = rows[3].findAll('td')[1].find(text=True)     # venue
+                if not Venue.objects.filter(name=venueName):
+                    venue = Venue()
+                    venue.name = venueName
+                    print("Venue " + venueName + " created")
+                else:
+                    venue = Venue.objects.filter(name=venueName)[0]
 
                 host.save()
                 guest.save()
@@ -261,12 +262,10 @@ def crawlLeagueFixtures(leagueFixturesUrl):
 
                 venue.save()
                 game.venue = venue
-                referee.save()
-                game.referee = referee
 
                 game.save()
 
-                print "Game " + str(game) + " created / updated"
+                print "GameFixture " + str(Game.objects.get(id=game.id)) + " created / updated"
 
             # recursively parse all next sites if there are any
             pagination = soup.find('div', attrs={'class': 'pagination'})

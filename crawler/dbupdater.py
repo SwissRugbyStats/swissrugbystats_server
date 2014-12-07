@@ -55,7 +55,7 @@ def initLeagueDB():
     if League.objects.count() == 0:
         print "Initialize leagues"
         for league in leagues:
-            print league + "created"
+            print league + " created"
             l = League(name=league, shortCode=league)
             l.save()
     else:
