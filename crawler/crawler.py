@@ -159,6 +159,8 @@ def crawlLeagueResults(leagueResultsUrl):
 
                 game.save()
 
+                print "Game " + str(game) + " created / updated"
+
             # recursively parse all next sites if there are any
             pagination = soup.find('div', attrs={'class': 'pagination'})
             current = int(pagination.find('span', attrs={'class': 'current'}).find(text=True))
@@ -263,6 +265,8 @@ def crawlLeagueFixtures(leagueFixturesUrl):
                 game.referee = referee
 
                 game.save()
+
+                print "Game " + str(game) + " created / updated"
 
             # recursively parse all next sites if there are any
             pagination = soup.find('div', attrs={'class': 'pagination'})

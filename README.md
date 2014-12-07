@@ -34,7 +34,8 @@ grunt watch
 source env/bin/activate
 
 ### run webcrawler
-python crawler/dbupdater.py
+without logging:
+python crawler/dbupdater.py > /dev/null 2> /dev/null &
 
 ### install rabbitmq
 wget http://www.rabbitmq.com/rabbitmq-signing-key-public.asc
