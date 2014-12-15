@@ -9,3 +9,5 @@ env/
 celerybeat-schedule
 .swp
 *~
+
+RUN
