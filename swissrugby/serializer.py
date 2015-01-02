@@ -1,6 +1,6 @@
 from django.forms import widgets
 from rest_framework import serializers
-from swissrugby.models import League, Team, Game, GameParticipation
+from swissrugby.models import League, Team, Game, GameParticipation, Referee, Venue
 
 
 class LeagueSerializer(serializers.ModelSerializer):
@@ -33,3 +33,11 @@ class GameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Game
         #fields = ('name', 'shortcode')
+
+class RefereeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Referee
+
+class VenueSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Venue

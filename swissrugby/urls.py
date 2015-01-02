@@ -13,6 +13,8 @@ urlpatterns = patterns('',
     url(r'^gameparticipations/(?P<pk>[0-9]+)/$', views.GameParticipationDetail.as_view()),
     url(r'^teams/$', views.TeamList.as_view(), name="teams"),
     url(r'^teams/(?P<pk>[0-9]+)/$', views.TeamDetail.as_view()),
+    url(r'^referees/$', views.RefereeList.as_view(), name="referees"),
+    url(r'^venues/$', views.VenueList.as_view(), name="venues"),
 )
 
 urlpatterns = format_suffix_patterns(urlpatterns)
