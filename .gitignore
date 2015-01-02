@@ -10,4 +10,8 @@ celerybeat-schedule
 .swp
 *~
 
+# custom rules
 RUN
+
+# ignore STATIC_ROOT folder
+swissrugbystats/static

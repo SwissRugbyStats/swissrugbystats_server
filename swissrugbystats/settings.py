@@ -24,7 +24,7 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['api.swissrugbystats.ch']
 
 
 # Application definition
@@ -85,6 +85,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = "/home/platzhersh/swissrugbystats_server/swissrugbystats/static"
 
 # CORS (Cross Origin Resource Sharing)
 # documentation: https://github.com/ottoyiu/django-cors-headers/
