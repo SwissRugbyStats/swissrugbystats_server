@@ -2,10 +2,9 @@ from django.shortcuts import render
 from swissrugby.models import League, Game, Team, GameParticipation
 from swissrugby.serializer import LeagueSerializer, GameSerializer, TeamSerializer, GameParticipationSerializer, TeamInsightSerializer
 from rest_framework import generics
-
-
-
-
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
 
 
 ''' --------------------------------
@@ -14,6 +13,15 @@ from rest_framework import generics
 
 -------------------------------- '''
 
+# API root
+@api_view(('GET',))
+def api_root(request, format=None):
+    return Response({
+        'leagues': reverse('leagues', request=request, format=format),
+        'games': reverse('games', request=request, format=format),
+        'game-participations': reverse('game-participations', request=request, format=format),
+        'teams': reverse('teams', request=request, format=format)
+    })
 
 # League list
 class LeagueList(generics.ListAPIView):

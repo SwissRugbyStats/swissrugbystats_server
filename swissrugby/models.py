@@ -152,9 +152,9 @@ class Referee(models.Model):
 class GameParticipation(models.Model):
     team = models.ForeignKey(Team, verbose_name="Team", related_name="Team_set")
     score = models.IntegerField(verbose_name="Score", blank=True, null=True)
-    tries = models.IntegerField(verbose_name="Score", blank=True, null=True)
+    tries = models.IntegerField(verbose_name="Tries", blank=True, null=True)
     redCards = models.IntegerField(verbose_name="Red Cards", blank=True, null=True)
-    points = models.IntegerField(verbose_name="Score", blank=True, null=True)
+    points = models.IntegerField(verbose_name="Points", blank=True, null=True)
 
     def __unicode__(self):
         return self.team.name + " " + str(self.score) + " (" + str(self.tries) + "/" + str(self.redCards) + "/" + str(self.points) + ")"
