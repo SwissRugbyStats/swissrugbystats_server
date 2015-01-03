@@ -181,6 +181,7 @@ class Game(models.Model):
     fsrID = models.CharField(max_length=10, blank=True, null=True, verbose_name="FSR ID")
     fsrUrl = models.CharField(max_length=100, blank=True, null=True, verbose_name="FSR Url")
     league = models.ForeignKey(League, verbose_name="League")
+    season = models.ForeignKey(Season, verbose_name="Season")
     venue = models.ForeignKey(Venue, blank=True, null=True, verbose_name="Venue")
     referee = models.ForeignKey(Referee, blank=True, null=True, verbose_name="Referee")
     date = models.DateTimeField(verbose_name="KickOff")
