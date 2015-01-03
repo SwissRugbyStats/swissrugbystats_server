@@ -1,5 +1,5 @@
 from django.contrib import admin
-from swissrugby.models import Team, Game, League, Venue, Referee, GameParticipation
+from swissrugby.models import Team, Game, League, Venue, Referee, GameParticipation, Season
 
 # Register your models here.
 
@@ -9,3 +9,4 @@ admin.site.register(League)
 admin.site.register(Venue)
 admin.site.register(Referee)
 admin.site.register(GameParticipation)
+admin.site.register(Season)

@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from swissrugby.models import League, Game, Team, GameParticipation, Referee, Venue
-from swissrugby.serializer import LeagueSerializer, GameSerializer, TeamSerializer, GameParticipationSerializer, TeamInsightSerializer, RefereeSerializer, VenueSerializer
+from swissrugby.models import League, Game, Team, GameParticipation, Referee, Venue, Season
+from swissrugby.serializer import LeagueSerializer, GameSerializer, TeamSerializer, GameParticipationSerializer, TeamInsightSerializer, RefereeSerializer, VenueSerializer, SeasonSerializer
 from rest_framework import generics
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -22,6 +22,7 @@ def api_root(request, format=None):
         'game-participations': reverse('game-participations', request=request, format=format),
         'teams': reverse('teams', request=request, format=format),
         'referees': reverse('referees', request=request, format=format),
+        'seasons': reverse('seasons', request=request, format=format),
         'venues': reverse('venues', request=request, format=format)
     })
 
@@ -76,7 +77,12 @@ class RefereeList(generics.ListAPIView):
     queryset = Referee.objects.all()
     serializer_class = RefereeSerializer
 
-# Referee list
+# Venue list
 class VenueList(generics.ListAPIView):
     queryset = Venue.objects.all()
     serializer_class = VenueSerializer
+
+# Season list
+class SeasonList(generics.ListAPIView):
+    queryset = Season.objects.all()
+    serializer_class = SeasonSerializer

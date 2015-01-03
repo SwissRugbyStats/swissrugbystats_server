@@ -14,6 +14,7 @@ urlpatterns = patterns('',
     url(r'^teams/$', views.TeamList.as_view(), name="teams"),
     url(r'^teams/(?P<pk>[0-9]+)/$', views.TeamDetail.as_view()),
     url(r'^referees/$', views.RefereeList.as_view(), name="referees"),
+    url(r'^seasons/$', views.SeasonList.as_view(), name="seasons"),
     url(r'^venues/$', views.VenueList.as_view(), name="venues"),
 )
 

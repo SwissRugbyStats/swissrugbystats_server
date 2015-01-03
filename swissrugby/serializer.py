@@ -1,17 +1,19 @@
-from django.forms import widgets
 from rest_framework import serializers
-from swissrugby.models import League, Team, Game, GameParticipation, Referee, Venue
+from swissrugby.models import League, Team, Game, GameParticipation, Referee, Venue, Season
 
 
 class LeagueSerializer(serializers.ModelSerializer):
     class Meta:
         model = League
-        #fields = ('name', 'shortCode')
+
+
+class SeasonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Season
 
 class TeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Team
-        #fields = ('name', 'shortcode')
 
 class TeamInsightSerializer(serializers.ModelSerializer):
     pointCount = serializers.Field(source='getPointCount')

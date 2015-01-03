@@ -29,6 +29,18 @@ class League(models.Model):
 '''
 
 
+class Season(models.Model):
+    name = models.CharField(max_length=50, null=True)
+
+    def __unicode__(self):
+        return self.name
+
+
+'''
+-------------------------------------------
+'''
+
+
 class Team(models.Model):
     name = models.CharField(max_length=50)
     logo = models.CharField(max_length=200, null=True, blank=True) # move to club class, once it exists
