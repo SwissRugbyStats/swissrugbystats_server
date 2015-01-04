@@ -34,7 +34,16 @@ class GameSerializer(serializers.ModelSerializer):
     league = LeagueSerializer(many=False, read_only=True)
     class Meta:
         model = Game
-        #fields = ('name', 'shortcode')
+
+class GameDetailSerializer(serializers.ModelSerializer):
+    host = GameParticipationSerializer(many=False, read_only=True)
+    guest = GameParticipationSerializer(many=False, read_only=True)
+    league = LeagueSerializer(many=False, read_only=True)
+    season = SeasonSerializer(many=False, read_only=True)
+    referee = RefereeSerializer(many=False, read_only=True)
+    venue = VenueSerializer(many=False, read_only=True)
+    class Meta:
+        model = Game
 
 class RefereeSerializer(serializers.ModelSerializer):
     class Meta:

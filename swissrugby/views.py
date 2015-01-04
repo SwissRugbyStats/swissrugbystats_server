@@ -46,7 +46,7 @@ class GameList(generics.ListAPIView):
 # Game detail
 class GameDetail(generics.RetrieveAPIView):
     queryset = Game.objects.all()
-    serializer_class = GameSerializer
+    serializer_class = GameDetailSerializer
 
 
 # GameParticipation list
