@@ -18,6 +18,9 @@ urlpatterns = patterns('',
     url(r'^seasons/$', views.SeasonList.as_view(), name="seasons"),
     url(r'^venues/$', views.VenueList.as_view(), name="venues"),
     url(r'^venues/(?P<pk>[0-9]+)/$', views.VenueDetail.as_view()),
+
+    url(r'^nextGameByTeamId/(?P<pk>[0-9]+)/$', views.NextGameByTeamId.as_view()),
+    url(r'^lastGameByTeamId/(?P<pk>[0-9]+)/$', views.LastGameByTeamId.as_view()),
 )
 
 urlpatterns = format_suffix_patterns(urlpatterns)

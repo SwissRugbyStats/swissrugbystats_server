@@ -4,7 +4,8 @@ from rest_framework import generics
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-
+from datetime import datetime
+from django.shortcuts import get_object_or_404
 
 ''' --------------------------------
 
@@ -48,6 +49,7 @@ class GameDetail(generics.RetrieveAPIView):
     serializer_class = GameDetailSerializer
 
 
+
 # GameParticipation list
 class GameParticipationList(generics.ListAPIView):
     queryset = GameParticipation.objects.all()
@@ -69,7 +71,8 @@ class TeamList(generics.ListAPIView):
 # Team detail
 class TeamDetail(generics.RetrieveAPIView):
     queryset = Team.objects.all()
-    serializer_class = TeamSerializer
+    serializer_class = TeamInsightSerializer
+
 
 # Referee list
 class RefereeList(generics.ListAPIView):
@@ -95,3 +98,41 @@ class VenueDetail(generics.RetrieveAPIView):
 class SeasonList(generics.ListAPIView):
     queryset = Season.objects.all()
     serializer_class = SeasonSerializer
+
+class NextGameByTeamId(generics.RetrieveAPIView):
+    queryset = Team.objects.all()
+    serializer_class = GameSerializer
+
+    def get_object(self):
+
+        queryset = self.filter_queryset(self.get_queryset())
+
+        # Perform the lookup filtering.
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+
+        filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
+        obj = get_object_or_404(queryset, **filter_kwargs)
+
+        # May raise a permission denied
+        self.check_object_permissions(self.request, obj)
+
+        return obj.getNextGame()
+
+class LastGameByTeamId(generics.RetrieveAPIView):
+    queryset = Team.objects.all()
+    serializer_class = GameSerializer
+
+    def get_object(self):
+
+        queryset = self.filter_queryset(self.get_queryset())
+
+        # Perform the lookup filtering.
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+
+        filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
+        obj = get_object_or_404(queryset, **filter_kwargs)
+
+        # May raise a permission denied
+        self.check_object_permissions(self.request, obj)
+
+        return obj.getLastGame()

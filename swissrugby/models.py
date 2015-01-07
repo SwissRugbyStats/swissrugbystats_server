@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import Q
+from datetime import datetime
 
 # Create your models here.
 '''
@@ -127,6 +128,38 @@ class Team(models.Model):
             count += 1
 
         return count
+
+    def getGames(self):
+        gps = list(GameParticipation.objects.filter(Q(team=self)))
+        games = list(Game.objects.all())
+        result = []
+        for g in games:
+            for gp in gps:
+                if (g.host == gp) | (g.guest == gp):
+                    gps.remove(gp)
+                    result.append(g)
+                if len(gps) <= 0:
+                    break
+        return result
+
+    def getNextGame(self):
+        gps = list(GameParticipation.objects.filter(Q(team=self)))
+        games = list(Game.objects.filter(date__gt=datetime.today()))
+        for g in games:
+            for gp in gps:
+                if (g.host == gp) | (g.guest == gp):
+                    return g
+        return 0
+
+    def getLastGame(self):
+        gps = list(GameParticipation.objects.filter(Q(team=self)))
+        games = list(Game.objects.filter(date__lt=datetime.today()).order_by('-date'))
+        for g in games:
+            for gp in gps:
+                if (g.host == gp) | (g.guest == gp):
+                    return g
+        return 0
+
 
     def __unicode__(self):
         return self.name

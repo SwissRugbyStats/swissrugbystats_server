@@ -15,13 +15,6 @@ class TeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Team
 
-class TeamInsightSerializer(serializers.ModelSerializer):
-    pointCount = serializers.Field(source='getPointCount')
-    gameCount = serializers.Field(source='getGameCount')
-    class Meta:
-        model = Team
-        fields = ('id', 'name', 'pointCount', 'gameCount')
-
 class GameParticipationSerializer(serializers.ModelSerializer):
     team = TeamSerializer(many=False, read_only=True)
     class Meta:
@@ -42,6 +35,7 @@ class GameSerializer(serializers.ModelSerializer):
     league = LeagueSerializer(many=False, read_only=True)
     class Meta:
         model = Game
+        ordering = 'date'
 
 class GameDetailSerializer(serializers.ModelSerializer):
     host = GameParticipationSerializer(many=False, read_only=True)
@@ -52,3 +46,16 @@ class GameDetailSerializer(serializers.ModelSerializer):
     venue = VenueSerializer(many=False, read_only=True)
     class Meta:
         model = Game
+
+class TeamInsightSerializer(serializers.ModelSerializer):
+    pointCount = serializers.ReadOnlyField(source='getPointCount')
+    gameCount = serializers.ReadOnlyField(source='getGameCount')
+    winCount = serializers.ReadOnlyField(source='getWinCount')
+    drawCount = serializers.ReadOnlyField(source='getDrawCount')
+    lossCount = serializers.ReadOnlyField(source='getLossCount')
+    nextGame = GameSerializer(source='getNextGame')
+    lastGame = GameSerializer(source='getLastGame')
+
+    class Meta:
+        model = Team
+        

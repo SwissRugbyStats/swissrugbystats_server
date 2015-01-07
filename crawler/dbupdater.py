@@ -3,7 +3,6 @@ import sys
 import django
 import logging
 import pytz
-from datetime import datetime
 from django.utils import timezone
 
 # import models from swissrugbystats
