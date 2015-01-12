@@ -19,16 +19,13 @@ required python packages
 - djangorestframework
 - django-cors-headers
 
-required tools
---------------
-- less
-- grunt-cli
 
 some notes
 ----------
 
-### detect css changes and compile less automatically
-grunt watch
+### setup the server
+just run
+./setup.sh
 
 ### activate virtualenv
 source env/bin/activate
@@ -41,6 +38,8 @@ python crawler/dbupdater.py > /dev/null 2> /dev/null &
 wget http://www.rabbitmq.com/rabbitmq-signing-key-public.asc
 sudo apt-key add rabbitmq-signing-key-public.asc
 sudo apt-get install rabbitmq-server
+
+### 
 
 ### export packages to requirements.txt
 pip freeze -> requirements.txt

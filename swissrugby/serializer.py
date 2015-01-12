@@ -58,4 +58,3 @@ class TeamInsightSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Team
-        
