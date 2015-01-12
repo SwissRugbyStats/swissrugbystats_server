@@ -48,5 +48,5 @@ pip freeze -> requirements.txt
 pip install -r requirements.txt
 
 ### create virtualenv and install dependencies from requirements.txt
-virtualenv --no-site-packages --distribute .env && source .env/bin/activate && pip install -r requirements.txt
+virtualenv --no-site-packages --distribute ./env && source ./env/bin/activate && pip install -r requirements.txt
 source: https://stackoverflow.com/questions/6590688/is-it-bad-to-have-my-virtualenv-directory-inside-my-git-repository/6590783#6590783
