@@ -13,6 +13,15 @@ import os
 from datetime import timedelta
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+# Import email settings in the form of
+'''
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'youremail@gmail.com'
+EMAIL_HOST_PASSWORD = 'yourpassword'
+EMAIL_PORT = 587
+'''
+from settings_email import *
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/

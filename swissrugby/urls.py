@@ -22,7 +22,8 @@ urlpatterns = patterns('',
     url(r'^nextGameByTeamId/(?P<pk>[0-9]+)/$', views.NextGameByTeamId.as_view()),
     url(r'^lastGameByTeamId/(?P<pk>[0-9]+)/$', views.LastGameByTeamId.as_view()),
 
-    # url(r'^register/$', views.registerUser()),
+    url(r'^users/$', views.CreateUser.as_view(), name='create-user'),
+
 
     # JWT Authentication
     url(r'^api-token-auth/', 'rest_framework_jwt.views.obtain_jwt_token'),

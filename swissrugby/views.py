@@ -1,11 +1,13 @@
 from swissrugby.models import League, Game, Team, GameParticipation, Referee, Venue, Season
-from swissrugby.serializer import LeagueSerializer, GameSerializer, TeamSerializer, GameParticipationSerializer, TeamInsightSerializer, RefereeSerializer, VenueSerializer, SeasonSerializer, GameDetailSerializer
-from rest_framework import generics
+from swissrugby.serializer import LeagueSerializer, GameSerializer, TeamSerializer, GameParticipationSerializer, TeamInsightSerializer, RefereeSerializer, VenueSerializer, SeasonSerializer, GameDetailSerializer, UserSerializer
+from rest_framework import generics, permissions
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from datetime import datetime
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
 
 ''' --------------------------------
 
@@ -136,3 +138,18 @@ class LastGameByTeamId(generics.RetrieveAPIView):
         self.check_object_permissions(self.request, obj)
 
         return obj.getLastGame()
+
+
+class CreateUser(generics.CreateAPIView):
+    permission_classes = (permissions.AllowAny,)
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def perform_create(self, serializer):
+        u_email = serializer.data['username']
+        if u_email is not None:
+            serializer.save(email=u_email, is_active=False)
+            send_mail('Thanks for registering', 'Here is the message.', 'chregi.glatthard@gmail.com', [u_email], fail_silently=False)
+
+
+

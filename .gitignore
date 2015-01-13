@@ -1,4 +1,5 @@
 .idea/
+settings_email.py
 env/
 *.pyc
 *.pyo
