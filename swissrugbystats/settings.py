@@ -93,11 +93,12 @@ STATIC_ROOT = "/home/platzhersh/swissrugbystats_server/swissrugbystats/static"
 CORS_ORIGIN_ALLOW_ALL = True
 
 # Django Rest Framework
+# check http://www.django-rest-framework.org/api-guide/permissions/ for documentation about permissions
 REST_FRAMEWORK = {
     # only helpful if you want to paginate in the frontend as well
     # 'PAGINATE_BY': 20,
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
