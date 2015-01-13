@@ -21,6 +21,12 @@ urlpatterns = patterns('',
 
     url(r'^nextGameByTeamId/(?P<pk>[0-9]+)/$', views.NextGameByTeamId.as_view()),
     url(r'^lastGameByTeamId/(?P<pk>[0-9]+)/$', views.LastGameByTeamId.as_view()),
+
+    # url(r'^register/$', views.registerUser()),
+
+    # JWT Authentication
+    url(r'^api-token-auth/', 'rest_framework_jwt.views.obtain_jwt_token'),
+    url(r'^api-token-refresh/', 'rest_framework_jwt.views.refresh_jwt_token'),
 )
 
 urlpatterns = format_suffix_patterns(urlpatterns)

@@ -10,6 +10,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+from datetime import timedelta
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -90,3 +91,27 @@ STATIC_ROOT = "/home/platzhersh/swissrugbystats_server/swissrugbystats/static"
 # CORS (Cross Origin Resource Sharing)
 # documentation: https://github.com/ottoyiu/django-cors-headers/
 CORS_ORIGIN_ALLOW_ALL = True
+
+# Django Rest Framework
+REST_FRAMEWORK = {
+    # only helpful if you want to paginate in the frontend as well
+    # 'PAGINATE_BY': 20,
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+    ),
+}
+
+# JWT
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': timedelta(seconds=1200),
+
+    'JWT_ALLOW_REFRESH': True,
+    'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
+
+    'JWT_AUTH_HEADER_PREFIX': 'JWT',
+}
