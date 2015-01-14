@@ -107,7 +107,7 @@ REST_FRAMEWORK = {
     # only helpful if you want to paginate in the frontend as well
     # 'PAGINATE_BY': 20,
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
