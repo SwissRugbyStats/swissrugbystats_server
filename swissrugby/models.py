@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import Q
+from django.contrib.auth.models import User
 from datetime import datetime
 
 # Create your models here.
@@ -213,8 +214,8 @@ class GameParticipation(models.Model):
 class Game(models.Model):
     fsrID = models.CharField(max_length=10, blank=True, null=True, verbose_name="FSR ID")
     fsrUrl = models.CharField(max_length=100, blank=True, null=True, verbose_name="FSR Url")
-    league = models.ForeignKey(League, verbose_name="League")
-    season = models.ForeignKey(Season, verbose_name="Season")
+    league = models.ForeignKey(League, verbose_name="League", related_name='league_games')
+    season = models.ForeignKey(Season, verbose_name="Season", related_name='season_games')
     venue = models.ForeignKey(Venue, blank=True, null=True, verbose_name="Venue")
     referee = models.ForeignKey(Referee, blank=True, null=True, verbose_name="Referee")
     date = models.DateTimeField(verbose_name="KickOff")
@@ -254,3 +255,7 @@ class Game(models.Model):
             points += 1
 
         return points
+
+class Favorite(models.Model):
+    team = models.ForeignKey(Team, verbose_name="Team", related_name="Team")
+    user = models.ForeignKey(User, verbose_name="User", related_name="Owner")

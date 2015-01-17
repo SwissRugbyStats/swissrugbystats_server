@@ -1,5 +1,5 @@
-from swissrugby.models import League, Game, Team, GameParticipation, Referee, Venue, Season
-from swissrugby.serializer import LeagueSerializer, GameSerializer, TeamSerializer, GameParticipationSerializer, TeamInsightSerializer, RefereeSerializer, VenueSerializer, SeasonSerializer, GameDetailSerializer, UserSerializer
+from swissrugby.models import League, Game, Team, GameParticipation, Referee, Venue, Season, Favorite
+from swissrugby.serializer import LeagueSerializer, GameSerializer, TeamSerializer, GameParticipationSerializer, TeamInsightSerializer, RefereeSerializer, VenueSerializer, SeasonSerializer, GameDetailSerializer, UserSerializer, FavoriteSerializer, FavoriteDetailSerializer, LeagueDetailSerializer
 from rest_framework import generics, permissions
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -9,7 +9,9 @@ from datetime import datetime
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
-
+from rest_framework_jwt import utils
+import sys
+from http_errors import ResourceAlreadyExists
 
 ''' --------------------------------
 
@@ -17,10 +19,14 @@ from django.core.mail import send_mail
 
 -------------------------------- '''
 
-# API root
+'''
+API Root
+'''
 @api_view(('GET',))
-
 def api_root(request, format=None):
+    '''
+    Feel free to use this API. I would love to see what you did with it.
+    '''
     return Response({
         'leagues': reverse('leagues', request=request, format=format),
         'games': reverse('games', request=request, format=format),
@@ -31,15 +37,22 @@ def api_root(request, format=None):
         'venues': reverse('venues', request=request, format=format)
     })
 
-# League list
+
 class LeagueList(generics.ListAPIView):
+    '''
+    Get a list of all the leagues.
+    '''
     queryset = League.objects.all()
     serializer_class = LeagueSerializer
 
+
 # League detail
 class LeagueDetail(generics.RetrieveAPIView):
+    '''
+    Get details about a special league.
+    '''
     queryset = League.objects.all()
-    serializer_class = LeagueSerializer
+    serializer_class = LeagueDetailSerializer
 
 
 # Game list
@@ -123,6 +136,7 @@ class NextGameByTeamId(generics.RetrieveAPIView):
 
         return obj.getNextGame()
 
+
 class LastGameByTeamId(generics.RetrieveAPIView):
     queryset = Team.objects.all()
     serializer_class = GameSerializer
@@ -151,8 +165,31 @@ class CreateUser(generics.CreateAPIView):
     def perform_create(self, serializer):
         u_email = serializer.data['username']
         if u_email is not None:
-            serializer.save(email=u_email, is_active=False)
-            send_mail('Thanks for registering', 'Here is the message.', 'chregi.glatthard@gmail.com', [u_email], fail_silently=False)
+            serializer.save(email=u_email, is_active=True)
+            u = User.objects.get(username=u_email)
+            u.set_password(serializer.data['password'])
+            text = 'Thanks for registering on <a href="http://swissrugbystats.ch">swissrugbystats.ch</a>! You can now log in and add your favorite teams.'
+            send_mail('Thanks for registering', text, 'chregi.glatthard@gmail.com', [u_email], fail_silently=False)
 
 
+class CreateFavorite(generics.ListCreateAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = Favorite.objects.all()
+    serializer_class = FavoriteSerializer
 
+    def get_serializer_class(self):
+        if self.request.method == "POST":
+           return FavoriteSerializer
+        elif self.request.method == "GET":
+            return FavoriteDetailSerializer
+
+    def perform_create(self, serializer):
+        u = self.request.user
+        tid = serializer.data['team']
+        t = Team.objects.get(id=tid)
+        #f = Favorite(team=t, user=u)
+        favs = Favorite.objects.filter(team=t, user=u)
+        if len(favs) > 0:
+            raise ResourceAlreadyExists()
+        f = Favorite(team=t, user=u)
+        f.save()

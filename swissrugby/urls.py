@@ -23,6 +23,8 @@ urlpatterns = patterns('',
     url(r'^lastGameByTeamId/(?P<pk>[0-9]+)/$', views.LastGameByTeamId.as_view()),
 
     url(r'^users/$', views.CreateUser.as_view(), name='create-user'),
+    # url(r'^users/changePW$', views.CreateUser.as_view(), name='create-user'),
+    url(r'^favorites/$', views.CreateFavorite.as_view(), name='create-favorite'),
 
 
     # JWT Authentication
