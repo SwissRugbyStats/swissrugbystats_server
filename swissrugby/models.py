@@ -1,7 +1,20 @@
 from django.db import models
 from django.db.models import Q
-from django.contrib.auth.models import User
 from datetime import datetime
+from django.contrib.auth.models import AbstractBaseUser
+from swissrugbystats import settings
+from django.contrib.auth.models import UserManager, User
+
+'''
+class MyUser(AbstractBaseUser):
+    objects = UserManager()
+    username = models.CharField(max_length=254, unique=True, db_index=True)
+    email = models.EmailField(max_length=254, unique=True)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['email', 'username']
+'''
+
 
 # Create your models here.
 '''
@@ -258,4 +271,4 @@ class Game(models.Model):
 
 class Favorite(models.Model):
     team = models.ForeignKey(Team, verbose_name="Team", related_name="Team")
-    user = models.ForeignKey(User, verbose_name="User", related_name="Owner")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="User", related_name="Owner")

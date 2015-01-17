@@ -3,6 +3,7 @@ from swissrugby.models import Team, Game, League, Venue, Referee, GameParticipat
 
 # custom AdminModels
 
+
 class FavoriteAdmin(admin.ModelAdmin):
     list_display = ('user', 'team')
     search_fields = ['user', 'team']

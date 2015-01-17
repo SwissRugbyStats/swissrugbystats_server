@@ -125,3 +125,7 @@ JWT_AUTH = {
 
     'JWT_AUTH_HEADER_PREFIX': 'JWT',
 }
+
+# choose the user model
+#AUTH_USER_MODEL = 'swissrugby.MyUser'
+AUTH_USER_MODEL = 'auth.User'

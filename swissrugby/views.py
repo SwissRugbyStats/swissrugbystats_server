@@ -4,14 +4,11 @@ from rest_framework import generics, permissions
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework.views import APIView
-from datetime import datetime
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.models import User
 from django.core.mail import send_mail
-from rest_framework_jwt import utils
-import sys
 from http_errors import ResourceAlreadyExists
+from django.contrib.auth import get_user_model
+from rest_framework import status
 
 ''' --------------------------------
 
@@ -159,17 +156,25 @@ class LastGameByTeamId(generics.RetrieveAPIView):
 
 class CreateUser(generics.CreateAPIView):
     permission_classes = (permissions.AllowAny,)
-    queryset = User.objects.all()
+    queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
 
     def perform_create(self, serializer):
         u_email = serializer.data['username']
         if u_email is not None:
-            serializer.save(email=u_email, is_active=True)
-            u = User.objects.get(username=u_email)
-            u.set_password(serializer.data['password'])
-            text = 'Thanks for registering on <a href="http://swissrugbystats.ch">swissrugbystats.ch</a>! You can now log in and add your favorite teams.'
-            send_mail('Thanks for registering', text, 'chregi.glatthard@gmail.com', [u_email], fail_silently=False)
+            VALID_USER_FIELDS = [f.name for f in get_user_model()._meta.fields]
+            serialized = UserSerializer(data=self.request.DATA)
+            if serialized.is_valid():
+                user_data = {field: data for (field, data) in self.request.DATA.items() if field in VALID_USER_FIELDS}
+                user_data.update(email=u_email)
+                user = get_user_model().objects.create_user(
+                    **user_data
+                )
+                text = 'Thanks for registering on swissrugbystats.ch! You can now log in and add your favorite teams.'
+                send_mail('Thanks for registering', text, 'christian.glatthard@rugbygear.ch', [u_email], fail_silently=False)
+                return Response(UserSerializer(instance=user).data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serialized._errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CreateFavorite(generics.ListCreateAPIView):
@@ -179,7 +184,7 @@ class CreateFavorite(generics.ListCreateAPIView):
 
     def get_serializer_class(self):
         if self.request.method == "POST":
-           return FavoriteSerializer
+            return FavoriteSerializer
         elif self.request.method == "GET":
             return FavoriteDetailSerializer
 
