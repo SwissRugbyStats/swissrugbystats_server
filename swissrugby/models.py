@@ -1,9 +1,7 @@
 from django.db import models
 from django.db.models import Q
 from datetime import datetime
-from django.contrib.auth.models import AbstractBaseUser
 from swissrugbystats import settings
-from django.contrib.auth.models import UserManager, User
 
 '''
 class MyUser(AbstractBaseUser):
@@ -144,17 +142,11 @@ class Team(models.Model):
         return count
 
     def getGames(self):
-        gps = list(GameParticipation.objects.filter(Q(team=self)))
-        games = list(Game.objects.all())
-        result = []
-        for g in games:
-            for gp in gps:
-                if (g.host == gp) | (g.guest == gp):
-                    gps.remove(gp)
-                    result.append(g)
-                if len(gps) <= 0:
-                    break
-        return result
+        gps = GameParticipation.objects.filter(Q(team=self))
+        games = Game.objects.filter(Q(host__in=gps) | Q(guest__in=gps))
+
+        return games
+
 
     def getNextGame(self):
         gps = list(GameParticipation.objects.filter(Q(team=self)))

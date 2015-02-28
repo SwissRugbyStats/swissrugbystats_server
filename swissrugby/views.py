@@ -89,6 +89,26 @@ class TeamDetail(generics.RetrieveAPIView):
     serializer_class = TeamInsightSerializer
 
 
+# GameSchedule
+class GameSchedule(generics.ListAPIView):
+    serializer_class = GameSerializer
+
+    def get_queryset(self):
+
+        queryset = Team.objects.all()
+
+        # Perform the lookup filtering.
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+
+        filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
+        obj = get_object_or_404(queryset, **filter_kwargs)
+
+        # May raise a permission denied
+        self.check_object_permissions(self.request, obj)
+
+        return obj.getGames()
+
+
 # Referee list
 class RefereeList(generics.ListAPIView):
     queryset = Referee.objects.all()
