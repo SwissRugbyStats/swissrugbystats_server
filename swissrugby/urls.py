@@ -14,7 +14,9 @@ urlpatterns = patterns('',
     url(r'^teams/$', views.TeamList.as_view(), name="teams"),
     url(r'^teams/(?P<pk>[0-9]+)/$', views.TeamDetail.as_view()),
 
-    url(r'^teams/(?P<pk>[0-9]+)/games$', views.GameSchedule.as_view()),
+    url(r'^teams/(?P<pk>[0-9]+)/games$', views.GameSchedule.as_view(), name="game-schedule"),
+    url(r'^teams/(?P<pk>[0-9]+)/nextGame$', views.NextGameByTeamId.as_view(), name="next-game"),
+    url(r'^teams/(?P<pk>[0-9]+)/lastGame$', views.LastGameByTeamId.as_view(), name="last-game"),
 
     url(r'^referees/$', views.RefereeList.as_view(), name="referees"),
     url(r'^referees/(?P<pk>[0-9]+)/$', views.RefereeDetail.as_view()),

@@ -29,6 +29,9 @@ def api_root(request, format=None):
         'games': reverse('games', request=request, format=format),
         'game-participations': reverse('game-participations', request=request, format=format),
         'teams': reverse('teams', request=request, format=format),
+        'game schedule per team': reverse('game-schedule', request=request, format=format, kwargs={'pk': 42}),
+        'next game of team': reverse('next-game', request=request, format=format, kwargs={'pk': 42}),
+        'last game of team': reverse('last-game', request=request, format=format, kwargs={'pk': 42}),
         'referees': reverse('referees', request=request, format=format),
         'seasons': reverse('seasons', request=request, format=format),
         'venues': reverse('venues', request=request, format=format)
