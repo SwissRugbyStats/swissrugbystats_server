@@ -143,7 +143,7 @@ class Team(models.Model):
 
     def getGames(self):
         gps = GameParticipation.objects.filter(Q(team=self))
-        games = Game.objects.filter(Q(host__in=gps) | Q(guest__in=gps))
+        games = Game.objects.filter(Q(host__in=gps) | Q(guest__in=gps)).order_by('date')
 
         return games
 
