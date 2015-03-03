@@ -5,9 +5,15 @@ from crawler import dbupdater
 
 
 @app.task(name='crawler.updateAll')
-def updateAll():
-    dbupdater.updateAll()
+def update_all():
+    dbupdater.update_all()
 
-@app.task(name='crawler.updateAll')
+
+@app.task(name='crawler.update_latest')
+def update_latest():
+    dbupdater.update_all(True)
+
+
+@app.task(name='crawler.blubb')
 def blubb():
     return "blubb"

@@ -50,13 +50,16 @@ def crawlLeagueTeams(leagueUrl):
             if len(cells) > 0:
                 # parse Teamname and remove leading and tailing spaces
                 team = cells[1].find(text=True).strip()
+
                 if not Team.objects.filter(name=team):
                     t = Team(name=team)
                     t.save()
                     print "Team " + str(t) + " created"
 
+
 # leagueResultsUrl is an array of [leagueShortCode, leagueUrl] tuples
-def crawlLeagueResults(leagueResultsUrl):
+def crawlLeagueResults(leagueResultsUrl, deep_crawl=False):
+    count = 0
     headers = {
         'User-Agent': 'Mozilla 5.0'
     }
@@ -149,7 +152,7 @@ def crawlLeagueResults(leagueResultsUrl):
                 # referee is not always there
                 if len(rows)>=scoreRow+5:
                     refName = rows[scoreRow+4].findAll('td')[1].find(text=True).strip()     # referee
-                    # TODO: save performance by not doing reassigning referee if aready set
+                    # TODO: save performance by not reassigning referee if already set
                     if not Referee.objects.filter(name=refName):
                         referee = Referee()
                         referee.name = refName
@@ -175,17 +178,23 @@ def crawlLeagueResults(leagueResultsUrl):
 
                 print "GameResult " + str(Game.objects.get(id=game.id)) + " created / updated"
 
-            # recursively parse all next sites if there are any
-            pagination = soup.find('div', attrs={'class': 'pagination'})
-            current = int(pagination.find('span', attrs={'class': 'current'}).find(text=True))
-            if current == 1:
-                for page in pagination.findAll('a', attrs={'class': 'inactive'}):
-                    if int(page.find(text=True)) > current:
-                        nextUrl = [(league.shortCode, page['href'])]
-                        crawlLeagueResults(nextUrl)
+                # increment game counter
+                count += 1
+
+            if deep_crawl:
+                # recursively parse all next sites if there are any
+                pagination = soup.find('div', attrs={'class': 'pagination'})
+                current = int(pagination.find('span', attrs={'class': 'current'}).find(text=True))
+                if current == 1:
+                    for page in pagination.findAll('a', attrs={'class': 'inactive'}):
+                        if int(page.find(text=True)) > current:
+                            nextUrl = [(league.shortCode, page['href'])]
+                            count += crawlLeagueResults(nextUrl)
+    return count
 
 
-def crawlLeagueFixtures(leagueFixturesUrl):
+def crawlLeagueFixtures(leagueFixturesUrl, deep_crawl=False):
+    count = 0
     headers = {
         'User-Agent': 'Mozilla 5.0'
     }
@@ -276,30 +285,16 @@ def crawlLeagueFixtures(leagueFixturesUrl):
 
                 print "GameFixture " + str(Game.objects.get(id=game.id)) + " created / updated"
 
-            # recursively parse all next sites if there are any
-            pagination = soup.find('div', attrs={'class': 'pagination'})
-            current = int(pagination.find('span', attrs={'class': 'current'}).find(text=True))
-            if current == 1:
-                for page in pagination.findAll('a', attrs={'class': 'inactive'}):
-                    if int(page.find(text=True)) > current:
-                        nextUrl = [(league.shortCode, page['href'])]
-                        crawlLeagueFixtures(nextUrl)
+                # increment game counter
+                count += 1
 
-'''
-print "Teams:\n"
-
-#print str(crawlLeagueTeams(leagues))
-
-
-print "\n------------------\n"
-
-print "League Scores:\n"
-
-#print str(crawlLeagueResults(leagues))
-
-print "\n------------------\n"
-
-print "League Fixtures:\n"
-
-#print str(crawlLeagueFixtures(leagueFixtures))
-'''
+            if deep_crawl:
+                # recursively parse all next sites if there are any
+                pagination = soup.find('div', attrs={'class': 'pagination'})
+                current = int(pagination.find('span', attrs={'class': 'current'}).find(text=True))
+                if current == 1:
+                    for page in pagination.findAll('a', attrs={'class': 'inactive'}):
+                        if int(page.find(text=True)) > current:
+                            nextUrl = [(league.shortCode, page['href'])]
+                            count += crawlLeagueFixtures(nextUrl)
+    return count

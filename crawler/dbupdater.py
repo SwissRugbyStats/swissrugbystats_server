@@ -3,6 +3,7 @@ import sys
 import django
 import logging
 import pytz
+import datetime
 from django.utils import timezone
 
 # import models from swissrugbystats
@@ -31,9 +32,30 @@ leagues = [
     "lna"
 ]
 
-def updateAll():
+def update_all(deep_crawl=False):
+    '''
+    crawl suisserugby.com for the latest data
+    :param deep_crawl: crawl through pagination
+    :return: none
+    '''
 
     logging.info("update started")
+
+    # get current timestamp to calculate time needed for script exec
+    start_time = datetime.datetime.now()
+
+    print "------------------------------------------------------------------"
+    print ""
+
+    print "Getting latest data from suisserugby.com"
+    if deep_crawl:
+        print "    deep_crawl = True - following pagination"
+    else:
+        print "    deep_crawl = False (default) - not following pagination"
+
+    print ""
+    print "------------------------------------------------------------------"
+    print ""
 
     initLeagueDB()
 
@@ -41,12 +63,20 @@ def updateAll():
     crawler.crawlLeagueTeams([(l.shortCode, l.getLeagueUrl()) for l in League.objects.all()])
 
     # update game table with results
-    crawler.crawlLeagueResults([(l.shortCode, l.getResultsUrl()) for l in League.objects.all()])
+    result_count = crawler.crawlLeagueResults([(l.shortCode, l.getResultsUrl()) for l in League.objects.all()], deep_crawl)
 
     # update game table with fixtures
-    crawler.crawlLeagueFixtures([(l.shortCode, l.getFixturesUrl()) for l in League.objects.all()])
+    fixtures_count = crawler.crawlLeagueFixtures([(l.shortCode, l.getFixturesUrl()) for l in League.objects.all()], deep_crawl)
 
-    print "updateAll"
+    print ""
+    print "------------------------------------------------------------------"
+    print ""
+    print "{} {}".format(result_count, "results crawled")
+    print "{} {}".format(fixtures_count, "fixtures crawled")
+
+    print ""
+    print "{} {}".format("Time needed:", (datetime.datetime.now() - start_time))
+    print ""
 
 
 def initLeagueDB():
@@ -61,4 +91,4 @@ def initLeagueDB():
         print "Leagues already initialized"
 
 
-updateAll()
+update_all()
