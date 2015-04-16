@@ -57,7 +57,7 @@ without logging:
 
     virtualenv --no-site-packages --distribute ./env && source ./env/bin/activate && pip install -r requirements.txt
     
-source: [](https://stackoverflow.com/questions/6590688/is-it-bad-to-have-my-virtualenv-directory-inside-my-git-repository/6590783#6590783)
+source: [https://stackoverflow.com/questions/6590688/is-it-bad-to-have-my-virtualenv-directory-inside-my-git-repository/6590783#6590783]()
 
 ### setup cronjob for the crawler
 Create a script that runs your crawler, i.e. named update_srs.sh with the following content
