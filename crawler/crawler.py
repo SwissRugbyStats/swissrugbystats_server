@@ -1,9 +1,10 @@
-import requests
-import logging
+from BeautifulSoup import BeautifulSoup
 from datetime import datetime
 from django.utils import timezone
-from BeautifulSoup import BeautifulSoup
+from multiprocessing.pool import ThreadPool
 from swissrugby.models import Team, League, Game, GameParticipation, Venue, Referee
+import requests
+import logging
 
 # create logger
 logging.basicConfig(filename='crawler.log', level=logging.INFO, format='%(asctime)s- %(message)s', datefmt='%d.%m.%Y %I:%M:%S ')
@@ -16,6 +17,7 @@ logging.basicConfig(filename='crawler.log', level=logging.INFO, format='%(asctim
 # TODO: print summary of fetched data and how long it took at the end
 # TODO: detect playoff and playdown games
 # TODO: possibility to get old seasons (like 2013/2014)
+# TODO: concurrency
 
 
 leagues = [
@@ -35,36 +37,75 @@ leagueFixtures = [(l, "http://www.suisserugby.com/competitions/" + l + "/lt/fixt
 leagueResults = [(l, "http://www.suisserugby.com/competitions/" + l + "/lt/results.html") for l in leagues]
 
 
-def crawlLeagueTeams(leagueUrl):
+class SRSCrawler(object):
 
-    headers = {
-        'User-Agent': 'Mozilla 5.0'
-    }
-    for url in leagueUrl:
-        r = requests.get(url[1], headers=headers)
-        soup = BeautifulSoup(r.text)
-        table = soup.find('table', attrs={'class': 'table'})
+    def __init__(self, processes=50):
+        self.pool = ThreadPool(processes=processes)
 
-        for row in table.findAll('tr'):
-            cells = row.findAll('td')
-            if len(cells) > 0:
-                # parse Teamname and remove leading and tailing spaces
-                team = cells[1].find(text=True).strip()
+    def crawl_teams_per_league(self, league_urls):
+        '''
+        :param leagueUrl: list of URLs to crawl for teams
+        :return: -
+        '''
 
-                if not Team.objects.filter(name=team):
-                    t = Team(name=team)
-                    t.save()
-                    print "Team " + str(t) + " created"
+        headers = {
+            'User-Agent': 'Mozilla 5.0'
+        }
+        for url in league_urls:
+            r = requests.get(url[1], headers=headers)
+            soup = BeautifulSoup(r.text)
+            table = soup.find('table', attrs={'class': 'table'})
 
+            for row in table.findAll('tr'):
+                cells = row.findAll('td')
+                if len(cells) > 0:
+                    # parse Teamname and remove leading and tailing spaces
+                    team = cells[1].find(text=True).strip()
 
-# leagueResultsUrl is an array of [leagueShortCode, leagueUrl] tuples
-def crawlLeagueResults(leagueResultsUrl, deep_crawl=False):
-    count = 0
-    headers = {
-        'User-Agent': 'Mozilla 5.0'
-    }
-    # url is tupel of [leagueName, leagueUrl]
-    for url in leagueResultsUrl:
+                    if not Team.objects.filter(name=team):
+                        t = Team(name=team)
+                        t.save()
+                        print "Team " + str(t) + " created"
+
+    def crawl_results(self, league_results_urls, deep_crawl=False):
+        '''
+
+        :param league_results_urls:    list of tuples [(league_shortcode, league_url), ..]
+        :param deep_crawl:  defaults to False. Set True to follow pagination
+        :return: number of crawled game results
+        '''
+        count = 0
+        for url in league_results_urls:
+            count += self.crawl_results_per_league(url, deep_crawl)
+
+    def crawl_results_async(self, league_results_urls, deep_crawl=False):
+        '''
+
+        :param league_results_urls:    list of tuples [(league_shortcode, league_url), ..]
+        :param deep_crawl:  defaults to False. Set True to follow pagination
+        :return: number of crawled game results
+        '''
+        async_tasks = []
+
+        # url is tupel of (leagueName, leagueUrl)
+        for url in league_results_urls:
+            async_tasks += [self.pool.apply_async(self.crawl_results_per_league, ((url, deep_crawl)))]
+
+        count = 0
+        for t in async_tasks:
+            try:
+                if type(t.get()) is int:
+                    count += t.get()
+            except Exception as e:
+                print(e)
+
+        return count
+
+    def crawl_results_per_league(self, url, deep_crawl):
+        count = 0
+        headers = {
+            'User-Agent': 'Mozilla 5.0'
+        }
         r = requests.get(url[1], headers=headers)
         soup = BeautifulSoup(r.text)
         table = soup.find('table', attrs={'class': 'table'})
@@ -189,16 +230,39 @@ def crawlLeagueResults(leagueResultsUrl, deep_crawl=False):
                     for page in pagination.findAll('a', attrs={'class': 'inactive'}):
                         if int(page.find(text=True)) > current:
                             nextUrl = [(league.shortCode, page['href'])]
-                            count += crawlLeagueResults(nextUrl)
-    return count
+                            count += self.crawl_results_async(nextUrl)
+        return count
 
+    def crawl_fixtures(self, league_fixtures_urls, deep_crawl=False):
+        count = 0
 
-def crawlLeagueFixtures(leagueFixturesUrl, deep_crawl=False):
-    count = 0
-    headers = {
-        'User-Agent': 'Mozilla 5.0'
-    }
-    for url in leagueFixturesUrl:
+        for url in league_fixtures_urls:
+            count += self.crawl_fixture_per_league(url, deep_crawl)
+
+        return count
+
+    def crawl_fixtures_async(self, league_fixtures_urls, deep_crawl=False):
+        async_tasks = []
+
+        # url is tupel of (leagueName, leagueUrl)
+        for url in league_fixtures_urls:
+            async_tasks += [self.pool.apply_async(self.crawl_fixture_per_league, ((url, deep_crawl)))]
+
+        count = 0
+        for t in async_tasks:
+            try:
+                if type(t.get()) is int:
+                    count += t.get()
+            except Exception as e:
+                print e
+
+        return count
+
+    def crawl_fixture_per_league(self, url, deep_crawl=False):
+        count = 0
+        headers = {
+            'User-Agent': 'Mozilla 5.0'
+        }
         r = requests.get(url[1], headers=headers)
         soup = BeautifulSoup(r.text)
         table = soup.find('table', attrs={'class': 'table'})
@@ -296,5 +360,5 @@ def crawlLeagueFixtures(leagueFixturesUrl, deep_crawl=False):
                     for page in pagination.findAll('a', attrs={'class': 'inactive'}):
                         if int(page.find(text=True)) > current:
                             nextUrl = [(league.shortCode, page['href'])]
-                            count += crawlLeagueFixtures(nextUrl)
-    return count
+                            count += self.crawl_fixtures_async(nextUrl)
+        return count
