@@ -14,6 +14,7 @@ timezone.activate(pytz.timezone("Europe/Zurich"))
 django.setup()
 
 from crawler import SRSCrawler
+from threading import Thread
 
 # create logger
 logging.basicConfig(filename='crawler.log', level=logging.INFO, format='%(asctime)s- %(message)s', datefmt='%d.%m.%Y %I:%M:%S ')
@@ -61,14 +62,40 @@ def update_all(deep_crawl=False):
     initLeagueDB()
     c = SRSCrawler()
 
+    '''
+    Concurrent
+    '''
+    '''
+    threads = []
+    for l in League.objects.all():
+        t1 = Thread(target=c.crawl_fixture_per_league, args=((l.shortCode, l.getFixturesUrl()), deep_crawl))
+        t2 = Thread(target=c.crawl_results_per_league, args=((l.shortCode, l.getResultsUrl()), deep_crawl))
+        t1.start()
+        t2.start()
+        threads += [t1, t2]
+
+    for t in threads:
+        t.join()
+
+    fixtures_count = "?"
+    result_count = "?"
+    '''
+    '''
+    Async
+    '''
+
     # update team table
-    c.crawl_teams_per_league([(l.shortCode, l.getLeagueUrl()) for l in League.objects.all()])
+    print("crawl Teams")
+    c.crawl_teams_async([(l.shortCode, l.getLeagueUrl()) for l in League.objects.all()])
 
     # update game table with fixtures
-    fixtures_count = c.crawl_fixtures_async([(l.shortCode, l.getFixturesUrl()) for l in League.objects.all()], deep_crawl)
+    c.crawl_fixtures_async([(l.shortCode, l.getFixturesUrl()) for l in League.objects.all()], deep_crawl)
 
     # update game table with results
-    result_count = c.crawl_results_async([(l.shortCode, l.getResultsUrl()) for l in League.objects.all()], deep_crawl)
+    c.crawl_results_async([(l.shortCode, l.getResultsUrl()) for l in League.objects.all()], deep_crawl)
+
+    fixtures_count = c.get_fixtures_count()
+    result_count = c.get_results_count()
 
     print ""
     print "------------------------------------------------------------------"

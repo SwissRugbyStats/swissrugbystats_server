@@ -41,31 +41,41 @@ class SRSCrawler(object):
 
     def __init__(self, processes=50):
         self.pool = ThreadPool(processes=processes)
+        self.result_tasks = []
+        self.fixture_tasks = []
 
-    def crawl_teams_per_league(self, league_urls):
+    def crawl_teams(self, league_urls):
         '''
         :param leagueUrl: list of URLs to crawl for teams
         :return: -
         '''
+        for url in league_urls:
+            self.crawl_teams_per_league(url)
 
+    def crawl_teams_async(self, league_urls):
+        for url in league_urls:
+            self.pool.apply_async(self.crawl_teams_per_league, (url))
+
+    def crawl_teams_per_league(self, url):
         headers = {
             'User-Agent': 'Mozilla 5.0'
         }
-        for url in league_urls:
-            r = requests.get(url[1], headers=headers)
-            soup = BeautifulSoup(r.text)
-            table = soup.find('table', attrs={'class': 'table'})
+        r = requests.get(url[1], headers=headers)
+        soup = BeautifulSoup(r.text)
+        table = soup.find('table', attrs={'class': 'table'})
 
-            for row in table.findAll('tr'):
-                cells = row.findAll('td')
-                if len(cells) > 0:
-                    # parse Teamname and remove leading and tailing spaces
-                    team = cells[1].find(text=True).strip()
+        for row in table.findAll('tr'):
+            cells = row.findAll('td')
+            if len(cells) > 0:
+                # parse Teamname and remove leading and tailing spaces
+                team = cells[1].find(text=True).strip()
 
-                    if not Team.objects.filter(name=team):
-                        t = Team(name=team)
-                        t.save()
-                        print "Team " + str(t) + " created"
+                if not Team.objects.filter(name=team):
+                    t = Team(name=team)
+                    t.save()
+                    print ("Team {0} created".format(str(t)))
+                else:
+                    print ("Team {0} already in DB".format(str(t)))
 
     def crawl_results(self, league_results_urls, deep_crawl=False):
         '''
@@ -83,22 +93,26 @@ class SRSCrawler(object):
 
         :param league_results_urls:    list of tuples [(league_shortcode, league_url), ..]
         :param deep_crawl:  defaults to False. Set True to follow pagination
-        :return: number of crawled game results
+        :return: -
         '''
-        async_tasks = []
 
         # url is tupel of (leagueName, leagueUrl)
         for url in league_results_urls:
-            async_tasks += [self.pool.apply_async(self.crawl_results_per_league, ((url, deep_crawl)))]
+            self.result_tasks += [self.pool.apply_async(self.crawl_results_per_league, ((url, deep_crawl)))]
 
+    def get_results_count(self):
+        '''
+        wait for all pending tasks to finish and then summarize the results
+        :return:
+        '''
         count = 0
-        for t in async_tasks:
+        for t in self.result_tasks:
             try:
                 if type(t.get()) is int:
                     count += t.get()
             except Exception as e:
-                print(e)
-
+                print e
+        self.result_tasks = []
         return count
 
     def crawl_results_per_league(self, url, deep_crawl):
@@ -242,20 +256,28 @@ class SRSCrawler(object):
         return count
 
     def crawl_fixtures_async(self, league_fixtures_urls, deep_crawl=False):
-        async_tasks = []
-
-        # url is tupel of (leagueName, leagueUrl)
+        '''
+        Fetch all the fixtures asynchronously and add the AsynchronousResults to fixture_tasks
+        :param league_fixtures_urls:
+        :param deep_crawl:
+        :return:
+        '''
         for url in league_fixtures_urls:
-            async_tasks += [self.pool.apply_async(self.crawl_fixture_per_league, ((url, deep_crawl)))]
+            self.fixture_tasks += [self.pool.apply_async(self.crawl_fixture_per_league, ((url, deep_crawl)))]
 
+    def get_fixtures_count(self):
+        '''
+        wait for all pending tasks to finish and then summarize the results
+        :return:
+        '''
         count = 0
-        for t in async_tasks:
+        for t in self.fixture_tasks:
             try:
                 if type(t.get()) is int:
                     count += t.get()
             except Exception as e:
                 print e
-
+        self.fixture_tasks = []
         return count
 
     def crawl_fixture_per_league(self, url, deep_crawl=False):
