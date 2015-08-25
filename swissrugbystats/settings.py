@@ -49,6 +49,8 @@ INSTALLED_APPS = (
     'rest_framework',
     'corsheaders',
     'swissrugby',
+    'simple_history',
+    'django_admin_conf_vars',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -60,6 +62,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
 )
 
 ROOT_URLCONF = 'swissrugbystats.urls'
@@ -129,3 +132,5 @@ JWT_AUTH = {
 # choose the user model
 #AUTH_USER_MODEL = 'swissrugby.MyUser'
 AUTH_USER_MODEL = 'auth.User'
+
+VARS_MODULE_PATH = 'swissrugbystats.my_conf_vars'

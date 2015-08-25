@@ -18,7 +18,8 @@ required python packages
 - BeautifulSoup
 - djangorestframework
 - django-cors-headers
-
+- django-simple-history
+- django-admin-conf-vars
 
 some notes
 ----------

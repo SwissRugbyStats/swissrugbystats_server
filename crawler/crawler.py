@@ -54,7 +54,7 @@ class SRSCrawler(object):
 
     def crawl_teams_async(self, league_urls):
         for url in league_urls:
-            self.pool.apply_async(self.crawl_teams_per_league, (url))
+            self.pool.apply_async(self.crawl_teams_per_league, (url), )
 
     def crawl_teams_per_league(self, url):
         headers = {
@@ -98,7 +98,7 @@ class SRSCrawler(object):
 
         # url is tupel of (leagueName, leagueUrl)
         for url in league_results_urls:
-            self.result_tasks += [self.pool.apply_async(self.crawl_results_per_league, ((url, deep_crawl)))]
+            self.result_tasks += [self.pool.apply_async(self.crawl_results_per_league, (url, deep_crawl, True))]
 
     def get_results_count(self):
         '''
@@ -108,14 +108,15 @@ class SRSCrawler(object):
         count = 0
         for t in self.result_tasks:
             try:
-                if type(t.get()) is int:
-                    count += t.get()
+                r = t.get(5)
+                if type(r) is int:
+                    count += r
             except Exception as e:
                 print e
         self.result_tasks = []
         return count
 
-    def crawl_results_per_league(self, url, deep_crawl):
+    def crawl_results_per_league(self, url, deep_crawl=False, async=False):
         count = 0
         headers = {
             'User-Agent': 'Mozilla 5.0'
@@ -244,7 +245,10 @@ class SRSCrawler(object):
                     for page in pagination.findAll('a', attrs={'class': 'inactive'}):
                         if int(page.find(text=True)) > current:
                             nextUrl = [(league.shortCode, page['href'])]
-                            count += self.crawl_results_async(nextUrl)
+                            if async:
+                                self.crawl_results_async(nextUrl)
+                            else:
+                                count += self.crawl_results(nextUrl)
         return count
 
     def crawl_fixtures(self, league_fixtures_urls, deep_crawl=False):
@@ -263,7 +267,7 @@ class SRSCrawler(object):
         :return:
         '''
         for url in league_fixtures_urls:
-            self.fixture_tasks += [self.pool.apply_async(self.crawl_fixture_per_league, ((url, deep_crawl)))]
+            self.fixture_tasks += [self.pool.apply_async(self.crawl_fixture_per_league, (url, deep_crawl, True))]
 
     def get_fixtures_count(self):
         '''
@@ -273,14 +277,15 @@ class SRSCrawler(object):
         count = 0
         for t in self.fixture_tasks:
             try:
-                if type(t.get()) is int:
-                    count += t.get()
+                r = t.get(5)
+                if type(r) is int:
+                    count += r
             except Exception as e:
                 print e
         self.fixture_tasks = []
         return count
 
-    def crawl_fixture_per_league(self, url, deep_crawl=False):
+    def crawl_fixture_per_league(self, url, deep_crawl=False, async=False):
         count = 0
         headers = {
             'User-Agent': 'Mozilla 5.0'
@@ -382,5 +387,8 @@ class SRSCrawler(object):
                     for page in pagination.findAll('a', attrs={'class': 'inactive'}):
                         if int(page.find(text=True)) > current:
                             nextUrl = [(league.shortCode, page['href'])]
-                            count += self.crawl_fixtures_async(nextUrl)
+                            if async:
+                                self.crawl_fixtures_async(nextUrl)
+                            else:
+                                count += self.crawl_fixtures(nextUrl)
         return count

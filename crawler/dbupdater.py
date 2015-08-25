@@ -34,7 +34,7 @@ leagues = [
 ]
 
 
-def update_all(deep_crawl=False):
+def update_all(deep_crawl=True):
     '''
     crawl suisserugby.com for the latest data
     :param deep_crawl: crawl through pagination
@@ -63,7 +63,7 @@ def update_all(deep_crawl=False):
     c = SRSCrawler()
 
     '''
-    Concurrent
+    Concurrent Crawling
     '''
     '''
     threads = []
@@ -80,8 +80,10 @@ def update_all(deep_crawl=False):
     fixtures_count = "?"
     result_count = "?"
     '''
+
+
     '''
-    Async
+    Async Crawling
     '''
 
     # update team table
