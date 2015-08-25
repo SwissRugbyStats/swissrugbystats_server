@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models import Q
 from datetime import datetime
 from swissrugbystats import settings
+from simple_history.models import HistoricalRecords
 
 '''
 class MyUser(AbstractBaseUser):
@@ -23,6 +24,7 @@ class MyUser(AbstractBaseUser):
 class League(models.Model):
     name = models.CharField(max_length=50, null=True)
     shortCode = models.CharField(max_length=50)
+    history = HistoricalRecords()
 
     def getLeagueUrl(self):
         return "http://www.suisserugby.com/competitions/" + self.shortCode + ".html"
@@ -44,6 +46,7 @@ class League(models.Model):
 
 class Season(models.Model):
     name = models.CharField(max_length=50, null=True)
+    history = HistoricalRecords()
 
     def __unicode__(self):
         return self.name
@@ -57,6 +60,7 @@ class Season(models.Model):
 class Team(models.Model):
     name = models.CharField(max_length=50)
     logo = models.CharField(max_length=200, null=True, blank=True) # move to club class, once it exists
+    history = HistoricalRecords()
 
     def getPointCount(self):
         games = Game.objects.all()
@@ -178,6 +182,7 @@ class Team(models.Model):
 
 class Venue(models.Model):
     name = models.CharField(max_length=100)
+    history = HistoricalRecords()
 
     def __unicode__(self):
         return self.name
@@ -190,6 +195,7 @@ class Venue(models.Model):
 
 class Referee(models.Model):
     name = models.CharField(max_length=100)
+    history = HistoricalRecords()
 
     def __unicode__(self):
         return self.name
@@ -206,6 +212,7 @@ class GameParticipation(models.Model):
     tries = models.IntegerField(verbose_name="Tries", blank=True, null=True)
     redCards = models.IntegerField(verbose_name="Red Cards", blank=True, null=True)
     points = models.IntegerField(verbose_name="Points", blank=True, null=True)
+    history = HistoricalRecords()
 
     def __unicode__(self):
         return self.team.name + " " + str(self.score) + " (" + str(self.tries) + "/" + str(self.redCards) + "/" + str(self.points) + ")"
@@ -226,6 +233,7 @@ class Game(models.Model):
     date = models.DateTimeField(verbose_name="KickOff")
     host = models.ForeignKey(GameParticipation, verbose_name="Host Participation", related_name="hostTeam_set")
     guest = models.ForeignKey(GameParticipation, verbose_name="Guest Participation", related_name="guestTeam_set")
+    history = HistoricalRecords()
 
     def __unicode__(self):
         return self.date.strftime('%d.%m.%Y') + ": " + self.host.team.name + " vs " + self.guest.team.name
@@ -264,3 +272,4 @@ class Game(models.Model):
 class Favorite(models.Model):
     team = models.ForeignKey(Team, verbose_name="Team", related_name="Team")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="User", related_name="Owner")
+    history = HistoricalRecords()
