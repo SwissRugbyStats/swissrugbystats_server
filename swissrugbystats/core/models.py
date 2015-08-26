@@ -3,78 +3,132 @@ from django.db.models import Q
 from datetime import datetime
 from swissrugbystats import settings
 from simple_history.models import HistoricalRecords
-
-'''
-class MyUser(AbstractBaseUser):
-    objects = UserManager()
-    username = models.CharField(max_length=254, unique=True, db_index=True)
-    email = models.EmailField(max_length=254, unique=True)
-
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['email', 'username']
-'''
+from django_admin_conf_vars.global_vars import config
 
 
 # Create your models here.
-'''
--------------------------------------------
-'''
+
+
+class Association(models.Model):
+    """
+    Represents an association.
+    """
+    name = models.CharField(max_length=255, null=True)
+    abbreviation = models.CharField(max_length=10, null=False)
+    parent_association = models.ForeignKey('Association', verbose_name="Parent Association", related_name="child_associations")
+    history = HistoricalRecords()
+
+    def __unicode__(self):
+        return "{} ({})".format(self.name, self.abbreviation)
+
+
+class Club(models.Model):
+    """
+    Represents a Rugby Club.
+    """
+    name = models.CharField(max_length=255, null=False)
+    abbreviation = models.CharField(max_length=10, null=False)
+    website = models.CharField(max_length=255, null=True)
+    associations = models.ManyToManyField(Association, related_name="clubs")
+    history = HistoricalRecords()
+
+    def __unicode__(self):
+        return self.name
 
 
 class League(models.Model):
+    """
+    Todo: document.
+    """
     name = models.CharField(max_length=50, null=True)
     shortCode = models.CharField(max_length=50)
     history = HistoricalRecords()
 
-    def getLeagueUrl(self):
-        return "http://www.suisserugby.com/competitions/" + self.shortCode + ".html"
+    def get_league_url(self):
+        return config.get_league_url(self.shortCode)
 
-    def getFixturesUrl(self):
-        return "http://www.suisserugby.com/competitions/" + self.shortCode + "/lt/fixtures.html"
+    def get_fixtures_url(self):
+        return config.get_fixtures_url(self.shortCode)
 
-    def getResultsUrl(self):
-        return "http://www.suisserugby.com/competitions/" + self.shortCode + "/lt/results.html"
+    def get_results_url(self):
+        return config.get_results_url(self.shortCode)
 
     def __unicode__(self):
         return self.name
-
-
-'''
--------------------------------------------
-'''
 
 
 class Season(models.Model):
+    """
+    Todo: document.
+    """
     name = models.CharField(max_length=50, null=True)
+    fsr_url_slug = models.CharField(max_length=50, null=True)
     history = HistoricalRecords()
 
     def __unicode__(self):
         return self.name
 
 
-'''
--------------------------------------------
-'''
+class Competition(models.Model):
+    """
+    Todo: document.
+    """
+    league = models.ForeignKey(League, verbose_name="League", related_name='league_competitions')
+    season = models.ForeignKey(Season, verbose_name="Season", related_name='season_competitions')
+    history = HistoricalRecords()
+
+    def get_league_url(self):
+        if self.season.id == config.CURRENT_SEASON:
+            return config.get_league_url(self.league.shortCode)
+        else:
+            return config.get_archive_league_url(self.league.shortCode, self.season.fsr_url_slug)
+
+    def get_fixtures_url(self):
+        if self.season.id == config.CURRENT_SEASON:
+            return config.get_fixtures_url(self.league.shortCode)
+        else:
+            return config.get_archive_fixtures_url(self.league.shortCode, self.season.fsr_url_slug)
+
+    def get_results_url(self):
+        if self.season.id == config.CURRENT_SEASON:
+            return config.get_results_url(self.league.shortCode)
+        else:
+            return config.get_archive_results_url(self.league.shortCode, self.season.fsr_url_slug)
+
+    def __unicode__(self):
+        return "{} ({})".format(self.league, self.season)
 
 
 class Team(models.Model):
+    """
+    Todo: document.
+    """
     name = models.CharField(max_length=50)
     logo = models.CharField(max_length=200, null=True, blank=True) # move to club class, once it exists
+    club = models.ForeignKey(Club)
     history = HistoricalRecords()
 
-    def getPointCount(self):
+    def get_point_count(self):
+        """
+
+        :return:
+        """
         games = Game.objects.all()
         points = 0
 
         for g in [x for x in games if (x.host.team == self) & (x.host.score is not None)]:
-            points += g.getHostPoints()
+            points += g.get_host_points()
 
         for g in [x for x in games if (x.guest.team == self) & (x.guest.score is not None)]:
-            points += g.getGuestPoints()
+            points += g.get_guest_points()
 
         return points
 
-    def getCardCount(self):
+    def get_card_count(self):
+        """
+
+        :return:
+        """
         games = GameParticipation.objects.filter(team=self)
         cards = 0
         for game in games:
@@ -82,7 +136,11 @@ class Team(models.Model):
                 cards += game.redCards
         return cards
 
-    def getTryCount(self):
+    def get_try_count(self):
+        """
+
+        :return:
+        """
         games = GameParticipation.objects.filter(team=self)
         tries = 0
         for game in games:
@@ -90,49 +148,65 @@ class Team(models.Model):
                 tries += game.tries
         return tries
 
-    def getWinCount(self):
+    def get_win_count(self):
+        """
+
+        :return:
+        """
         games = Game.objects.all()
         wins = 0
 
         for g in [x for x in games if x.host.team == self]:
-            if g.getHostPoints() >= 4:
+            if g.get_host_points() >= 4:
                 wins += 1
 
         for g in [x for x in games if x.guest.team == self]:
-            if g.getGuestPoints() >= 4:
+            if g.get_guest_points() >= 4:
                 wins += 1
 
         return wins
 
-    def getDrawCount(self):
+    def get_draw_count(self):
+        """
+
+        :return:
+        """
         games = Game.objects.all()
         draws = 0
 
         for g in [x for x in games if x.host.team == self]:
-            if g.getHostPoints() == 2:
+            if g.get_host_points() == 2:
                 draws += 1
 
         for g in [x for x in games if x.guest.team == self]:
-            if g.getGuestPoints() == 2:
+            if g.get_guest_points() == 2:
                 draws += 1
 
         return draws
 
-    def getLossCount(self):
+    def get_loss_count(self):
+        """
+
+        :return:
+        """
         games = Game.objects.all()
         losses = 0
 
         for g in [x for x in games if (x.host.team == self) & (x.host.score is not None)]:
-            if g.getHostPoints() <= 1:
+            if g.get_host_points() <= 1:
                 losses += 1
 
         for g in [x for x in games if (x.guest.team == self) & (x.guest.score is not None)]:
-            if g.getGuestPoints() <= 1:
+            if g.get_guest_points() <= 1:
                 losses += 1
 
         return losses
 
-    def getGameCount(self):
+    def get_game_count(self):
+        """
+
+        :return:
+        """
         #return GameParticipation.objects.filter(Q(team=self) & Q(score__isnull=False)).count()
         games = Game.objects.all()
         count = 0
@@ -145,14 +219,21 @@ class Team(models.Model):
 
         return count
 
-    def getGames(self):
+    def get_games(self):
+        """
+
+        :return:
+        """
         gps = GameParticipation.objects.filter(Q(team=self))
         games = Game.objects.filter(Q(host__in=gps) | Q(guest__in=gps)).order_by('date')
 
         return games
 
+    def get_next_game(self):
+        """
 
-    def getNextGame(self):
+        :return:
+        """
         gps = list(GameParticipation.objects.filter(Q(team=self)))
         games = list(Game.objects.filter(date__gt=datetime.today()))
         for g in games:
@@ -161,7 +242,11 @@ class Team(models.Model):
                     return g
         return 0
 
-    def getLastGame(self):
+    def get_last_game(self):
+        """
+
+        :return:
+        """
         gps = list(GameParticipation.objects.filter(Q(team=self)))
         games = list(Game.objects.filter(date__lt=datetime.today()).order_by('-date'))
         for g in games:
@@ -170,30 +255,25 @@ class Team(models.Model):
                     return g
         return 0
 
-
     def __unicode__(self):
         return self.name
-
-
-'''
--------------------------------------------
-'''
 
 
 class Venue(models.Model):
+    """
+    Todo: document.
+    """
     name = models.CharField(max_length=100)
     history = HistoricalRecords()
 
     def __unicode__(self):
         return self.name
-
-
-'''
--------------------------------------------
-'''
 
 
 class Referee(models.Model):
+    """
+    Todo: document.
+    """
     name = models.CharField(max_length=100)
     history = HistoricalRecords()
 
@@ -201,12 +281,10 @@ class Referee(models.Model):
         return self.name
 
 
-'''
--------------------------------------------
-'''
-
-
 class GameParticipation(models.Model):
+    """
+    Todo: document.
+    """
     team = models.ForeignKey(Team, verbose_name="Team", related_name="Team_set")
     score = models.IntegerField(verbose_name="Score", blank=True, null=True)
     tries = models.IntegerField(verbose_name="Tries", blank=True, null=True)
@@ -218,16 +296,13 @@ class GameParticipation(models.Model):
         return self.team.name + " " + str(self.score) + " (" + str(self.tries) + "/" + str(self.redCards) + "/" + str(self.points) + ")"
 
 
-'''
--------------------------------------------
-'''
-
-
 class Game(models.Model):
+    """
+    Todo: document.
+    """
     fsrID = models.CharField(max_length=10, blank=True, null=True, verbose_name="FSR ID")
     fsrUrl = models.CharField(max_length=100, blank=True, null=True, verbose_name="FSR Url")
-    league = models.ForeignKey(League, verbose_name="League", related_name='league_games')
-    season = models.ForeignKey(Season, verbose_name="Season", related_name='season_games')
+    competition = models.ForeignKey(Competition, verbose_name="Competition", related_name="competition_games")
     venue = models.ForeignKey(Venue, blank=True, null=True, verbose_name="Venue")
     referee = models.ForeignKey(Referee, blank=True, null=True, verbose_name="Referee")
     date = models.DateTimeField(verbose_name="KickOff")
@@ -238,7 +313,11 @@ class Game(models.Model):
     def __unicode__(self):
         return self.date.strftime('%d.%m.%Y') + ": " + self.host.team.name + " vs " + self.guest.team.name
 
-    def getHostPoints(self):
+    def get_host_points(self):
+        """
+        Todo: document.
+        :return:
+        """
         if (self.guest.score is None) | (self.host.score is None):
             return None
         points = 0
@@ -253,8 +332,11 @@ class Game(models.Model):
 
         return points
 
-
-    def getGuestPoints(self):
+    def get_guest_points(self):
+        """
+        Todo: document.
+        :return:
+        """
         if (self.guest.score is None) | (self.host.score is None):
             return None
         points = 0
@@ -269,7 +351,11 @@ class Game(models.Model):
 
         return points
 
+
 class Favorite(models.Model):
+    """
+    Todo: document.
+    """
     team = models.ForeignKey(Team, verbose_name="Team", related_name="Team")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="User", related_name="Owner")
     history = HistoricalRecords()
