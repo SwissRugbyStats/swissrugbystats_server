@@ -1,10 +1,12 @@
-from BeautifulSoup import BeautifulSoup
 from datetime import datetime
-from django.utils import timezone
 from multiprocessing.pool import ThreadPool
-from swissrugby.models import Team, League, Game, GameParticipation, Venue, Referee
-import requests
 import logging
+
+from BeautifulSoup import BeautifulSoup
+from django.utils import timezone
+from swissrugbystats.core.models import Team, League, Game, GameParticipation, Venue, Referee
+import requests
+
 
 # create logger
 logging.basicConfig(filename='crawler.log', level=logging.INFO, format='%(asctime)s- %(message)s', datefmt='%d.%m.%Y %I:%M:%S ')
@@ -38,6 +40,10 @@ leagueResults = [(l, "http://www.suisserugby.com/competitions/" + l + "/lt/resul
 
 
 class SRSCrawler(object):
+    """
+    :param leagueUrl: list of URLs to crawl for teams
+    :return: -
+    """
 
     def __init__(self, processes=50):
         self.pool = ThreadPool(processes=processes)
@@ -45,18 +51,28 @@ class SRSCrawler(object):
         self.fixture_tasks = []
 
     def crawl_teams(self, league_urls):
-        '''
-        :param leagueUrl: list of URLs to crawl for teams
+        """
+        :param league_urls: list of URLs to crawl for teams
         :return: -
-        '''
+        """
+
         for url in league_urls:
             self.crawl_teams_per_league(url)
 
+
     def crawl_teams_async(self, league_urls):
+        """
+        TODO: write doc.
+        """
+
         for url in league_urls:
             self.pool.apply_async(self.crawl_teams_per_league, (url), )
 
     def crawl_teams_per_league(self, url):
+        """
+        TODO: write doc.
+        """
+
         headers = {
             'User-Agent': 'Mozilla 5.0'
         }
@@ -78,33 +94,33 @@ class SRSCrawler(object):
                     print ("Team {0} already in DB".format(str(t)))
 
     def crawl_results(self, league_results_urls, deep_crawl=False):
-        '''
+        """
 
         :param league_results_urls:    list of tuples [(league_shortcode, league_url), ..]
         :param deep_crawl:  defaults to False. Set True to follow pagination
         :return: number of crawled game results
-        '''
+        """
+
         count = 0
         for url in league_results_urls:
             count += self.crawl_results_per_league(url, deep_crawl)
 
     def crawl_results_async(self, league_results_urls, deep_crawl=False):
-        '''
-
+        """
         :param league_results_urls:    list of tuples [(league_shortcode, league_url), ..]
         :param deep_crawl:  defaults to False. Set True to follow pagination
         :return: -
-        '''
+        """
 
         # url is tupel of (leagueName, leagueUrl)
         for url in league_results_urls:
             self.result_tasks += [self.pool.apply_async(self.crawl_results_per_league, (url, deep_crawl, True))]
 
     def get_results_count(self):
-        '''
+        """
         wait for all pending tasks to finish and then summarize the results
         :return:
-        '''
+        """
         count = 0
         for t in self.result_tasks:
             try:
@@ -117,6 +133,9 @@ class SRSCrawler(object):
         return count
 
     def crawl_results_per_league(self, url, deep_crawl=False, async=False):
+        """
+        TODO: write doc.
+        """
         count = 0
         headers = {
             'User-Agent': 'Mozilla 5.0'
@@ -252,6 +271,9 @@ class SRSCrawler(object):
         return count
 
     def crawl_fixtures(self, league_fixtures_urls, deep_crawl=False):
+        """
+        TODO: write doc.
+        """
         count = 0
 
         for url in league_fixtures_urls:
@@ -260,20 +282,20 @@ class SRSCrawler(object):
         return count
 
     def crawl_fixtures_async(self, league_fixtures_urls, deep_crawl=False):
-        '''
+        """
         Fetch all the fixtures asynchronously and add the AsynchronousResults to fixture_tasks
         :param league_fixtures_urls:
         :param deep_crawl:
         :return:
-        '''
+        """
         for url in league_fixtures_urls:
             self.fixture_tasks += [self.pool.apply_async(self.crawl_fixture_per_league, (url, deep_crawl, True))]
 
     def get_fixtures_count(self):
-        '''
+        """
         wait for all pending tasks to finish and then summarize the results
         :return:
-        '''
+        """
         count = 0
         for t in self.fixture_tasks:
             try:
@@ -286,6 +308,9 @@ class SRSCrawler(object):
         return count
 
     def crawl_fixture_per_league(self, url, deep_crawl=False, async=False):
+        """
+        TODO: write doc.
+        """
         count = 0
         headers = {
             'User-Agent': 'Mozilla 5.0'

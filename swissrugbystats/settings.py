@@ -48,7 +48,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
-    'swissrugby',
+    'swissrugbystats.core',
     'simple_history',
     'django_admin_conf_vars',
 )

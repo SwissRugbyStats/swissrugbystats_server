@@ -1,25 +1,27 @@
 import datetime
-import django
-import os
 import sys
 import logging
-import pytz
 
+import django
+import os
+import pytz
 from django.utils import timezone
 
+
+
+
 # import models from swissrugbystats, all django models must be imported BENEATH this block
-sys.path.append("/home/chregi/Documents/git/swissrugbystats")
+sys.path.append("/home/chregi/Documents/git/swissrugbystats/swissrugbystats")
 os.environ["DJANGO_SETTINGS_MODULE"] = "swissrugbystats.settings"
 timezone.activate(pytz.timezone("Europe/Zurich"))
 django.setup()
 
-from crawler import SRSCrawler
-from threading import Thread
+from swissrugbystats.crawler.crawler import SRSCrawler
 
 # create logger
 logging.basicConfig(filename='crawler.log', level=logging.INFO, format='%(asctime)s- %(message)s', datefmt='%d.%m.%Y %I:%M:%S ')
 
-from swissrugby.models import League
+from swissrugbystats.core.models import League
 
 leagues = [
     "u16-east",
@@ -35,11 +37,11 @@ leagues = [
 
 
 def update_all(deep_crawl=True):
-    '''
+    """
     crawl suisserugby.com for the latest data
     :param deep_crawl: crawl through pagination
     :return: none
-    '''
+    """
 
     logging.info("update started")
 
@@ -88,13 +90,13 @@ def update_all(deep_crawl=True):
 
     # update team table
     print("crawl Teams")
-    c.crawl_teams_async([(l.shortCode, l.getLeagueUrl()) for l in League.objects.all()])
+    c.crawl_teams_async([(l.shortCode, l.get_league_url()) for l in League.objects.all()])
 
     # update game table with fixtures
-    c.crawl_fixtures_async([(l.shortCode, l.getFixturesUrl()) for l in League.objects.all()], deep_crawl)
+    c.crawl_fixtures_async([(l.shortCode, l.get_fixtures_url()) for l in League.objects.all()], deep_crawl)
 
     # update game table with results
-    c.crawl_results_async([(l.shortCode, l.getResultsUrl()) for l in League.objects.all()], deep_crawl)
+    c.crawl_results_async([(l.shortCode, l.get_results_url()) for l in League.objects.all()], deep_crawl)
 
     fixtures_count = c.get_fixtures_count()
     result_count = c.get_results_count()
