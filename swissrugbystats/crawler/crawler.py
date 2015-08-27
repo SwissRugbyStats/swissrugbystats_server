@@ -46,9 +46,10 @@ class SRSCrawler(object):
         :param league_urls: list of URLs to crawl for teams
         :return: -
         """
-
+        count = 0
         for url in league_urls:
-            self.crawl_teams_per_league(url)
+            count += self.crawl_teams_per_league(url)
+        return count
 
     def crawl_teams_async(self, league_urls):
         """
@@ -62,6 +63,7 @@ class SRSCrawler(object):
         """
         TODO: write doc.
         """
+        count = 0
         print("crawl {}".format(url[1]))
         r = requests.get(url[1], headers=self.headers)
         soup = BeautifulSoup(r.text)
@@ -76,9 +78,12 @@ class SRSCrawler(object):
                 if not Team.objects.filter(name=team):
                     t = Team(name=team)
                     t.save()
+                    count += 1
                     print ("Team {0} created".format(str(t)))
                 else:
                     print ("Team {0} already in DB".format(str(Team.objects.filter(name=team).first())))
+        return count
+
 
     def crawl_results(self, league_results_urls, deep_crawl=False):
         """
@@ -91,6 +96,7 @@ class SRSCrawler(object):
         count = 0
         for url in league_results_urls:
             count += self.crawl_results_per_league(url, deep_crawl)
+        return count
 
     def crawl_results_async(self, league_results_urls, deep_crawl=False):
         """
