@@ -1,17 +1,14 @@
+from BeautifulSoup import BeautifulSoup
 from datetime import datetime
+from django.utils import timezone
 from multiprocessing.pool import ThreadPool
 import logging
-
-from BeautifulSoup import BeautifulSoup
-from django.utils import timezone
-from swissrugbystats.core.models import Team, League, Game, GameParticipation, Venue, Referee
 import requests
-
+from swissrugbystats.core.models import Competition, Team, League, Game, GameParticipation, Venue, Referee
 
 # create logger
 logging.basicConfig(filename='crawler.log', level=logging.INFO, format='%(asctime)s- %(message)s', datefmt='%d.%m.%Y %I:%M:%S ')
 
-# TODO: option to choose if wanting to make a deep crawl (all games), or just a shallow one (only first page of every league)
 # TODO: try to combine crawlLeagueFixtures and crawlLeagueResults into one function
 # TODO: add verbose option, don't show all the print() messages per default
 # TODO: log count of objects at beginning, count of objects created / updated and count of objects after script completion
@@ -21,15 +18,8 @@ logging.basicConfig(filename='crawler.log', level=logging.INFO, format='%(asctim
 # TODO: possibility to get old seasons (like 2013/2014)
 # TODO: concurrency
 
-
 leagues = [
-    "u16-east",
-    "u16-west",
-    "u18",
-    "league-1-east",
-    "league-1-west",
-    "lnc-east",
-    "lnc-west",
+    "lnb-elite",
     "lnb",
     "lna"
 ]
@@ -45,10 +35,11 @@ class SRSCrawler(object):
     :return: -
     """
 
-    def __init__(self, processes=50):
+    def __init__(self, processes=50, headers={'User-Agent': 'Mozilla 5.0'} ):
         self.pool = ThreadPool(processes=processes)
         self.result_tasks = []
         self.fixture_tasks = []
+        self.headers = headers
 
     def crawl_teams(self, league_urls):
         """
@@ -59,24 +50,20 @@ class SRSCrawler(object):
         for url in league_urls:
             self.crawl_teams_per_league(url)
 
-
     def crawl_teams_async(self, league_urls):
         """
         TODO: write doc.
         """
 
         for url in league_urls:
-            self.pool.apply_async(self.crawl_teams_per_league, (url), )
+            self.pool.apply_async(self.crawl_teams_per_league, url, )
 
     def crawl_teams_per_league(self, url):
         """
         TODO: write doc.
         """
-
-        headers = {
-            'User-Agent': 'Mozilla 5.0'
-        }
-        r = requests.get(url[1], headers=headers)
+        print("crawl {}".format(url[1]))
+        r = requests.get(url[1], headers=self.headers)
         soup = BeautifulSoup(r.text)
         table = soup.find('table', attrs={'class': 'table'})
 
@@ -91,7 +78,7 @@ class SRSCrawler(object):
                     t.save()
                     print ("Team {0} created".format(str(t)))
                 else:
-                    print ("Team {0} already in DB".format(str(t)))
+                    print ("Team {0} already in DB".format(str(Team.objects.filter(name=team).first())))
 
     def crawl_results(self, league_results_urls, deep_crawl=False):
         """
@@ -137,13 +124,10 @@ class SRSCrawler(object):
         TODO: write doc.
         """
         count = 0
-        headers = {
-            'User-Agent': 'Mozilla 5.0'
-        }
-        r = requests.get(url[1], headers=headers)
+        r = requests.get(url[1], headers=self.headers)
         soup = BeautifulSoup(r.text)
         table = soup.find('table', attrs={'class': 'table'})
-        league = League.objects.filter(shortCode=url[0])[0]
+        competition = Competition.objects.get(id=url[2])
 
         for row in table.findAll('tr'):
             cells = row.findAll('td')
@@ -188,14 +172,14 @@ class SRSCrawler(object):
                 d2 = d1.strftime('%Y-%m-%d %H:%M%z')
                 game.date = d2
 
-                game.league = league
+                game.competition = competition
                 game.fsrID = cells[0].find(text=True)
                 game.fsrUrl = cells[0].find('a')['href']
 
                 # Game details & team logos
 
                 # make new request to game detail page
-                r2 = requests.get(game.fsrUrl, headers=headers)
+                r2 = requests.get(game.fsrUrl, headers=self.headers)
                 soup2 = BeautifulSoup(r2.text)
                 table2 = soup2.find('table')
                 rows = table2.findAll('tr')
@@ -210,7 +194,6 @@ class SRSCrawler(object):
                     print("Venue " + venueName + " created")
                 else:
                     venue = Venue.objects.filter(name=venueName)[0]
-
 
                 scoreRow = 4
                 if rows[4].findAll('td')[1].find(text=True).strip() == "Forfait":
@@ -263,7 +246,7 @@ class SRSCrawler(object):
                 if current == 1:
                     for page in pagination.findAll('a', attrs={'class': 'inactive'}):
                         if int(page.find(text=True)) > current:
-                            nextUrl = [(league.shortCode, page['href'])]
+                            nextUrl = [(competition.league.shortCode, page['href'], competition.id)]
                             if async:
                                 self.crawl_results_async(nextUrl)
                             else:
@@ -312,13 +295,11 @@ class SRSCrawler(object):
         TODO: write doc.
         """
         count = 0
-        headers = {
-            'User-Agent': 'Mozilla 5.0'
-        }
-        r = requests.get(url[1], headers=headers)
+        print(url)
+        r = requests.get(url[1], headers=self.headers)
         soup = BeautifulSoup(r.text)
         table = soup.find('table', attrs={'class': 'table'})
-        league = League.objects.filter(shortCode=url[0])[0]
+        competition = Competition.objects.get(id=url[2])
 
         for row in table.findAll('tr'):
             cells = row.findAll('td')
@@ -363,14 +344,14 @@ class SRSCrawler(object):
                 d2 = d1.strftime('%Y-%m-%d %H:%M%z')
                 game.date = d2
 
-                game.league = league
+                game.competition = competition
                 game.fsrID = cells[0].find(text=True)
                 game.fsrUrl = cells[0].find('a')['href']
 
                 # Game details & team logos
 
                 # make new request to game detail page
-                r2 = requests.get(game.fsrUrl, headers=headers)
+                r2 = requests.get(game.fsrUrl, headers=self.headers)
                 soup2 = BeautifulSoup(r2.text)
                 table2 = soup2.find('table')
                 rows = table2.findAll('tr')
@@ -411,7 +392,7 @@ class SRSCrawler(object):
                 if current == 1:
                     for page in pagination.findAll('a', attrs={'class': 'inactive'}):
                         if int(page.find(text=True)) > current:
-                            nextUrl = [(league.shortCode, page['href'])]
+                            nextUrl = [(competition.league.shortCode, page['href'], competition.id)]
                             if async:
                                 self.crawl_fixtures_async(nextUrl)
                             else:

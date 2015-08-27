@@ -1,9 +1,9 @@
+from django_admin_conf_vars.global_vars import config
 from django.db import models
 from django.db.models import Q
 from datetime import datetime
 from swissrugbystats import settings
 from simple_history.models import HistoricalRecords
-from django_admin_conf_vars.global_vars import config
 
 
 # Create your models here.
@@ -45,13 +45,22 @@ class League(models.Model):
     history = HistoricalRecords()
 
     def get_league_url(self):
-        return config.get_league_url(self.shortCode)
+        return "{}{}{}".format(config.COMPETITIONS_BASE_URL, self.shortCode, config.LEAGUE_URL_ENDING)
 
     def get_fixtures_url(self):
-        return config.get_fixtures_url(self.shortCode)
+            return "{}{}{}".format(config.COMPETITIONS_BASE_URL, self.shortCode, config.FIXTURES_URL_ENDING)
 
     def get_results_url(self):
-        return config.get_results_url(self.shortCode)
+            return "{}{}{}".format(config.COMPETITIONS_BASE_URL, self.shortCode, config.RESULTS_URL_ENDING)
+
+    def get_archive_league_url(self, season_slug):
+        return "{}{}/{}{}".format(config.ARCHIVE_BASE_URL, season_slug, self.shortCode, config.LEAGUE_URL_ENDING)
+
+    def get_archive_fixtures_url(self, season_slug):
+        return "{}{}/{}{}".format(config.ARCHIVE_BASE_URL, season_slug, self.shortCode, config.FIXTURES_URL_ENDING)
+
+    def get_archive_results_url(self, season_slug):
+        return "{}{}/{}{}".format(config.ARCHIVE_BASE_URL, season_slug, self.shortCode, config.RESULTS_URL_ENDING)
 
     def __unicode__(self):
         return self.name
@@ -78,22 +87,23 @@ class Competition(models.Model):
     history = HistoricalRecords()
 
     def get_league_url(self):
-        if self.season.id == config.CURRENT_SEASON:
-            return config.get_league_url(self.league.shortCode)
+        print("get_league_url {}".format(self.__unicode__()))
+        if self.season.id == int(config.CURRENT_SEASON):
+            return self.league.get_league_url()
         else:
-            return config.get_archive_league_url(self.league.shortCode, self.season.fsr_url_slug)
+            return self.league.get_archive_league_url(self.season.fsr_url_slug)
 
     def get_fixtures_url(self):
-        if self.season.id == config.CURRENT_SEASON:
-            return config.get_fixtures_url(self.league.shortCode)
+        if self.season.id == int(config.CURRENT_SEASON):
+            return self.league.get_fixtures_url()
         else:
-            return config.get_archive_fixtures_url(self.league.shortCode, self.season.fsr_url_slug)
+            return self.league.get_archive_fixtures_url(self.season.fsr_url_slug)
 
     def get_results_url(self):
-        if self.season.id == config.CURRENT_SEASON:
-            return config.get_results_url(self.league.shortCode)
+        if self.season.id == int(config.CURRENT_SEASON):
+            return self.league.get_results_url()
         else:
-            return config.get_archive_results_url(self.league.shortCode, self.season.fsr_url_slug)
+            return self.league.get_archive_results_url(self.season.fsr_url_slug)
 
     def __unicode__(self):
         return "{} ({})".format(self.league, self.season)
@@ -105,7 +115,7 @@ class Team(models.Model):
     """
     name = models.CharField(max_length=50)
     logo = models.CharField(max_length=200, null=True, blank=True) # move to club class, once it exists
-    club = models.ForeignKey(Club)
+    club = models.ForeignKey(Club, null=True)
     history = HistoricalRecords()
 
     def get_point_count(self):

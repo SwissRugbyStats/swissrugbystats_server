@@ -7,7 +7,7 @@ config.set("COMPETITIONS_BASE_URL", default="http://www.suisserugby.com/competit
 config.set("ARCHIVE_BASE_URL", default="http://www.suisserugby.com/competitions/archiv/")
 config.set("FIXTURES_URL_ENDING", default="/lt/fixtures.html")
 config.set("RESULTS_URL_ENDING", default="/lt/results.html")
-config.set("LEAGUE_URL_ENDING", default="/lt/results.html")
+config.set("LEAGUE_URL_ENDING", default=".html")
 
 
 def get_league_url(league):
