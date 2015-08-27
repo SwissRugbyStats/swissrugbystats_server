@@ -13,9 +13,9 @@ class Association(models.Model):
     """
     Represents an association.
     """
-    name = models.CharField(max_length=255, null=True)
+    name = models.CharField(max_length=255, null=True, blank=True)
     abbreviation = models.CharField(max_length=10, null=False)
-    parent_association = models.ForeignKey('Association', verbose_name="Parent Association", related_name="child_associations")
+    parent_association = models.ForeignKey('Association', verbose_name="Parent Association", related_name="child_associations", null=True, blank=True)
     history = HistoricalRecords()
 
     def __unicode__(self):
@@ -28,9 +28,12 @@ class Club(models.Model):
     """
     name = models.CharField(max_length=255, null=False)
     abbreviation = models.CharField(max_length=10, null=False)
-    website = models.CharField(max_length=255, null=True)
-    associations = models.ManyToManyField(Association, related_name="clubs")
+    website = models.CharField(max_length=255, null=True, blank=True)
+    associations = models.ManyToManyField(Association, related_name="clubs", blank=True)
     history = HistoricalRecords()
+
+    def get_associations(self):
+        return ", ".join([str(a) for a in self.associations.all()])
 
     def __unicode__(self):
         return self.name
@@ -301,6 +304,12 @@ class GameParticipation(models.Model):
     redCards = models.IntegerField(verbose_name="Red Cards", blank=True, null=True)
     points = models.IntegerField(verbose_name="Points", blank=True, null=True)
     history = HistoricalRecords()
+
+    def get_game(self):
+        if self.hostTeam_set.all():
+            return self.hostTeam_set.all().first()
+        else:
+            return self.guestTeam_set.all().first()
 
     def __unicode__(self):
         return self.team.name + " " + str(self.score) + " (" + str(self.tries) + "/" + str(self.redCards) + "/" + str(self.points) + ")"
