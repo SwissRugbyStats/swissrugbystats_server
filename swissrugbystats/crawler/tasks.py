@@ -1,30 +1,11 @@
 import datetime
-import django
 from django_admin_conf_vars.global_vars import config
-from django.utils import timezone
 import logging
-import os
-import pytz
-import sys
-
-# import models from swissrugbystats, all django models must be imported BENEATH this block
-sys.path.append("/home/chregi/Documents/git/swissrugbystats/")
-os.environ["DJANGO_SETTINGS_MODULE"] = "swissrugbystats.settings"
-timezone.activate(pytz.timezone("Europe/Zurich"))
-django.setup()
-
 from swissrugbystats.crawler.crawler import SRSCrawler
+from swissrugbystats.core.models import Competition, Season
 
 # create logger
 logging.basicConfig(filename='crawler.log', level=logging.INFO, format='%(asctime)s- %(message)s', datefmt='%d.%m.%Y %I:%M:%S ')
-
-from swissrugbystats.core.models import Competition, League, Season
-
-league_list = [
-    "lnb-elite",
-    "lnb",
-    "lna"
-]
 
 
 def update_all(deep_crawl=True, season=config.CURRENT_SEASON):
@@ -33,8 +14,8 @@ def update_all(deep_crawl=True, season=config.CURRENT_SEASON):
     :param deep_crawl: crawl through pagination
     :return: none
     """
-    s = Season.objects.get(id=season)
-    logging.info("update started for season {}".format(s))
+    current_season = Season.objects.get(id=season)
+    logging.info("update started for season {}".format(current_season))
 
     # get current timestamp to calculate time needed for script exec
     start_time = datetime.datetime.now()
@@ -52,22 +33,21 @@ def update_all(deep_crawl=True, season=config.CURRENT_SEASON):
     print "------------------------------------------------------------------"
     print ""
 
-    create_leagues()
     crawler = SRSCrawler()
 
     # update team table
     print("crawl Teams")
     #crawler.crawl_teams_async([(c.league.shortCode, c.get_league_url(), c.id) for c in Competition.objects.filter(season=s)])
-    teams_count = crawler.crawl_teams([(c.league.shortCode, c.get_league_url(), c.id) for c in Competition.objects.filter(season=s)])
+    teams_count = crawler.crawl_teams([(c.league.shortCode, c.get_league_url(), c.id) for c in Competition.objects.filter(season=current_season)])
 
     # update game table with fixtures
     print("current season:" + config.CURRENT_SEASON)
     #crawler.crawl_fixtures_async([(c.league.shortCode, c.get_fixtures_url(), c.id) for c in Competition.objects.filter(season=s)], deep_crawl)
-    fixtures_count = crawler.crawl_fixtures([(c.league.shortCode, c.get_fixtures_url(), c.id) for c in Competition.objects.filter(season=s)], deep_crawl)
+    fixtures_count = crawler.crawl_fixtures([(c.league.shortCode, c.get_fixtures_url(), c.id) for c in Competition.objects.filter(season=current_season)], deep_crawl)
 
     # update game table with results
     #crawler.crawl_results_async([(c.league.shortCode, c.get_results_url(), c.id) for c in Competition.objects.filter(season=s)], deep_crawl)
-    result_count = crawler.crawl_results([(c.league.shortCode, c.get_results_url(), c.id) for c in Competition.objects.filter(season=s)], deep_crawl)
+    result_count = crawler.crawl_results([(c.league.shortCode, c.get_results_url(), c.id) for c in Competition.objects.filter(season=current_season)], deep_crawl)
 
     #fixtures_count = crawler.get_fixtures_count()
     #result_count = crawler.get_results_count()
@@ -83,15 +63,3 @@ def update_all(deep_crawl=True, season=config.CURRENT_SEASON):
     print "{} {}".format("Time needed:", (datetime.datetime.now() - start_time))
     print ""
 
-
-def create_leagues(leagues=league_list):
-    """
-    :param leagues:
-    :return:
-    """
-    print "Initialize leagues"
-    for league in leagues:
-        if not League.objects.filter(name=league):
-            l = League(name=league, shortCode=league)
-            l.save()
-            print league + " created"

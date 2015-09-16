@@ -40,6 +40,7 @@ ALLOWED_HOSTS = ['api.swissrugbystats.ch']
 # Application definition
 
 INSTALLED_APPS = (
+    'django_admin_conf_vars',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -51,7 +52,6 @@ INSTALLED_APPS = (
     'swissrugbystats.core',
     'swissrugbystats.crawler',
     'simple_history',
-    'django_admin_conf_vars',
 )
 
 MIDDLEWARE_CLASSES = (
