@@ -1,9 +1,13 @@
 swissrugbystats_server
 ======================
 
+main components
+---------------
+
 - api: json-API to access data
 - crawler: Webcrawler to get teams, fixtures and results from suisserugby.com
 - swissrugby: back- and frontend for the webapplication
+- docs: documentation
 
 
 required python packages
@@ -36,19 +40,12 @@ just run
 ### run webcrawler
 without logging:
 
-    python crawler/dbupdater.py > /dev/null 2> /dev/null &
+    python manage.py crawl_and_update > /dev/null 2> /dev/null &
 
-### install rabbitmq
-
-    wget http://www.rabbitmq.com/rabbitmq-signing-key-public.asc
-    sudo apt-key add rabbitmq-signing-key-public.asc
-    sudo apt-get install rabbitmq-server
-
-### 
 
 ### export packages to requirements.txt
 
-    pip freeze -> requirements.txt
+    pip freeze -l -> requirements.txt
 
 ### install packages from requirements.txt
 
@@ -66,7 +63,7 @@ Create a script that runs your crawler, i.e. named update_srs.sh with the follow
     srsdir="/path/to/your/installation"
     cd $srsdir
     source env/bin/activate
-    python crawler/dbupdater.py > /path/to/your/script/update_srs.log 2> /path/to/your/script/update_srs_err.log
+    python manage.py crawl_and_update > /path/to/your/script/update_srs.log 2> /path/to/your/script/update_srs_err.log
 
 
 Open your crontab for editing with `crontab -e` and add the following lines:
