@@ -31,11 +31,16 @@ leagueResults = [(l, "http://www.suisserugby.com/competitions/" + l + "/lt/resul
 
 class SRSCrawler(object):
     """
-    :param leagueUrl: list of URLs to crawl for teams
-    :return: -
+    Todo: document.
     """
 
-    def __init__(self, processes=50, headers={'User-Agent': 'Mozilla 5.0'} ):
+    def __init__(self, processes=50, headers={'User-Agent': 'Mozilla 5.0'}):
+        """
+        Create SRSCrawler instance.
+        :param processes: Number of processes for async processing.
+        :param headers: HTTP Headers to send with.
+        :return: void
+        """
         self.pool = ThreadPool(processes=processes)
         self.result_tasks = []
         self.fixture_tasks = []
@@ -84,10 +89,8 @@ class SRSCrawler(object):
                     print ("Team {0} already in DB".format(str(Team.objects.filter(name=team).first())))
         return count
 
-
     def crawl_results(self, league_results_urls, deep_crawl=False):
         """
-
         :param league_results_urls:    list of tuples [(league_shortcode, league_url), ..]
         :param deep_crawl:  defaults to False. Set True to follow pagination
         :return: number of crawled game results
@@ -111,8 +114,8 @@ class SRSCrawler(object):
 
     def get_results_count(self):
         """
-        wait for all pending tasks to finish and then summarize the results
-        :return:
+        Wait for all pending tasks to finish and then summarize the results.
+        :return: number of crawled results
         """
         count = 0
         for t in self.result_tasks:
@@ -283,7 +286,7 @@ class SRSCrawler(object):
     def get_fixtures_count(self):
         """
         wait for all pending tasks to finish and then summarize the results
-        :return:
+        :return: number of fixtures crawled
         """
         count = 0
         for t in self.fixture_tasks:

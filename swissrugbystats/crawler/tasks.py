@@ -55,8 +55,6 @@ def update_all(deep_crawl=True, season=config.CURRENT_SEASON):
     create_leagues()
     crawler = SRSCrawler()
 
-
-
     # update team table
     print("crawl Teams")
     #crawler.crawl_teams_async([(c.league.shortCode, c.get_league_url(), c.id) for c in Competition.objects.filter(season=s)])
@@ -88,7 +86,6 @@ def update_all(deep_crawl=True, season=config.CURRENT_SEASON):
 
 def create_leagues(leagues=league_list):
     """
-
     :param leagues:
     :return:
     """

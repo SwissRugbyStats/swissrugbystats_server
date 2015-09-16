@@ -49,6 +49,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'corsheaders',
     'swissrugbystats.core',
+    'swissrugbystats.crawler',
     'simple_history',
     'django_admin_conf_vars',
 )
