@@ -1,7 +1,7 @@
 import datetime
 from django_admin_conf_vars.global_vars import config
 import logging
-from swissrugbystats.crawler.crawler import SRSCrawler
+from swissrugbystats.crawler.crawler import SRSCrawler, SRSAsyncCrawler
 from swissrugbystats.core.models import Competition, Season
 
 # create logger
@@ -34,23 +34,18 @@ def update_all(deep_crawl=True, season=config.CURRENT_SEASON):
     print ""
 
     crawler = SRSCrawler()
+    #crawler = SRSAsyncCrawler()
 
     # update team table
     print("crawl Teams")
-    #crawler.crawl_teams_async([(c.league.shortCode, c.get_league_url(), c.id) for c in Competition.objects.filter(season=s)])
     teams_count = crawler.crawl_teams([(c.league.shortCode, c.get_league_url(), c.id) for c in Competition.objects.filter(season=current_season)])
 
     # update game table with fixtures
     print("current season:" + config.CURRENT_SEASON)
-    #crawler.crawl_fixtures_async([(c.league.shortCode, c.get_fixtures_url(), c.id) for c in Competition.objects.filter(season=s)], deep_crawl)
     fixtures_count = crawler.crawl_fixtures([(c.league.shortCode, c.get_fixtures_url(), c.id) for c in Competition.objects.filter(season=current_season)], deep_crawl)
 
     # update game table with results
-    #crawler.crawl_results_async([(c.league.shortCode, c.get_results_url(), c.id) for c in Competition.objects.filter(season=s)], deep_crawl)
     result_count = crawler.crawl_results([(c.league.shortCode, c.get_results_url(), c.id) for c in Competition.objects.filter(season=current_season)], deep_crawl)
-
-    #fixtures_count = crawler.get_fixtures_count()
-    #result_count = crawler.get_results_count()
 
     print ""
     print "------------------------------------------------------------------"
