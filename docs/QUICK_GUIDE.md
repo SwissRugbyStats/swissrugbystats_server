@@ -23,4 +23,4 @@ Schedule Widget for your Website
     
 - place a div in your site, wherever you want to display the schedule
 
-    <div class="srs-schedule" data-teamid="45">Schedule loading...</div>
+    <div class="srs-schedule" data-teamid="45" data-seasonid="3">Schedule loading...</div>
