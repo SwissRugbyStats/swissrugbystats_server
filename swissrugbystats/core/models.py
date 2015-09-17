@@ -6,9 +6,6 @@ from swissrugbystats import settings
 from simple_history.models import HistoricalRecords
 
 
-# Create your models here.
-
-
 class Association(models.Model):
     """
     Represents an association.
@@ -44,27 +41,27 @@ class League(models.Model):
     Todo: document.
     """
     name = models.CharField(max_length=50, null=True)
-    shortCode = models.CharField(max_length=50, unique=True, null=False, blank=False)
+    shortcode = models.CharField(max_length=50, unique=True, null=True, blank=True)
     description = models.TextField(blank=True, null=True)
     history = HistoricalRecords()
 
     def get_league_url(self):
-        return "{}{}{}".format(config.COMPETITIONS_BASE_URL, self.shortCode, config.LEAGUE_URL_ENDING)
+        return "{}{}{}".format(config.COMPETITIONS_BASE_URL, self.shortcode, config.LEAGUE_URL_ENDING)
 
     def get_fixtures_url(self):
-            return "{}{}{}".format(config.COMPETITIONS_BASE_URL, self.shortCode, config.FIXTURES_URL_ENDING)
+            return "{}{}{}".format(config.COMPETITIONS_BASE_URL, self.shortcode, config.FIXTURES_URL_ENDING)
 
     def get_results_url(self):
-            return "{}{}{}".format(config.COMPETITIONS_BASE_URL, self.shortCode, config.RESULTS_URL_ENDING)
+            return "{}{}{}".format(config.COMPETITIONS_BASE_URL, self.shortcode, config.RESULTS_URL_ENDING)
 
     def get_archive_league_url(self, season_slug):
-        return "{}{}/{}{}".format(config.ARCHIVE_BASE_URL, season_slug, self.shortCode, config.LEAGUE_URL_ENDING)
+        return "{}{}/{}{}".format(config.ARCHIVE_BASE_URL, season_slug, self.shortcode, config.LEAGUE_URL_ENDING)
 
     def get_archive_fixtures_url(self, season_slug):
-        return "{}{}/{}{}".format(config.ARCHIVE_BASE_URL, season_slug, self.shortCode, config.FIXTURES_URL_ENDING)
+        return "{}{}/{}{}".format(config.ARCHIVE_BASE_URL, season_slug, self.shortcode, config.FIXTURES_URL_ENDING)
 
     def get_archive_results_url(self, season_slug):
-        return "{}{}/{}{}".format(config.ARCHIVE_BASE_URL, season_slug, self.shortCode, config.RESULTS_URL_ENDING)
+        return "{}{}/{}{}".format(config.ARCHIVE_BASE_URL, season_slug, self.shortcode, config.RESULTS_URL_ENDING)
 
     def __unicode__(self):
         return self.name
