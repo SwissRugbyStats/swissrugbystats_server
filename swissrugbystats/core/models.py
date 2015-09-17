@@ -75,7 +75,7 @@ class Season(models.Model):
     Todo: document.
     """
     name = models.CharField(max_length=50, null=True)
-    fsr_url_slug = models.CharField(max_length=50, unique=True, null=False, blank=False)
+    fsr_url_slug = models.CharField(max_length=50, unique=True, null=True, blank=True)
     history = HistoricalRecords()
 
     def __unicode__(self):
