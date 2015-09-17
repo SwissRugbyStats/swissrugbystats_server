@@ -92,8 +92,8 @@ class SRSCrawler(object):
         TODO: write doc.
         TODO: crawl also special tables like finals / semi finals
         """
+        count = 0
         try:
-            count = 0
             r = requests.get(url[1], headers=self.headers)
             soup = BeautifulSoup(r.text)
             table = soup.find('table', attrs={'class': 'table'})
@@ -228,12 +228,12 @@ class SRSCrawler(object):
                         message_type=CrawlerLogMessage.ERROR,
                         message=e.__str__()
                     )
-            return count
         except Exception as e:
             CrawlerLogMessage.objects.create(
                 message_type=CrawlerLogMessage.ERROR,
                 message=e.__str__()
             )
+        return count
 
     def crawl_fixtures(self, league_fixtures_urls, deep_crawl=False):
         """
@@ -250,8 +250,8 @@ class SRSCrawler(object):
         """
         TODO: write doc.
         """
+        count = 0
         try:
-            count = 0
             print(url)
             r = requests.get(url[1], headers=self.headers)
             soup = BeautifulSoup(r.text)
@@ -361,12 +361,12 @@ class SRSCrawler(object):
                         message_type=CrawlerLogMessage.ERROR,
                         message=e.__str__()
                     )
-            return count
         except Exception as e:
             CrawlerLogMessage.objects.create(
                 message_type=CrawlerLogMessage.ERROR,
                 message=e.__str__()
             )
+        return count
 
 
 class SRSAsyncCrawler(SRSCrawler):
