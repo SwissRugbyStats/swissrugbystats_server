@@ -68,12 +68,12 @@ class SRSCrawler(object):
                         print ("Team {0} created".format(str(t)))
                     else:
                         print ("Team {0} already in DB".format(str(Team.objects.filter(name=team).first())))
-            return count
         except Exception as e:
             CrawlerLogMessage.objects.create(
                 message_type=CrawlerLogMessage.ERROR,
                 message=e.__str__()
             )
+        return count
 
     def crawl_results(self, league_results_urls, deep_crawl=False):
         """
