@@ -59,7 +59,7 @@ class CrawlerLogMessage(models.Model):
         (Venue, Venue),
         (Referee, Referee)
     ]
-
+    date = models.DateTimeField(auto_now=True)
     message = models.TextField(
         help_text='The message to be shown in the backend.'
     )
