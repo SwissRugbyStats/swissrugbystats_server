@@ -14,7 +14,7 @@ class Association(models.Model):
     Represents an association.
     """
     name = models.CharField(max_length=255, null=True, blank=True)
-    abbreviation = models.CharField(max_length=10, null=False)
+    abbreviation = models.CharField(max_length=10, null=False, unique=True)
     parent_association = models.ForeignKey('Association', verbose_name="Parent Association", related_name="child_associations", null=True, blank=True)
     history = HistoricalRecords()
 
@@ -44,7 +44,8 @@ class League(models.Model):
     Todo: document.
     """
     name = models.CharField(max_length=50, null=True)
-    shortCode = models.CharField(max_length=50)
+    shortCode = models.CharField(max_length=50, unique=True, null=False, blank=False)
+    description = models.TextField(blank=True, null=True)
     history = HistoricalRecords()
 
     def get_league_url(self):
@@ -74,7 +75,7 @@ class Season(models.Model):
     Todo: document.
     """
     name = models.CharField(max_length=50, null=True)
-    fsr_url_slug = models.CharField(max_length=50, null=True)
+    fsr_url_slug = models.CharField(max_length=50, unique=True, null=False, blank=False)
     history = HistoricalRecords()
 
     def __unicode__(self):
@@ -88,6 +89,8 @@ class Competition(models.Model):
     league = models.ForeignKey(League, verbose_name="League", related_name='league_competitions')
     season = models.ForeignKey(Season, verbose_name="Season", related_name='season_competitions')
     history = HistoricalRecords()
+
+    unique_together = ("league", "season")
 
     def get_league_url(self):
         print("get_league_url {}".format(self.__unicode__()))
@@ -307,9 +310,11 @@ class GameParticipation(models.Model):
 
     def get_game(self):
         if self.hostTeam_set.all():
-            return self.hostTeam_set.all().first()
+            game = self.hostTeam_set.all().first()
         else:
-            return self.guestTeam_set.all().first()
+            game = self.guestTeam_set.all().first()
+
+        return "{}: {}".format(game.competition.league.__str__(), game.__str__())
 
     def __unicode__(self):
         return self.team.name + " " + str(self.score) + " (" + str(self.tries) + "/" + str(self.redCards) + "/" + str(self.points) + ")"

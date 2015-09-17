@@ -50,6 +50,7 @@ class SRSCrawler(object):
         print("crawl {}".format(url[1]))
         r = requests.get(url[1], headers=self.headers)
         soup = BeautifulSoup(r.text)
+        # Todo: ensure to only crawl the main league table and no finals table, i.e. check for num of cols == 13
         table = soup.find('table', attrs={'class': 'table'})
 
         for row in table.findAll('tr'):
@@ -82,6 +83,7 @@ class SRSCrawler(object):
     def crawl_results_per_league(self, url, deep_crawl=False, async=False):
         """
         TODO: write doc.
+        TODO: crawl also special tables like finals / semi finals
         """
         count = 0
         r = requests.get(url[1], headers=self.headers)
@@ -202,15 +204,16 @@ class SRSCrawler(object):
             if deep_crawl:
                 # recursively parse all next sites if there are any
                 pagination = soup.find('div', attrs={'class': 'pagination'})
-                current = int(pagination.find('span', attrs={'class': 'current'}).find(text=True))
-                if current == 1:
-                    for page in pagination.findAll('a', attrs={'class': 'inactive'}):
-                        if int(page.find(text=True)) > current:
-                            nextUrl = [(competition.league.shortCode, page['href'], competition.id)]
-                            if async:
-                                self.crawl_results_async(nextUrl)
-                            else:
-                                count += self.crawl_results(nextUrl)
+                if pagination:
+                    current = pagination.find('span', attrs={'class': 'current'})
+                    if current and (current.find(text=True)) == 1:
+                        for page in pagination.findAll('a', attrs={'class': 'inactive'}):
+                            if int(page.find(text=True)) > current:
+                                nextUrl = [(competition.league.shortCode, page['href'], competition.id)]
+                                if async:
+                                    self.crawl_results_async(nextUrl)
+                                else:
+                                    count += self.crawl_results(nextUrl)
         return count
 
     def crawl_fixtures(self, league_fixtures_urls, deep_crawl=False):
@@ -322,15 +325,16 @@ class SRSCrawler(object):
             if deep_crawl:
                 # recursively parse all next sites if there are any
                 pagination = soup.find('div', attrs={'class': 'pagination'})
-                current = int(pagination.find('span', attrs={'class': 'current'}).find(text=True))
-                if current == 1:
-                    for page in pagination.findAll('a', attrs={'class': 'inactive'}):
-                        if int(page.find(text=True)) > current:
-                            nextUrl = [(competition.league.shortCode, page['href'], competition.id)]
-                            if async:
-                                self.crawl_fixtures_async(nextUrl)
-                            else:
-                                count += self.crawl_fixtures(nextUrl)
+                if pagination:
+                    current = pagination.find('span', attrs={'class': 'current'})
+                    if current and (current.find(text=True)) == 1:
+                        for page in pagination.findAll('a', attrs={'class': 'inactive'}):
+                            if int(page.find(text=True)) > current:
+                                nextUrl = [(competition.league.shortCode, page['href'], competition.id)]
+                                if async:
+                                    self.crawl_fixtures_async(nextUrl)
+                                else:
+                                    count += self.crawl_fixtures(nextUrl)
         return count
 
 
