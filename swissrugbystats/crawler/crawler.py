@@ -218,7 +218,7 @@ class SRSCrawler(object):
                             if current and (current.find(text=True)) == 1:
                                 for page in pagination.findAll('a', attrs={'class': 'inactive'}):
                                     if int(page.find(text=True)) > current:
-                                        nextUrl = [(competition.league.shortCode, page['href'], competition.id)]
+                                        nextUrl = [(competition.league.shortcode, page['href'], competition.id)]
                                         if async:
                                             self.crawl_results_async(nextUrl)
                                         else:
@@ -351,7 +351,7 @@ class SRSCrawler(object):
                             if current and (current.find(text=True)) == 1:
                                 for page in pagination.findAll('a', attrs={'class': 'inactive'}):
                                     if int(page.find(text=True)) > current:
-                                        nextUrl = [(competition.league.shortCode, page['href'], competition.id)]
+                                        nextUrl = [(competition.league.shortcode, page['href'], competition.id)]
                                         if async:
                                             self.crawl_fixtures_async(nextUrl)
                                         else:
