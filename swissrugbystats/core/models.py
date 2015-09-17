@@ -242,6 +242,16 @@ class Team(models.Model):
 
         return games
 
+    def get_games_by_season(self, season):
+        """
+
+        :param season:
+        :return:
+        """
+        gps = GameParticipation.objects.filter(Q(team=self))
+        games = Game.objects.filter(competition__season=season).filter(Q(host__in=gps) | Q(guest__in=gps)).order_by('date')
+        return games
+
     def get_next_game(self):
         """
 
@@ -253,7 +263,7 @@ class Team(models.Model):
             for gp in gps:
                 if (g.host == gp) | (g.guest == gp):
                     return g
-        return 0
+        return None
 
     def get_last_game(self):
         """
@@ -266,7 +276,7 @@ class Team(models.Model):
             for gp in gps:
                 if (g.host == gp) | (g.guest == gp):
                     return g
-        return 0
+        return None
 
     def __unicode__(self):
         return self.name

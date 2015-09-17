@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from swissrugbystats.core.models import League, Team, Game, GameParticipation, Referee, Venue, Season, Favorite
+from swissrugbystats.core.models import Competition, League, Team, Game, GameParticipation, Referee, Venue, Season, Favorite
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 
@@ -7,6 +7,12 @@ class LeagueSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = League
+
+
+class CompetitionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Competition
 
 
 class SeasonSerializer(serializers.ModelSerializer):
@@ -62,13 +68,13 @@ class GameDetailSerializer(serializers.ModelSerializer):
 
 
 class TeamInsightSerializer(serializers.ModelSerializer):
-    pointCount = serializers.ReadOnlyField(source='getPointCount')
-    gameCount = serializers.ReadOnlyField(source='getGameCount')
-    winCount = serializers.ReadOnlyField(source='getWinCount')
-    drawCount = serializers.ReadOnlyField(source='getDrawCount')
-    lossCount = serializers.ReadOnlyField(source='getLossCount')
-    nextGame = GameSerializer(source='getNextGame')
-    lastGame = GameSerializer(source='getLastGame')
+    pointCount = serializers.ReadOnlyField(source='get_point_count')
+    gameCount = serializers.ReadOnlyField(source='get_game_count')
+    winCount = serializers.ReadOnlyField(source='get_win_count')
+    drawCount = serializers.ReadOnlyField(source='get_draw_count')
+    lossCount = serializers.ReadOnlyField(source='get_loss_count')
+    nextGame = GameSerializer(source='get_next_game')
+    lastGame = GameSerializer(source='get_last_game')
 
     class Meta:
         model = Team
