@@ -16,3 +16,6 @@ RUN
 
 # ignore STATIC_ROOT folder
 swissrugbystats/static
+
+# ignore all migrations
+**/migrations/*
