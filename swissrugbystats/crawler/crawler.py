@@ -56,22 +56,28 @@ class SRSCrawler(object):
             table = soup.find('table', attrs={'class': 'table'})
 
             for row in table.findAll('tr'):
-                cells = row.findAll('td')
-                if len(cells) > 0:
-                    # parse Teamname and remove leading and tailing spaces
-                    team = cells[1].find(text=True).strip()
+                try:
+                    cells = row.findAll('td')
+                    if len(cells) > 0:
+                        # parse Teamname and remove leading and tailing spaces
+                        team = cells[1].find(text=True).strip()
 
-                    if not Team.objects.filter(name=team):
-                        t = Team(name=team)
-                        t.save()
-                        count += 1
-                        print ("Team {0} created".format(str(t)))
-                    else:
-                        print ("Team {0} already in DB".format(str(Team.objects.filter(name=team).first())))
+                        if not Team.objects.filter(name=team):
+                            t = Team(name=team)
+                            t.save()
+                            count += 1
+                            print ("Team {0} created".format(str(t)))
+                        else:
+                            print ("Team {0} already in DB".format(str(Team.objects.filter(name=team).first())))
+                except Exception as e:
+                    CrawlerLogMessage.objects.create(
+                        message_type=CrawlerLogMessage.ERROR,
+                        message="crawl_teams_per_league, {}".format(e.__str__())
+                    )
         except Exception as e:
             CrawlerLogMessage.objects.create(
                 message_type=CrawlerLogMessage.ERROR,
-                message=e.__str__()
+                message="crawl_teams_per_league, {}".format(e.__str__())
             )
         return count
 

@@ -50,6 +50,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'corsheaders',
     'swissrugbystats.core',
+    'swissrugbystats.coach',
     'swissrugbystats.crawler',
     'simple_history',
 )
@@ -99,7 +100,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = "/home/chregi/Documents/git/swissrugbystats/swissrugbystats/static"
+STATIC_ROOT = '/home/chregi/Documents/git/swissrugbystats/swissrugbystats/static'
+
+
+# Media files (Files uploaded by user)
+
+MEDIA_ROOT = '/home/chregi/Documents/git/swissrugbystats/swissrugbystats/media'
+MEDIA_URL = '/media/'
 
 # CORS (Cross Origin Resource Sharing)
 # documentation: https://github.com/ottoyiu/django-cors-headers/

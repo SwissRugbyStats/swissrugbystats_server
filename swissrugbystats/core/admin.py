@@ -23,13 +23,19 @@ class GameAdmin(SimpleHistoryAdmin):
 
 
 class GameParticipationAdmin(SimpleHistoryAdmin):
-    list_display = ('__str__', 'get_game')
+    list_display = ['__str__', 'get_game']
     list_filter = ['team', 'hostTeam_set__competition', 'guestTeam_set__competition']
 
 
 class FavoriteAdmin(SimpleHistoryAdmin):
-    list_display = ('user', 'team')
+    list_display = ['user', 'team']
     search_fields = ['user', 'team']
+
+
+class LeagueAdmin(SimpleHistoryAdmin):
+    list_display = ['name', 'shortcode', 'description']
+    list_editable = ['name', 'shortcode']
+    search_fields = ['name', 'shortcode', 'description']
 
 
 # Register your models here.
@@ -39,7 +45,7 @@ admin.site.register(Club, ClubAdmin)
 admin.site.register(Competition, CompetitionAdmin)
 admin.site.register(Team, SimpleHistoryAdmin)
 admin.site.register(Game, GameAdmin)
-admin.site.register(League, SimpleHistoryAdmin)
+admin.site.register(League, LeagueAdmin)
 admin.site.register(Venue, SimpleHistoryAdmin)
 admin.site.register(Referee, SimpleHistoryAdmin)
 admin.site.register(GameParticipation, GameParticipationAdmin)
