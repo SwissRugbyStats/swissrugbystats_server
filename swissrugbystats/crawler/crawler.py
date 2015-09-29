@@ -234,7 +234,8 @@ class SRSCrawler(object):
                 pagination = soup.find('div', attrs={'class': 'pagination'})
                 if pagination:
                     current = pagination.find('span', attrs={'class': 'current'})
-                    if current and (current.find(text=True)) == 1:
+                    if current and int(current.find(text=True)) == 1:
+                        print("Follow pagination, {} pages.".format(len(pagination)))
                         for page in pagination.findAll('a', attrs={'class': 'inactive'}):
                             if int(page.find(text=True)) > current:
                                 nextUrl = [(competition.league.shortcode, page['href'], competition.id)]
@@ -368,7 +369,8 @@ class SRSCrawler(object):
                 pagination = soup.find('div', attrs={'class': 'pagination'})
                 if pagination:
                     current = pagination.find('span', attrs={'class': 'current'})
-                    if current and (current.find(text=True)) == 1:
+                    if current and int(current.find(text=True)) == 1:
+                        print("Follow pagination, {} pages.".format(len(pagination)))
                         for page in pagination.findAll('a', attrs={'class': 'inactive'}):
                             if int(page.find(text=True)) > current:
                                 nextUrl = [(competition.league.shortcode, page['href'], competition.id)]
