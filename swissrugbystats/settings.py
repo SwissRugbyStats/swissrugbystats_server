@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 import os
 from datetime import timedelta
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+PROJECT_DIR = os.path.join(BASE_DIR, 'swissrugbystats')
 
 # Import email settings in the form of
 '''
@@ -100,13 +101,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_ROOT = os.path.join(PROJECT_DIR, "static")
 
 
 # Media files (Files uploaded by user)
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_ROOT = os.path.join(PROJECT_DIR, "media")
 
 # CORS (Cross Origin Resource Sharing)
 # documentation: https://github.com/ottoyiu/django-cors-headers/
