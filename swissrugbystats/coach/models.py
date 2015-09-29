@@ -1,9 +1,9 @@
+from __future__ import unicode_literals
 from django_admin_conf_vars.global_vars import config
 from django.db import models
 from swissrugbystats import settings
 from swissrugbystats.core.models import Club, Game, GameParticipation
 from simple_history.models import HistoricalRecords
-from __future__ import unicode_literals
 
 
 class Position(models.Model):
