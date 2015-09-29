@@ -52,28 +52,33 @@ class SRSCrawler(object):
         try:
             r = requests.get(url[1], headers=self.headers)
             soup = BeautifulSoup(r.text)
-            # Todo: ensure to only crawl the main league table and no finals table, i.e. check for num of cols == 13
-            table = soup.find('table', attrs={'class': 'table'})
+            # find all tables of the rugbymanager plugin, to be sure to get all the information
+            tables = soup.findAll('table', attrs={'class': 'table'})
 
-            for row in table.findAll('tr'):
-                try:
-                    cells = row.findAll('td')
-                    if len(cells) > 0:
-                        # parse Teamname and remove leading and tailing spaces
-                        team = cells[1].find(text=True).strip()
+            for table in tables:
+                for row in table.findAll('tr'):
+                    try:
+                        cells = row.findAll('td')
+                        if len(cells) > 0:
+                            # check if we are looking at the season table and not a playdown / playoff / finals table
+                            if len(cells) > 5:
+                                # parse Teamname and remove leading and tailing spaces
+                                team = cells[1].find(text=True).strip()
 
-                        if not Team.objects.filter(name=team):
-                            t = Team(name=team)
-                            t.save()
-                            count += 1
-                            print ("Team {0} created".format(str(t)))
-                        else:
-                            print ("Team {0} already in DB".format(str(Team.objects.filter(name=team).first())))
-                except Exception as e:
-                    CrawlerLogMessage.objects.create(
-                        message_type=CrawlerLogMessage.ERROR,
-                        message="crawl_teams_per_league, {}".format(e.__str__())
-                    )
+                                if not Team.objects.filter(name=team):
+                                    t = Team(name=team)
+                                    t.save()
+                                    count += 1
+                                    print ("Team {0} created".format(str(t)))
+                                else:
+                                    print ("Team {0} already in DB".format(str(Team.objects.filter(name=team).first())))
+                            else:
+                                print ("Less than 5 columns, must be finals table or similar. --> ignore")
+                    except Exception as e:
+                        CrawlerLogMessage.objects.create(
+                            message_type=CrawlerLogMessage.ERROR,
+                            message="crawl_teams_per_league, {}".format(e.__str__())
+                        )
         except Exception as e:
             CrawlerLogMessage.objects.create(
                 message_type=CrawlerLogMessage.ERROR,
@@ -100,140 +105,143 @@ class SRSCrawler(object):
         """
         count = 0
         try:
+            print(url)
             r = requests.get(url[1], headers=self.headers)
             soup = BeautifulSoup(r.text)
-            table = soup.find('table', attrs={'class': 'table'})
+            tables = soup.findAll('table', attrs={'class': 'table'})
+            print str(len(tables)) + " tables found."
             competition = Competition.objects.get(id=url[2])
 
-            for row in table.findAll('tr'):
-                try:
-                    cells = row.findAll('td')
-                    if len(cells) > 0:
+            for table in tables:
+                for row in table.findAll('tr'):
+                    try:
+                        cells = row.findAll('td')
+                        if len(cells) > 0:
 
-                        # get host and guest team
-                        teams = cells[2].find(text=True)        # teams
-                        teams2 = teams.split(' - ')
+                            # get host and guest team
+                            teams = cells[2].find(text=True)        # teams
+                            teams2 = teams.split(' - ')
 
-                        host = Team.objects.filter(name=teams2[0].strip())
-                        if not host:
-                            logging.error("Hostteam not found: "+teams2[0].strip())
-                            logging.error(row)
-                            print "Hostteam not found: "+teams2[0].strip()
-                            continue
-                        else:
-                            host = host[0]
-                        guest = Team.objects.filter(name=teams2[1].strip())
-                        if not guest:
-                            logging.error("Guestteam not found: "+teams2[1].strip())
-                            logging.error(row)
-                            print "Guestteam not found: "+teams2[1].strip()
-                            continue
-                        else:
-                            guest = guest[0]
-
-                        # check if game is already stored, if so, update the existing one
-                        fsrUrl = cells[0].find('a')['href']
-                        if not Game.objects.filter(fsrUrl=fsrUrl):
-                            game = Game()
-                            hostParticipant = GameParticipation(team=host)
-                            guestParticipant = GameParticipation(team=guest)
-                        else:
-                            game = Game.objects.filter(fsrUrl=fsrUrl)[0]
-                            hostParticipant = game.host
-                            guestParticipant = game.guest
-
-
-                        # parse date and set timezone
-                        date = cells[1].find(text=True)
-                        d1 = timezone.get_current_timezone().localize(datetime.strptime(date, '%d.%m.%Y %H:%M'))
-                        d2 = d1.strftime('%Y-%m-%d %H:%M%z')
-                        game.date = d2
-
-                        game.competition = competition
-                        game.fsrID = cells[0].find(text=True)
-                        game.fsrUrl = cells[0].find('a')['href']
-
-                        # Game details & team logos
-
-                        # make new request to game detail page
-                        r2 = requests.get(game.fsrUrl, headers=self.headers)
-                        soup2 = BeautifulSoup(r2.text)
-                        table2 = soup2.find('table')
-                        rows = table2.findAll('tr')
-
-                        host.logo = rows[1].findAll('td')[0].find('img')['src']   # logo host
-                        guest.logo = rows[1].findAll('td')[2].find('img')['src']  # logo guest
-
-                        venueName = rows[3].findAll('td')[1].find(text=True)     # venue
-                        if not Venue.objects.filter(name=venueName):
-                            venue = Venue()
-                            venue.name = venueName
-                            print("Venue " + venueName + " created")
-                        else:
-                            venue = Venue.objects.filter(name=venueName)[0]
-
-                        scoreRow = 4
-                        if rows[4].findAll('td')[1].find(text=True).strip() == "Forfait":
-                            scoreRow += 1
-                            #TODO: save forfait in db
-
-                        hostParticipant.score = int(rows[scoreRow].findAll('td')[0].find(text=True))          # score host
-                        guestParticipant.score = int(rows[scoreRow].findAll('td')[2].find(text=True))         # score guest
-                        hostParticipant.tries = int(rows[scoreRow+1].findAll('td')[0].find(text=True))          # tries host
-                        guestParticipant.tries = int(rows[scoreRow+1].findAll('td')[2].find(text=True))         # tries guest
-                        hostParticipant.redCards = int(rows[scoreRow+2].findAll('td')[0].find(text=True))       # red cards host
-                        guestParticipant.redCards = int(rows[scoreRow+2].findAll('td')[2].find(text=True))      # red cards guest
-
-                        # referee is not always there
-                        if len(rows)>=scoreRow+5:
-                            refName = rows[scoreRow+4].findAll('td')[1].find(text=True).strip()     # referee
-                            # TODO: save performance by not reassigning referee if already set
-                            if not Referee.objects.filter(name=refName):
-                                referee = Referee()
-                                referee.name = refName
-                                print("Referee " + refName + " created")
+                            host = Team.objects.filter(name=teams2[0].strip())
+                            if not host:
+                                logging.error("Hostteam not found: "+teams2[0].strip())
+                                logging.error(row)
+                                print "Hostteam not found: "+teams2[0].strip()
+                                continue
                             else:
-                                referee = Referee.objects.filter(name=refName)[0]
-                            referee.save()
-                            game.referee = referee
+                                host = host[0]
+                            guest = Team.objects.filter(name=teams2[1].strip())
+                            if not guest:
+                                logging.error("Guestteam not found: "+teams2[1].strip())
+                                logging.error(row)
+                                print "Guestteam not found: "+teams2[1].strip()
+                                continue
+                            else:
+                                guest = guest[0]
 
-                        host.save()
-                        guest.save()
-                        hostParticipant.team = host
-                        hostParticipant.save()
-                        guestParticipant.team = guest
-                        guestParticipant.save()
-                        game.host = hostParticipant
-                        game.guest = guestParticipant
+                            # check if game is already stored, if so, update the existing one
+                            fsrUrl = cells[0].find('a')['href']
+                            if not Game.objects.filter(fsrUrl=fsrUrl):
+                                game = Game()
+                                hostParticipant = GameParticipation(team=host)
+                                guestParticipant = GameParticipation(team=guest)
+                            else:
+                                game = Game.objects.filter(fsrUrl=fsrUrl)[0]
+                                hostParticipant = game.host
+                                guestParticipant = game.guest
 
-                        venue.save()
-                        game.venue = venue
 
-                        game.save()
+                            # parse date and set timezone
+                            date = cells[1].find(text=True)
+                            d1 = timezone.get_current_timezone().localize(datetime.strptime(date, '%d.%m.%Y %H:%M'))
+                            d2 = d1.strftime('%Y-%m-%d %H:%M%z')
+                            game.date = d2
 
-                        print "GameResult " + str(Game.objects.get(id=game.id)) + " created / updated"
+                            game.competition = competition
+                            game.fsrID = cells[0].find(text=True)
+                            game.fsrUrl = cells[0].find('a')['href']
 
-                        # increment game counter
-                        count += 1
+                            # Game details & team logos
 
-                    if deep_crawl:
-                        # recursively parse all next sites if there are any
-                        pagination = soup.find('div', attrs={'class': 'pagination'})
-                        if pagination:
-                            current = pagination.find('span', attrs={'class': 'current'})
-                            if current and (current.find(text=True)) == 1:
-                                for page in pagination.findAll('a', attrs={'class': 'inactive'}):
-                                    if int(page.find(text=True)) > current:
-                                        nextUrl = [(competition.league.shortcode, page['href'], competition.id)]
-                                        if async:
-                                            self.crawl_results_async(nextUrl)
-                                        else:
-                                            count += self.crawl_results(nextUrl)
-                except Exception as e:
-                    CrawlerLogMessage.objects.create(
-                        message_type=CrawlerLogMessage.ERROR,
-                        message=e.__str__()
-                    )
+                            # make new request to game detail page
+                            r2 = requests.get(game.fsrUrl, headers=self.headers)
+                            soup2 = BeautifulSoup(r2.text)
+                            table2 = soup2.find('table', attrs={'class': None})
+                            rows = table2.findAll('tr')
+
+                            host.logo = rows[1].findAll('td')[0].find('img')['src']   # logo host
+                            guest.logo = rows[1].findAll('td')[2].find('img')['src']  # logo guest
+
+                            venueName = rows[3].findAll('td')[1].find(text=True)     # venue
+                            if not Venue.objects.filter(name=venueName):
+                                venue = Venue()
+                                venue.name = venueName
+                                print("Venue " + venueName + " created")
+                            else:
+                                venue = Venue.objects.filter(name=venueName)[0]
+
+                            scoreRow = 4
+                            if rows[4].findAll('td')[1].find(text=True).strip() == "Forfait":
+                                scoreRow += 1
+                                #TODO: save forfait in db
+
+                            hostParticipant.score = int(rows[scoreRow].findAll('td')[0].find(text=True))          # score host
+                            guestParticipant.score = int(rows[scoreRow].findAll('td')[2].find(text=True))         # score guest
+                            hostParticipant.tries = int(rows[scoreRow+1].findAll('td')[0].find(text=True))          # tries host
+                            guestParticipant.tries = int(rows[scoreRow+1].findAll('td')[2].find(text=True))         # tries guest
+                            hostParticipant.redCards = int(rows[scoreRow+2].findAll('td')[0].find(text=True))       # red cards host
+                            guestParticipant.redCards = int(rows[scoreRow+2].findAll('td')[2].find(text=True))      # red cards guest
+
+                            # referee is not always there
+                            if len(rows)>=scoreRow+5:
+                                refName = rows[scoreRow+4].findAll('td')[1].find(text=True).strip()     # referee
+                                # TODO: save performance by not reassigning referee if already set
+                                if not Referee.objects.filter(name=refName):
+                                    referee = Referee()
+                                    referee.name = refName
+                                    print("Referee " + refName + " created")
+                                else:
+                                    referee = Referee.objects.filter(name=refName)[0]
+                                referee.save()
+                                game.referee = referee
+
+                            host.save()
+                            guest.save()
+                            hostParticipant.team = host
+                            hostParticipant.save()
+                            guestParticipant.team = guest
+                            guestParticipant.save()
+                            game.host = hostParticipant
+                            game.guest = guestParticipant
+
+                            venue.save()
+                            game.venue = venue
+
+                            game.save()
+
+                            print "GameResult " + str(Game.objects.get(id=game.id)) + " created / updated"
+
+                            # increment game counter
+                            count += 1
+
+                        if deep_crawl:
+                            # recursively parse all next sites if there are any
+                            pagination = soup.find('div', attrs={'class': 'pagination'})
+                            if pagination:
+                                current = pagination.find('span', attrs={'class': 'current'})
+                                if current and (current.find(text=True)) == 1:
+                                    for page in pagination.findAll('a', attrs={'class': 'inactive'}):
+                                        if int(page.find(text=True)) > current:
+                                            nextUrl = [(competition.league.shortcode, page['href'], competition.id)]
+                                            if async:
+                                                self.crawl_results_async(nextUrl)
+                                            else:
+                                                count += self.crawl_results(nextUrl)
+                    except Exception as e:
+                        CrawlerLogMessage.objects.create(
+                            message_type=CrawlerLogMessage.ERROR,
+                            message=e.__str__()
+                        )
         except Exception as e:
             CrawlerLogMessage.objects.create(
                 message_type=CrawlerLogMessage.ERROR,
@@ -317,7 +325,7 @@ class SRSCrawler(object):
                         # make new request to game detail page
                         r2 = requests.get(game.fsrUrl, headers=self.headers)
                         soup2 = BeautifulSoup(r2.text)
-                        table2 = soup2.find('table')
+                        table2 = soup2.find('table', attrs={'class': None})
                         rows = table2.findAll('tr')
 
                         host.logo = rows[1].findAll('td')[0].find('img')['src']   # logo host
