@@ -21,10 +21,12 @@ def api_root(request, format=None):
         'leagues': reverse('leagues', request=request, format=format),
         'games': reverse('games', request=request, format=format),
         'game-participations': reverse('game-participations', request=request, format=format),
+        'clubs': reverse('clubs', request=request, format=format),
         'teams': reverse('teams', request=request, format=format),
         'game schedule per team': reverse('game-schedule', request=request, format=format, kwargs={'pk': 42}),
         'next game of team': reverse('next-game', request=request, format=format, kwargs={'pk': 42}),
         'last game of team': reverse('last-game', request=request, format=format, kwargs={'pk': 42}),
+        'players': reverse('players', request=request, format=format),
         'referees': reverse('referees', request=request, format=format),
         'seasons': reverse('seasons', request=request, format=format),
         'venues': reverse('venues', request=request, format=format)
@@ -46,6 +48,38 @@ class LeagueDetail(generics.RetrieveAPIView):
     """
     queryset = League.objects.all()
     serializer_class = LeagueDetailSerializer
+
+
+class ClubList(generics.ListAPIView):
+    """
+    Get a list of all the clubs.
+    """
+    queryset = Club.objects.all()
+    serializer_class = ClubSerializer
+
+
+class ClubDetail(generics.RetrieveAPIView):
+    """
+    Get details about a special club.
+    """
+    queryset = Club.objects.all()
+    serializer_class = ClubSerializer
+
+
+class PlayerList(generics.ListAPIView):
+    """
+    Get a list of all the players.
+    """
+    queryset = Player.objects.all()
+    serializer_class = PlayerSerializer
+
+
+class PlayerDetail(generics.RetrieveAPIView):
+    """
+    Get details about a special player.
+    """
+    queryset = Player.objects.all()
+    serializer_class = PlayerSerializer
 
 
 class CompetitionList(generics.ListAPIView):

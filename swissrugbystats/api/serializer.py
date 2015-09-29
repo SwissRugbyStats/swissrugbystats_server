@@ -1,33 +1,68 @@
 from rest_framework import serializers
-from swissrugbystats.core.models import Competition, League, Team, Game, GameParticipation, Referee, Venue, Season, Favorite
+from swissrugbystats.coach.models import Player
+from swissrugbystats.core.models import Club, Competition, League, Team, Game, GameParticipation, Referee, Venue, Season, Favorite
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 
+
+class PlayerSerializer(serializers.ModelSerializer):
+    """
+    Todo: document.
+    """
+
+    class Meta:
+        model = Player
+
+
+class ClubSerializer(serializers.ModelSerializer):
+    """
+    Todo: document.
+    """
+
+    class Meta:
+        model = Club
+
+
 class LeagueSerializer(serializers.ModelSerializer):
+    """
+    Todo: document.
+    """
 
     class Meta:
         model = League
 
 
 class CompetitionSerializer(serializers.ModelSerializer):
+    """
+    Todo: document.
+    """
 
     class Meta:
         model = Competition
 
 
 class SeasonSerializer(serializers.ModelSerializer):
+    """
+    Todo: document.
+    """
 
     class Meta:
         model = Season
 
 
 class TeamSerializer(serializers.ModelSerializer):
+    """
+    Todo: document.
+    """
 
     class Meta:
         model = Team
 
 
 class GameParticipationSerializer(serializers.ModelSerializer):
+    """
+    Todo: document.
+    """
     team = TeamSerializer(many=False, read_only=True)
 
     class Meta:
@@ -36,16 +71,25 @@ class GameParticipationSerializer(serializers.ModelSerializer):
 
 
 class RefereeSerializer(serializers.ModelSerializer):
+    """
+    Todo: document.
+    """
     class Meta:
         model = Referee
 
 
 class VenueSerializer(serializers.ModelSerializer):
+    """
+    Todo: document.
+    """
     class Meta:
         model = Venue
 
 
 class GameSerializer(serializers.ModelSerializer):
+    """
+    Todo: document.
+    """
     host = GameParticipationSerializer(many=False, read_only=True)
     guest = GameParticipationSerializer(many=False, read_only=True)
     league = LeagueSerializer(many=False, read_only=True)
@@ -56,6 +100,9 @@ class GameSerializer(serializers.ModelSerializer):
 
 
 class GameDetailSerializer(serializers.ModelSerializer):
+    """
+    Todo: document.
+    """
     host = GameParticipationSerializer(many=False, read_only=True)
     guest = GameParticipationSerializer(many=False, read_only=True)
     league = LeagueSerializer(many=False, read_only=True)
@@ -68,6 +115,9 @@ class GameDetailSerializer(serializers.ModelSerializer):
 
 
 class TeamInsightSerializer(serializers.ModelSerializer):
+    """
+    Todo: document.
+    """
     pointCount = serializers.ReadOnlyField(source='get_point_count')
     gameCount = serializers.ReadOnlyField(source='get_game_count')
     winCount = serializers.ReadOnlyField(source='get_win_count')
@@ -81,18 +131,27 @@ class TeamInsightSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """
+    Todo: document.
+    """
     class Meta:
         model = get_user_model()
         fields = ('username', 'password', 'first_name', 'last_name')
 
 
 class UserSerializer2(serializers.ModelSerializer):
+    """
+    Todo: document.
+    """
     class Meta:
         model = User
         fields = ('id', 'username')
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
+    """
+    Todo: document.
+    """
     # team = TeamSerializer(many=False, read_only=True)
 
     class Meta:
@@ -101,6 +160,9 @@ class FavoriteSerializer(serializers.ModelSerializer):
 
 
 class FavoriteDetailSerializer(serializers.ModelSerializer):
+    """
+    Todo: document.
+    """
     team = TeamSerializer(many=False, read_only=True)
     user = UserSerializer2(many=False, read_only=True)
 
@@ -110,6 +172,9 @@ class FavoriteDetailSerializer(serializers.ModelSerializer):
 
 
 class LeagueDetailSerializer(serializers.ModelSerializer):
+    """
+    Todo: document.
+    """
     league_games = GameSerializer(many=True, read_only=True)
 
     class Meta:

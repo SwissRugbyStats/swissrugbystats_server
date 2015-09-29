@@ -14,6 +14,9 @@ urlpatterns = patterns('',
     url(r'^gameparticipations/?$', views.GameParticipationList.as_view(), name="game-participations"),
     url(r'^gameparticipations/(?P<pk>[0-9]+)/?$', views.GameParticipationDetail.as_view()),
 
+    url(r'^clubs/?$', views.ClubList.as_view(), name="clubs"),
+    url(r'^clubs/(?P<pk>[0-9]+)/?$', views.ClubDetail.as_view()),
+
     url(r'^teams/?$', views.TeamList.as_view(), name="teams"),
     url(r'^teams/(?P<pk>[0-9]+)/?$', views.TeamDetail.as_view()),
 
@@ -21,6 +24,9 @@ urlpatterns = patterns('',
     url(r'^teams/(?P<pk>[0-9]+)/games/next/?$', views.NextGameByTeamId.as_view(), name="next-game"),
     url(r'^teams/(?P<pk>[0-9]+)/games/last/?$', views.LastGameByTeamId.as_view(), name="last-game"),
     url(r'^teams/(?P<pk>[0-9]+)/games/season/(?P<season>[0-9]+)/?$', views.get_team_games_by_season, name="last-game"),
+
+    url(r'^players/?$', views.PlayerList.as_view(), name="players"),
+    url(r'^players/(?P<pk>[0-9]+)/?$', views.PlayerDetail.as_view()),
 
     url(r'^referees/?$', views.RefereeList.as_view(), name="referees"),
     url(r'^referees/(?P<pk>[0-9]+)/?$', views.RefereeDetail.as_view()),
