@@ -21,4 +21,5 @@ swissrugbystats/static
 swissrugbystats/media
 
 # ignore all migrations
-**/migrations/*
+migrations/
+*/migrations/*
