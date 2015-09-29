@@ -234,14 +234,17 @@ class SRSCrawler(object):
                 pagination = soup.find('div', attrs={'class': 'pagination'})
                 if pagination:
                     current = pagination.find('span', attrs={'class': 'current'})
+                    print(current.find(text=True))
                     if current and int(current.find(text=True)) == 1:
                         print("Follow pagination, {} pages.".format(len(pagination)))
                         for page in pagination.findAll('a', attrs={'class': 'inactive'}):
-                            if int(page.find(text=True)) > current:
+                            print("Page: {}, Current: {}".format(int(page.find(text=True)), int(current.find(text=True))))
+                            if int(page.find(text=True)) > int(current.find(text=True)):
                                 nextUrl = [(competition.league.shortcode, page['href'], competition.id)]
                                 if async:
                                     self.crawl_results_async(nextUrl)
                                 else:
+                                    print("visit".format(nextUrl))
                                     count += self.crawl_results(nextUrl)
 
         except Exception as e:
