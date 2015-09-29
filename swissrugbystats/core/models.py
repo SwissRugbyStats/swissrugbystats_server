@@ -4,6 +4,7 @@ from django.db.models import Q
 from datetime import datetime
 from swissrugbystats import settings
 from simple_history.models import HistoricalRecords
+from __future__ import unicode_literals
 
 
 class Association(models.Model):

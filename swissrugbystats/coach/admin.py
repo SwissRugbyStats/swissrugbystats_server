@@ -3,6 +3,13 @@ from swissrugbystats.coach.models import TrophyType, Trophy, Position, LineUp, L
 from simple_history.admin import SimpleHistoryAdmin
 
 # custom AdminModels
+
+
+class PlayerAdmin(SimpleHistoryAdmin):
+    list_display = ('get_full_name', 'club', 'birth_date')
+    search_fields = ['get_full_name']
+    list_filter = ['club']
+
 """
 class ClubAdmin(SimpleHistoryAdmin):
     list_display = ('__str__', 'get_associations', 'website')
@@ -13,7 +20,7 @@ class ClubAdmin(SimpleHistoryAdmin):
 
 # Register your models here.
 
-admin.site.register(Player, SimpleHistoryAdmin)
+admin.site.register(Player, PlayerAdmin)
 admin.site.register(TrophyType, SimpleHistoryAdmin)
 admin.site.register(Trophy, SimpleHistoryAdmin)
 #admin.site.register(LineUp, SimpleHistoryAdmin)
