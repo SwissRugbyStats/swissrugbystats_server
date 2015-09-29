@@ -9,4 +9,6 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
     url(r'^', include('swissrugbystats.api.urls')),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^media/(?P<path>.*)$', 'django.views.static.serve',
+            {'document_root': settings.MEDIA_ROOT, 'show_indexes': True })
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
