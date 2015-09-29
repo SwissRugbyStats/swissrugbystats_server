@@ -179,4 +179,4 @@ class LeagueDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = League
-        fields = ('id', 'name', 'shortCode', 'league_games')
+        fields = ('id', 'name', 'shortcode', 'league_games')
