@@ -224,24 +224,25 @@ class SRSCrawler(object):
                             # increment game counter
                             count += 1
 
-                        if deep_crawl:
-                            # recursively parse all next sites if there are any
-                            pagination = soup.find('div', attrs={'class': 'pagination'})
-                            if pagination:
-                                current = pagination.find('span', attrs={'class': 'current'})
-                                if current and (current.find(text=True)) == 1:
-                                    for page in pagination.findAll('a', attrs={'class': 'inactive'}):
-                                        if int(page.find(text=True)) > current:
-                                            nextUrl = [(competition.league.shortcode, page['href'], competition.id)]
-                                            if async:
-                                                self.crawl_results_async(nextUrl)
-                                            else:
-                                                count += self.crawl_results(nextUrl)
                     except Exception as e:
                         CrawlerLogMessage.objects.create(
                             message_type=CrawlerLogMessage.ERROR,
                             message=e.__str__()
                         )
+            if deep_crawl:
+                # recursively parse all next sites if there are any
+                pagination = soup.find('div', attrs={'class': 'pagination'})
+                if pagination:
+                    current = pagination.find('span', attrs={'class': 'current'})
+                    if current and (current.find(text=True)) == 1:
+                        for page in pagination.findAll('a', attrs={'class': 'inactive'}):
+                            if int(page.find(text=True)) > current:
+                                nextUrl = [(competition.league.shortcode, page['href'], competition.id)]
+                                if async:
+                                    self.crawl_results_async(nextUrl)
+                                else:
+                                    count += self.crawl_results(nextUrl)
+
         except Exception as e:
             CrawlerLogMessage.objects.create(
                 message_type=CrawlerLogMessage.ERROR,
@@ -357,24 +358,24 @@ class SRSCrawler(object):
                         # increment game counter
                         count += 1
 
-                    if deep_crawl:
-                        # recursively parse all next sites if there are any
-                        pagination = soup.find('div', attrs={'class': 'pagination'})
-                        if pagination:
-                            current = pagination.find('span', attrs={'class': 'current'})
-                            if current and (current.find(text=True)) == 1:
-                                for page in pagination.findAll('a', attrs={'class': 'inactive'}):
-                                    if int(page.find(text=True)) > current:
-                                        nextUrl = [(competition.league.shortcode, page['href'], competition.id)]
-                                        if async:
-                                            self.crawl_fixtures_async(nextUrl)
-                                        else:
-                                            count += self.crawl_fixtures(nextUrl)
                 except Exception as e:
                     CrawlerLogMessage.objects.create(
                         message_type=CrawlerLogMessage.ERROR,
                         message=e.__str__()
                     )
+            if deep_crawl:
+                # recursively parse all next sites if there are any
+                pagination = soup.find('div', attrs={'class': 'pagination'})
+                if pagination:
+                    current = pagination.find('span', attrs={'class': 'current'})
+                    if current and (current.find(text=True)) == 1:
+                        for page in pagination.findAll('a', attrs={'class': 'inactive'}):
+                            if int(page.find(text=True)) > current:
+                                nextUrl = [(competition.league.shortcode, page['href'], competition.id)]
+                                if async:
+                                    self.crawl_fixtures_async(nextUrl)
+                                else:
+                                    count += self.crawl_fixtures(nextUrl)
         except Exception as e:
             CrawlerLogMessage.objects.create(
                 message_type=CrawlerLogMessage.ERROR,
