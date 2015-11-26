@@ -18,18 +18,52 @@ def api_root(request, format=None):
     Feel free to use this API. I would love to see what you did with it.
     """
     return Response({
-        'leagues': reverse('leagues', request=request, format=format),
-        'games': reverse('games', request=request, format=format),
-        'game-participations': reverse('game-participations', request=request, format=format),
-        'clubs': reverse('clubs', request=request, format=format),
-        'teams': reverse('teams', request=request, format=format),
-        'game schedule per team': reverse('game-schedule', request=request, format=format, kwargs={'pk': 42}),
-        'next game of team': reverse('next-game', request=request, format=format, kwargs={'pk': 42}),
-        'last game of team': reverse('last-game', request=request, format=format, kwargs={'pk': 42}),
-        'players': reverse('players', request=request, format=format),
-        'referees': reverse('referees', request=request, format=format),
-        'seasons': reverse('seasons', request=request, format=format),
-        'venues': reverse('venues', request=request, format=format)
+        '/leagues': {
+            '/' : reverse('leagues', request=request, format=format),
+            '/{id}': 'league details'
+        },
+        '/games': {
+            '/': reverse('games', request=request, format=format),
+            '/{id}' : 'game details',
+        },
+        '/game-participations': {
+            '/' : reverse('game-participations', request=request, format=format),
+            '/{id}' : 'game-participations'
+        },
+        '/clubs': {
+            '/' : reverse('clubs', request=request, format=format),
+            '/{id}': 'club details'
+        },
+        '/teams': {
+            '/': reverse('teams', request=request, format=format),
+            '/{id}': {
+                '/': 'team details',
+                'games': {
+                    '/next' : 'next game',
+                    '/last' : 'last game',
+                    '/season/{id}' : 'all games by season'
+                }
+            }
+        },
+        '/players': {
+            '/': reverse('players', request=request, format=format),
+            '/{id}' : 'player details'
+        },
+        '/referees': {
+            '/': reverse('referees', request=request, format=format),
+            '/{id}': 'referee details'
+        },
+        '/seasons': {
+            '/': reverse('seasons', request=request, format=format),
+            '/{id}': 'season details'
+        },
+        '/venues': {
+            '/': reverse('venues', request=request, format=format),
+            '/{id}': 'venue details'
+        },
+        '/competitions': {
+            '/': reverse('competitions', request=request, format=format),
+        }
     })
 
 
@@ -89,44 +123,59 @@ class CompetitionList(generics.ListAPIView):
     queryset = Competition.objects.all()
     serializer_class = CompetitionSerializer
 
-# Game list
+
 class GameList(generics.ListAPIView):
+    """
+    Todo: document.
+    """
     queryset = Game.objects.all()
     serializer_class = GameSerializer
 
 
-# Game detail
 class GameDetail(generics.RetrieveAPIView):
+    """
+    Todo: document.
+    """
     queryset = Game.objects.all()
     serializer_class = GameDetailSerializer
 
 
-# GameParticipation list
 class GameParticipationList(generics.ListAPIView):
+    """
+    Todo: document.
+    """
     queryset = GameParticipation.objects.all()
     serializer_class = GameParticipationSerializer
 
 
-# GameDetail detail
 class GameParticipationDetail(generics.RetrieveAPIView):
+    """
+    Todo: document.
+    """
     queryset = GameParticipation.objects.all()
     serializer_class = GameParticipationSerializer
 
 
-# Team list
 class TeamList(generics.ListAPIView):
+    """
+    Todo: document.
+    """
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
 
 
-# Team detail
 class TeamDetail(generics.RetrieveAPIView):
+    """
+    Todo: document.
+    """
     queryset = Team.objects.all()
     serializer_class = TeamInsightSerializer
 
 
-# GameSchedule
 class GameSchedule(generics.ListAPIView):
+    """
+    Todo: document.
+    """
     serializer_class = GameSerializer
 
     def get_queryset(self):
@@ -145,37 +194,50 @@ class GameSchedule(generics.ListAPIView):
         return obj.get_games()
 
 
-# Referee list
 class RefereeList(generics.ListAPIView):
+    """
+    Todo: document.
+    """
     queryset = Referee.objects.all()
     serializer_class = RefereeSerializer
 
 
-# Referee detail
 class RefereeDetail(generics.RetrieveAPIView):
+    """
+    Todo: document.
+    """
     queryset = Referee.objects.all()
     serializer_class = VenueSerializer
 
 
-# Venue list
 class VenueList(generics.ListAPIView):
+    """
+    Todo: document.
+    """
     queryset = Venue.objects.all()
     serializer_class = VenueSerializer
 
 
-# Venue detail
 class VenueDetail(generics.RetrieveAPIView):
+    """
+    Todo: document.
+    """
     queryset = Venue.objects.all()
     serializer_class = VenueSerializer
 
 
-# Season list
 class SeasonList(generics.ListAPIView):
+    """
+    Todo: document.
+    """
     queryset = Season.objects.all()
     serializer_class = SeasonSerializer
 
 
 class NextGameByTeamId(generics.RetrieveAPIView):
+    """
+    Todo: document.
+    """
     queryset = Team.objects.all()
     serializer_class = GameSerializer
 

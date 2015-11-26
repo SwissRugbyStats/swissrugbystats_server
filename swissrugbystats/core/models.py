@@ -118,9 +118,19 @@ class Team(models.Model):
     Todo: document.
     """
     name = models.CharField(max_length=50)
-    logo = models.CharField(max_length=200, null=True, blank=True) # move to club class, once it exists
+    fsr_logo = models.CharField(max_length=200, null=True, blank=True) # move to club class, once it exists
+    custom_logo = models.ImageField(upload_to='logos/', blank=True, null=True, help_text='Custom team logo.')
     club = models.ForeignKey(Club, null=True)
     history = HistoricalRecords()
+
+    def get_logo(self):
+        """
+        :return: URL to the current team logo.
+        """
+        if self.custom_logo:
+            return self.custom_logo.path
+        else:
+            return self.fsr_logo
 
     def get_point_count(self):
         """
