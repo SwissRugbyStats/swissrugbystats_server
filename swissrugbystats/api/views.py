@@ -135,6 +135,9 @@ class CompetitionList(generics.ListAPIView):
     """
     queryset = Competition.objects.all()
     serializer_class = CompetitionSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['name']
+    ordering = ['name']
 
 
 class GameList(generics.ListAPIView):
@@ -177,6 +180,7 @@ class TeamList(generics.ListAPIView):
     serializer_class = TeamSerializer
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ['name']
+    ordering = ['name']
 
 
 class TeamDetail(generics.RetrieveAPIView):
@@ -215,6 +219,9 @@ class RefereeList(generics.ListAPIView):
     """
     queryset = Referee.objects.all()
     serializer_class = RefereeSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['name']
+    ordering = ['name']
 
 
 class RefereeDetail(generics.RetrieveAPIView):
@@ -231,6 +238,9 @@ class VenueList(generics.ListAPIView):
     """
     queryset = Venue.objects.all()
     serializer_class = VenueSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['name']
+    ordering = ['name']
 
 
 class VenueDetail(generics.RetrieveAPIView):
@@ -247,6 +257,9 @@ class SeasonList(generics.ListAPIView):
     """
     queryset = Season.objects.all()
     serializer_class = SeasonSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['name']
+    ordering = ['name']
 
 
 class NextGameByTeamId(generics.RetrieveAPIView):
