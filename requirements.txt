@@ -8,5 +8,6 @@ django-filter==0.11.0
 django-simple-history==1.6.3
 djangorestframework==3.2.3
 djangorestframework-jwt==1.7.2
+django-resized==0.3.5
 pytz==2015.4
 requests==2.7.0

@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 from django_admin_conf_vars.global_vars import config
 from django.db import models
 from django.db.models import Q
+from django_resized import ResizedImageField
 from datetime import datetime
 from swissrugbystats import settings
 from simple_history.models import HistoricalRecords
@@ -119,8 +120,8 @@ class Team(models.Model):
     """
     name = models.CharField(max_length=50)
     fsr_logo = models.CharField(max_length=200, null=True, blank=True) # move to club class, once it exists
-    custom_logo = models.ImageField(upload_to='logos/', blank=True, null=True, help_text='Custom team logo.')
-    club = models.ForeignKey(Club, null=True)
+    custom_logo = ResizedImageField(size=[500, 500], upload_to='logos/', blank=True, null=True, help_text='Custom team logo.')
+    club = models.ForeignKey(Club, null=True, blank=True)
     history = HistoricalRecords()
 
     def get_logo(self):
