@@ -6,7 +6,7 @@ from swissrugbystats.api import views
 urlpatterns = patterns('',
     url(r'^$', views.api_root),
     url(r'^leagues/?$', views.LeagueList.as_view(), name="leagues"),
-    url(r'^leagues/(?P<pk>[0-9]+)/?$', views.LeagueDetail.as_view()),
+    url(r'^leagues/(?P<pk>[0-9]+)/?$', views.LeagueDetail.as_view(), name='leagues_detail'),
 
     url(r'^games/?$', views.GameList.as_view(), name="games"),
     url(r'^games/(?P<pk>[0-9]+)/?$', views.GameDetail.as_view()),

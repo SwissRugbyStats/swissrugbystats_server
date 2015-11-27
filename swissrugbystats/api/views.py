@@ -18,30 +18,32 @@ def api_root(request, format=None):
     Feel free to use this API. I would love to see what you did with it.
     """
     return Response({
-        '/leagues': {
-            '/' : reverse('leagues', request=request, format=format),
-            '/{id}': 'league details'
+        reverse('leagues', request=request, format=format): {
+            reverse('leagues', request=request, format=format): 'list of all league objects',
+            "{}/<id>".format(reverse('leagues', request=request, format=format)): 'league details'
         },
-        '/games': {
-            '/': reverse('games', request=request, format=format),
-            '/{id}' : 'game details',
+        reverse('games', request=request, format=format): {
+            reverse('games', request=request, format=format): 'list of all games',
+            "{}/<id>".format(reverse('games', request=request, format=format)): 'game details',
         },
-        '/game-participations': {
-            '/' : reverse('game-participations', request=request, format=format),
-            '/{id}' : 'game-participations'
+        reverse('game-participations', request=request, format=format): {
+            reverse('game-participations', request=request, format=format): 'list of all game-participations',
+            "{}/<id>".format(reverse('game-participations', request=request, format=format)): 'game-participations detail',
         },
-        '/clubs': {
-            '/' : reverse('clubs', request=request, format=format),
-            '/{id}': 'club details'
+        reverse('clubs', request=request, format=format): {
+            reverse('clubs', request=request, format=format): 'list of all clubs',
+            "{}/<id>".format(reverse('clubs', request=request, format=format)): 'club detail',
         },
-        '/teams': {
-            '/': reverse('teams', request=request, format=format),
-            '/{id}': {
-                '/': 'team details',
-                'games': {
-                    '/next' : 'next game',
-                    '/last' : 'last game',
-                    '/season/{id}' : 'all games by season'
+
+        reverse('teams', request=request, format=format): {
+            reverse('teams', request=request, format=format): 'list of all teams',
+            "{}/<team-id>".format(reverse('teams', request=request, format=format)): {
+                "{}/<team-id>".format(reverse('teams', request=request, format=format)): 'team-details',
+                "{}/<team-id>/games".format(reverse('teams', request=request, format=format)): {
+                    "{}/<team-id>/games".format(reverse('teams', request=request, format=format)): 'all games by team-id',
+                    "{}/<team-id>/games/season/<season-id>".format(reverse('teams', request=request, format=format)): 'all games by team and season id',
+                    "{}/<team-id>/games/next".format(reverse('teams', request=request, format=format)): 'next game',
+                    "{}/<team-id>/games/last".format(reverse('teams', request=request, format=format)): 'last game',
                 }
             }
         },
