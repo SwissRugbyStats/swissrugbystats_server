@@ -54,6 +54,7 @@ class TeamSerializer(serializers.ModelSerializer):
     """
     Todo: document.
     """
+    logo = serializers.ImageField(source="get_logo", read_only=True)
 
     class Meta:
         model = Team
