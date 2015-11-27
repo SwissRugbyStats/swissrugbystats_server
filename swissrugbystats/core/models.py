@@ -129,7 +129,7 @@ class Team(models.Model):
         :return: URL to the current team logo.
         """
         if self.custom_logo:
-            return self.custom_logo
+            return self.custom_logo.url
         else:
             return self.fsr_logo
 

@@ -4,12 +4,13 @@ from rest_framework import generics, permissions
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from django_admin_conf_vars.models import ConfigurationVariable
 from django.shortcuts import get_object_or_404
 from django.core.mail import send_mail
 from swissrugbystats.api.http_errors import ResourceAlreadyExists
 from django.contrib.auth import get_user_model
 from rest_framework import status
-
+from rest_framework import filters
 
 @api_view(('GET',))
 def api_root(request, format=None):
@@ -18,24 +19,24 @@ def api_root(request, format=None):
     Feel free to use this API. I would love to see what you did with it.
     """
     return Response({
-        reverse('leagues', request=request, format=format): {
+        '/leagues': {
             reverse('leagues', request=request, format=format): 'list of all league objects',
             "{}/<id>".format(reverse('leagues', request=request, format=format)): 'league details'
         },
-        reverse('games', request=request, format=format): {
+        '/games': {
             reverse('games', request=request, format=format): 'list of all games',
             "{}/<id>".format(reverse('games', request=request, format=format)): 'game details',
         },
-        reverse('game-participations', request=request, format=format): {
+        '/game-participations': {
             reverse('game-participations', request=request, format=format): 'list of all game-participations',
             "{}/<id>".format(reverse('game-participations', request=request, format=format)): 'game-participations detail',
         },
-        reverse('clubs', request=request, format=format): {
+        '/clubs': {
             reverse('clubs', request=request, format=format): 'list of all clubs',
             "{}/<id>".format(reverse('clubs', request=request, format=format)): 'club detail',
         },
-
-        reverse('teams', request=request, format=format): {
+        '/config': 'list of all config',
+        '/teams': {
             reverse('teams', request=request, format=format): 'list of all teams',
             "{}/<team-id>".format(reverse('teams', request=request, format=format)): {
                 "{}/<team-id>".format(reverse('teams', request=request, format=format)): 'team-details',
@@ -67,6 +68,15 @@ def api_root(request, format=None):
             '/': reverse('competitions', request=request, format=format),
         }
     })
+
+class ConfigurationVariableList(generics.ListCreateAPIView):
+    """
+    Get a list of all configuration variables.
+    Only visible to authenticated users.
+    """
+
+    queryset = ConfigurationVariable.objects.all()
+    serializer_class = ConfigurationVariableSerializer
 
 
 class LeagueList(generics.ListAPIView):
@@ -164,6 +174,8 @@ class TeamList(generics.ListAPIView):
     """
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['name']
 
 
 class TeamDetail(generics.RetrieveAPIView):

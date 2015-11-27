@@ -1,8 +1,18 @@
 from rest_framework import serializers
 from swissrugbystats.coach.models import Player
 from swissrugbystats.core.models import Club, Competition, League, Team, Game, GameParticipation, Referee, Venue, Season, Favorite
+from django_admin_conf_vars.models import ConfigurationVariable
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
+
+
+class ConfigurationVariableSerializer(serializers.ModelSerializer):
+    """
+    Todo: write doc.
+    """
+
+    class Meta:
+        model = ConfigurationVariable
 
 
 class PlayerSerializer(serializers.ModelSerializer):
@@ -54,7 +64,6 @@ class TeamSerializer(serializers.ModelSerializer):
     """
     Todo: document.
     """
-    logo = serializers.ImageField(source="get_logo", read_only=True)
 
     class Meta:
         model = Team
