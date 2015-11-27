@@ -86,6 +86,9 @@ class LeagueList(generics.ListAPIView):
     """
     queryset = League.objects.all()
     serializer_class = LeagueSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['name']
+    ordering = ['name']
 
 
 # League detail
@@ -103,6 +106,9 @@ class ClubList(generics.ListAPIView):
     """
     queryset = Club.objects.all()
     serializer_class = ClubSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['name']
+    ordering = ['name']
 
 
 class ClubDetail(generics.RetrieveAPIView):
@@ -119,6 +125,9 @@ class PlayerList(generics.ListAPIView):
     """
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['last_name','first_name']
+    ordering = ['last_name', 'first_name']
 
 
 class PlayerDetail(generics.RetrieveAPIView):
