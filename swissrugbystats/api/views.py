@@ -69,7 +69,8 @@ def api_root(request, format=None):
         }
     })
 
-class ConfigurationVariableList(generics.ListCreateAPIView):
+
+class ConfigurationVariableList(generics.ListAPIView):
     """
     Get a list of all configuration variables.
     Only visible to authenticated users.

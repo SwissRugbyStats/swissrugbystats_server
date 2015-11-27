@@ -54,6 +54,7 @@ INSTALLED_APPS = (
     'swissrugbystats.coach',
     'swissrugbystats.crawler',
     'simple_history',
+    'crispy_forms'
 )
 
 MIDDLEWARE_CLASSES = (
