@@ -126,7 +126,7 @@ class PlayerList(generics.ListAPIView):
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
     filter_backends = [filters.OrderingFilter]
-    ordering_fields = ['last_name','first_name']
+    ordering_fields = ['last_name', 'first_name']
     ordering = ['last_name', 'first_name']
 
 
