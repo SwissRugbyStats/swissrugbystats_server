@@ -14,7 +14,7 @@ class Association(models.Model):
     """
     name = models.CharField(max_length=255, null=True, blank=True)
     abbreviation = models.CharField(max_length=10, null=False, unique=True)
-    parent_association = models.ForeignKey('Association', verbose_name="Parent Association", related_name="child_associations", null=True, blank=True)
+    parent_association = models.ForeignKey('self', verbose_name="Parent Association", related_name="child_associations", null=True, blank=True)
     history = HistoricalRecords()
 
     def __unicode__(self):
@@ -119,7 +119,7 @@ class Team(models.Model):
     Todo: document.
     """
     name = models.CharField(max_length=50)
-    fsr_logo = models.CharField(max_length=200, null=True, blank=True) # move to club class, once it exists
+    fsr_logo = models.CharField(max_length=200, null=True, blank=True)
     custom_logo = ResizedImageField(size=[500, 500], upload_to='logos/', blank=True, null=True, help_text='Custom team logo.')
     club = models.ForeignKey(Club, null=True, blank=True)
     history = HistoricalRecords()

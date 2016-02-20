@@ -67,6 +67,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
+    'simple_history.middleware.CurrentUserMiddleware',
 )
 
 ROOT_URLCONF = 'swissrugbystats.urls'
@@ -144,9 +145,10 @@ JWT_AUTH = {
 #AUTH_USER_MODEL = 'swissrugby.MyUser'
 AUTH_USER_MODEL = 'auth.User'
 
-VARS_MODULE_PATH = 'swissrugbystats.my_conf_vars'
-
 # Django Resized
 DJANGORESIZED_DEFAULT_SIZE = [1920, 1080]
 DJANGORESIZED_DEFAULT_QUALITY = 75
 DJANGORESIZED_DEFAULT_KEEP_META = True
+
+# comment out following line for initial db migration
+VARS_MODULE_PATH = 'swissrugbystats.my_conf_vars'
