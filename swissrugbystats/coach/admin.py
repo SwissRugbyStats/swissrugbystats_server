@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.contrib import admin
 from swissrugbystats.coach.models import TrophyType, Trophy, Position, LineUp, LineUpPosition, Card, CardType, Point, PointType, Player
 from simple_history.admin import SimpleHistoryAdmin

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.contrib import admin
 from swissrugbystats.core.models import Association, Club, Competition, Team, Game, League, Venue, Referee, GameParticipation, Season, Favorite
 from simple_history.admin import SimpleHistoryAdmin
