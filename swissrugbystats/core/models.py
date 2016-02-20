@@ -33,7 +33,7 @@ class Club(models.Model):
     history = HistoricalRecords()
 
     def get_associations(self):
-        return u", ".join([str(a) for a in self.associations.all()])
+        return u", ".join([unicode(a) for a in self.associations.all()])
 
     def __unicode__(self):
         return self.name

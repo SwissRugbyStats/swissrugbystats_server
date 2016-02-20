@@ -32,7 +32,7 @@ class Player(models.Model):
     weight = models.IntegerField(null=True, blank=True, help_text='Current weight of the player.')
 
     def get_full_name(self):
-        return self.first_name + " " + self.last_name
+        return u"{} {}".format(self.first_name, self.last_name)
 
     def __unicode__(self):
         return self.get_full_name()

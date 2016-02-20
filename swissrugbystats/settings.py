@@ -67,7 +67,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
-    'simple_history.middleware.CurrentUserMiddleware',
 )
 
 ROOT_URLCONF = 'swissrugbystats.urls'
