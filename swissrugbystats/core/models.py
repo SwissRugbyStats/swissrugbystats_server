@@ -19,7 +19,7 @@ class Association(models.Model):
     history = HistoricalRecords()
 
     def __unicode__(self):
-        return "{} ({})".format(self.name, self.abbreviation)
+        return u"{} ({})".format(self.name, self.abbreviation)
 
 
 class Club(models.Model):
@@ -33,7 +33,7 @@ class Club(models.Model):
     history = HistoricalRecords()
 
     def get_associations(self):
-        return ", ".join([str(a) for a in self.associations.all()])
+        return u", ".join([str(a) for a in self.associations.all()])
 
     def __unicode__(self):
         return self.name
@@ -49,22 +49,22 @@ class League(models.Model):
     history = HistoricalRecords()
 
     def get_league_url(self):
-        return "{}{}{}".format(config.COMPETITIONS_BASE_URL, self.shortcode, config.LEAGUE_URL_ENDING)
+        return u"{}{}{}".format(config.COMPETITIONS_BASE_URL, self.shortcode, config.LEAGUE_URL_ENDING)
 
     def get_fixtures_url(self):
-            return "{}{}{}".format(config.COMPETITIONS_BASE_URL, self.shortcode, config.FIXTURES_URL_ENDING)
+            return u"{}{}{}".format(config.COMPETITIONS_BASE_URL, self.shortcode, config.FIXTURES_URL_ENDING)
 
     def get_results_url(self):
-            return "{}{}{}".format(config.COMPETITIONS_BASE_URL, self.shortcode, config.RESULTS_URL_ENDING)
+            return u"{}{}{}".format(config.COMPETITIONS_BASE_URL, self.shortcode, config.RESULTS_URL_ENDING)
 
     def get_archive_league_url(self, season_slug):
-        return "{}{}/{}{}".format(config.ARCHIVE_BASE_URL, season_slug, self.shortcode, config.LEAGUE_URL_ENDING)
+        return u"{}{}/{}{}".format(config.ARCHIVE_BASE_URL, season_slug, self.shortcode, config.LEAGUE_URL_ENDING)
 
     def get_archive_fixtures_url(self, season_slug):
-        return "{}{}/{}{}".format(config.ARCHIVE_BASE_URL, season_slug, self.shortcode, config.FIXTURES_URL_ENDING)
+        return u"{}{}/{}{}".format(config.ARCHIVE_BASE_URL, season_slug, self.shortcode, config.FIXTURES_URL_ENDING)
 
     def get_archive_results_url(self, season_slug):
-        return "{}{}/{}{}".format(config.ARCHIVE_BASE_URL, season_slug, self.shortcode, config.RESULTS_URL_ENDING)
+        return u"{}{}/{}{}".format(config.ARCHIVE_BASE_URL, season_slug, self.shortcode, config.RESULTS_URL_ENDING)
 
     def __unicode__(self):
         return self.name
@@ -112,7 +112,7 @@ class Competition(models.Model):
             return self.league.get_archive_results_url(self.season.fsr_url_slug)
 
     def __unicode__(self):
-        return "{} ({})".format(self.league, self.season)
+        return u"{} ({})".format(self.league, self.season)
 
 
 class Team(models.Model):
@@ -334,7 +334,7 @@ class GameParticipation(models.Model):
         else:
             game = self.guestTeam_set.all().first()
 
-        return "{}: {}".format(game.competition.league.__str__(), game.__str__())
+        return u"{}: {}".format(game.competition.league.__str__(), game.__str__())
 
     def __unicode__(self):
         return self.team.name + " " + str(self.score) + " (" + str(self.tries) + "/" + str(self.redCards) + "/" + str(self.points) + ")"

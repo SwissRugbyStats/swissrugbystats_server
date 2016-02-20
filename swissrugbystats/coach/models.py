@@ -57,7 +57,7 @@ class Trophy(models.Model):
     player = models.ForeignKey(Player, help_text='')
 
     def __unicode__(self):
-        return "{} in {} is {}".format(self.trophy_type, self.game, self.player)
+        return u"{} in {} is {}".format(self.trophy_type, self.game, self.player)
 
 
 class LineUp(models.Model):
@@ -79,7 +79,7 @@ class LineUpPosition(models.Model):
     lineup = models.ForeignKey(LineUp, help_text='')
 
     def __unicode__(self):
-        return "{}: {}".format(self.position_number, self.player)
+        return u"{}: {}".format(self.position_number, self.player)
 
 
 class Substitution(models.Model):
@@ -99,7 +99,7 @@ class PointType(models.Model):
     value = models.IntegerField(help_text='Numeric value of the point type (i.e. 5 for a try, 3 for a penalty)')
 
     def __unicode__(self):
-        return "{} ({} points)".format(self.name, self.value)
+        return u"{} ({} points)".format(self.name, self.value)
 
 
 class Point(models.Model):
@@ -135,4 +135,4 @@ class Card(models.Model):
     notes = models.CharField(max_length=255, null=True, blank=True, help_text='Additional notes regarding the card, i.e. "High Tackle" or similar.')
 
     def __unicode__(self):
-        return "{} ({}) in {}".format(self.cardType.name, self.player.get_full_name(), self.game)
+        return u"{} ({}) in {}".format(self.cardType.name, self.player.get_full_name(), self.game)
