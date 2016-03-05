@@ -41,6 +41,7 @@ ALLOWED_HOSTS = ['api.swissrugbystats.ch']
 # Application definition
 
 INSTALLED_APPS = (
+    'suit',
     'django_admin_conf_vars',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -67,6 +68,12 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
+)
+
+from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
+
+TEMPLATE_CONTEXT_PROCESSORS = TCP + (
+    'django.core.context_processors.request',
 )
 
 ROOT_URLCONF = 'swissrugbystats.urls'

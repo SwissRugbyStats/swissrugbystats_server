@@ -28,7 +28,16 @@ class Club(models.Model):
     """
     name = models.CharField(max_length=255, null=False)
     abbreviation = models.CharField(max_length=10, null=False)
-    website = models.CharField(max_length=255, null=True, blank=True)
+    logo = ResizedImageField(size=[500, 500], upload_to='logos/', blank=True, null=True, verbose_name='Club logo')
+    description = models.TextField(null=True, blank=True, verbose_name='Description', help_text='Tell us something about your club.')
+
+    email = models.CharField(max_length=255, null=True, blank=True, verbose_name='Main E-mail')
+    website = models.CharField(max_length=255, null=True, blank=True, verbose_name='Website')
+    facebook = models.CharField(max_length=255, null=True, blank=True, verbose_name='Facebook')
+    twitter = models.CharField(max_length=255, null=True, blank=True, verbose_name='Twitter')
+    instagram = models.CharField(max_length=255, null=True, blank=True, verbose_name='Instagram')
+    google_plus = models.CharField(max_length=255, null=True, blank=True, verbose_name='Google+')
+
     associations = models.ManyToManyField(Association, related_name="clubs", blank=True)
     history = HistoricalRecords()
 
@@ -122,6 +131,7 @@ class Team(models.Model):
     name = models.CharField(max_length=50)
     fsr_logo = models.CharField(max_length=200, null=True, blank=True)
     custom_logo = ResizedImageField(size=[500, 500], upload_to='logos/', blank=True, null=True, help_text='Custom team logo.')
+    current_competition = models.ForeignKey(Competition, null=True, blank=True, verbose_name='Aktueller Wettbewerb')
     club = models.ForeignKey(Club, null=True, blank=True)
     history = HistoricalRecords()
 
