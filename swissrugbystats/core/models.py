@@ -144,7 +144,7 @@ class Team(models.Model):
         else:
             if self.club:
                 if self.club.logo:
-                    return self.club.logo
+                    return self.club.logo.url
         
         return self.fsr_logo
 
