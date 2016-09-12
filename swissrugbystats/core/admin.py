@@ -6,8 +6,8 @@ from simple_history.admin import SimpleHistoryAdmin
 # custom AdminModels
 
 class TeamAdmin(SimpleHistoryAdmin):
-    list_display = ('__str__', 'club__name', 'current_competition')
-    search_fields = ['name', 'club']
+    list_display = ('__str__', 'club', 'current_competition')
+    search_fields = ['name', 'club__name']
     list_filter = ['club', 'current_competition']
 
 class ClubAdmin(SimpleHistoryAdmin):
@@ -23,7 +23,7 @@ class CompetitionAdmin(SimpleHistoryAdmin):
 
 class GameAdmin(SimpleHistoryAdmin):
     list_display = ('__str__', 'competition', 'venue')
-    search_fields = ['host__team', 'guest__team', 'venue__name']
+    search_fields = ['host__team', 'guest__team__name', 'venue__name']
     list_filter = ['date', 'competition', 'competition__season', 'competition__league']
 
 
