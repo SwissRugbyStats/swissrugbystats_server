@@ -6,7 +6,7 @@ from simple_history.admin import SimpleHistoryAdmin
 # custom AdminModels
 
 class TeamAdmin(SimpleHistoryAdmin):
-    list_display = ('__str__', 'club', 'current_competition')
+    list_display = ('__str__', 'club__name', 'current_competition')
     search_fields = ['name', 'club']
     list_filter = ['club', 'current_competition']
 
@@ -23,7 +23,7 @@ class CompetitionAdmin(SimpleHistoryAdmin):
 
 class GameAdmin(SimpleHistoryAdmin):
     list_display = ('__str__', 'competition', 'venue')
-    search_fields = ['host__team', 'guest__team', 'venue']
+    search_fields = ['host__team', 'guest__team', 'venue__name']
     list_filter = ['date', 'competition', 'competition__season', 'competition__league']
 
 
@@ -34,7 +34,7 @@ class GameParticipationAdmin(SimpleHistoryAdmin):
 
 class FavoriteAdmin(SimpleHistoryAdmin):
     list_display = ['user', 'team']
-    search_fields = ['user', 'team']
+    search_fields = ['user', 'team__name']
 
 
 class LeagueAdmin(SimpleHistoryAdmin):
