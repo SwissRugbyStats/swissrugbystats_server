@@ -142,7 +142,11 @@ class Team(models.Model):
         if self.custom_logo:
             return self.custom_logo.url
         else:
-            return self.fsr_logo
+            if self.club:
+                if self.club.logo:
+                    return self.club.logo
+        
+        return self.fsr_logo
 
     def get_point_count(self):
         """
