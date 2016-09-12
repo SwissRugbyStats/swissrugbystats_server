@@ -20,6 +20,3 @@ swissrugbystats/static
 # ignore MEDIA_ROOT folder
 swissrugbystats/media
 
-# ignore all migrations
-migrations/
-*/migrations/*
