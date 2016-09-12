@@ -136,6 +136,7 @@ class TeamInsightSerializer(serializers.ModelSerializer):
     lossCount = serializers.ReadOnlyField(source='get_loss_count')
     nextGame = GameSerializer(source='get_next_game')
     lastGame = GameSerializer(source='get_last_game')
+    logo = serializers.ReadOnlyField(source='get_logo')
 
     class Meta:
         model = Team
