@@ -78,4 +78,5 @@ def update_statistics(log_to_db=True):
     teams = Team.objects.all()
 
     for t in teams:
+        print("update {}".format(t.name))
         t.update_statistics()

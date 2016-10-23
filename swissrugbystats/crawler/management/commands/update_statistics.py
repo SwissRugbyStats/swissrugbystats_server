@@ -14,4 +14,4 @@ class Command(BaseCommand):
     help = 'Update the team statistics.'
 
     def handle(self, *args, **options):
-        tasks.update_statistics(**args)
+        tasks.update_statistics()
