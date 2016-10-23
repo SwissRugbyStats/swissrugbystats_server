@@ -13,7 +13,7 @@ import os
 from datetime import timedelta
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 PROJECT_DIR = os.path.join(BASE_DIR, 'swissrugbystats')
-BASE_URL = "http://api.swissrugbstats.ch"
+BASE_URL = "http://api.swissrugbystats.ch"
 
 # Import email settings in the form of
 '''
