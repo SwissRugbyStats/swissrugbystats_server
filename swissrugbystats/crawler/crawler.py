@@ -52,17 +52,9 @@ class SRSCrawler(object):
         print("crawl {}".format(url[1]))
         try:
             r = requests.get(url[1], headers=self.headers)
-            print("r")
-            print(r)
-            try:
-                soup = BeautifulSoup(r.text)
-            except Exception as e:
-                print e
             soup = BeautifulSoup(r.text)
-            print("soup")
             # find all tables of the rugbymanager plugin, to be sure to get all the information
             tables = soup.findAll('table', attrs={'class': 'table'})
-            print("tables")
 
             for table in tables:
                 for row in table.findAll('tr'):
@@ -78,21 +70,21 @@ class SRSCrawler(object):
                                     t = Team(name=team)
                                     t.save()
                                     count += 1
-                                    print ("Team {0} created".format(str(t)))
+                                    print (u"Team {0} created".format(str(t)))
                                 else:
-                                    print ("Team {0} already in DB".format(str(Team.objects.filter(name=team).first())))
+                                    print (u"Team {0} already in DB".format(str(Team.objects.filter(name=team).first())))
                             else:
-                                print ("Less than 5 columns, must be finals table or similar. --> ignore")
+                                print (u"Less than 5 columns, must be finals table or similar. --> ignore")
                     except Exception as e:
                         CrawlerLogMessage.objects.create(
                             message_type=CrawlerLogMessage.ERROR,
-                            message="crawl_teams_per_league, {}".format(e.__str__())
+                            message=u"crawl_teams_per_league, {}".format(e.__str__())
                         )
         except Exception as e:
-            print("exception {}")
+            print(u"exception {}")
             CrawlerLogMessage.objects.create(
                 message_type=CrawlerLogMessage.ERROR,
-                message="crawl_teams_per_league, {}".format(e.__str__())
+                message=u"crawl_teams_per_league, {}".format(e.__str__())
             )
         return count
 
@@ -119,7 +111,7 @@ class SRSCrawler(object):
             r = requests.get(url[1], headers=self.headers)
             soup = BeautifulSoup(r.text)
             tables = soup.findAll('table', attrs={'class': 'table'})
-            print str(len(tables)) + " tables found."
+            print(u"{} tables found.".format(len(tables)))
             competition = Competition.objects.get(id=url[2])
 
             for table in tables:
@@ -134,17 +126,17 @@ class SRSCrawler(object):
 
                             host = Team.objects.filter(name=teams2[0].strip())
                             if not host:
-                                logging.error("Hostteam not found: "+teams2[0].strip())
+                                logging.error(u"Hostteam not found: {}".format(teams2[0].strip()))
                                 logging.error(row)
-                                print "Hostteam not found: "+teams2[0].strip()
+                                print u"Hostteam not found: {}".format(teams2[0].strip())
                                 continue
                             else:
                                 host = host[0]
                             guest = Team.objects.filter(name=teams2[1].strip())
                             if not guest:
-                                logging.error("Guestteam not found: "+teams2[1].strip())
+                                logging.error(u"Guestteam not found: {}".format(teams2[1].strip()))
                                 logging.error(row)
-                                print "Guestteam not found: "+teams2[1].strip()
+                                print u"Guestteam not found: {}".format(teams2[1].strip())
                                 continue
                             else:
                                 guest = guest[0]
@@ -186,7 +178,7 @@ class SRSCrawler(object):
                             if not Venue.objects.filter(name=venueName):
                                 venue = Venue()
                                 venue.name = venueName
-                                print("Venue " + venueName + " created")
+                                print(u"Venue {} created".format(venueName))
                             else:
                                 venue = Venue.objects.filter(name=venueName)[0]
 
@@ -209,7 +201,7 @@ class SRSCrawler(object):
                                 if not Referee.objects.filter(name=refName):
                                     referee = Referee()
                                     referee.name = refName
-                                    print("Referee " + refName + " created")
+                                    print(u"Referee {} created".format(refName))
                                 else:
                                     referee = Referee.objects.filter(name=refName)[0]
                                 referee.save()
@@ -229,7 +221,7 @@ class SRSCrawler(object):
 
                             game.save()
 
-                            print "GameResult " + str(Game.objects.get(id=game.id)) + " created / updated"
+                            print u"GameResult {} created / updated".format(Game.objects.get(id=game.id))
 
                             # increment game counter
                             count += 1
@@ -246,15 +238,15 @@ class SRSCrawler(object):
                     current = pagination.find('span', attrs={'class': 'current'})
                     print(current.find(text=True))
                     if current and int(current.find(text=True)) == 1:
-                        print("Follow pagination, {} pages.".format(len(pagination)))
+                        print(u"Follow pagination, {} pages.".format(len(pagination)))
                         for page in pagination.findAll('a', attrs={'class': 'inactive'}):
-                            print("Page: {}, Current: {}".format(int(page.find(text=True)), int(current.find(text=True))))
+                            print(u"Page: {}, Current: {}".format(int(page.find(text=True)), int(current.find(text=True))))
                             if int(page.find(text=True)) > int(current.find(text=True)):
                                 nextUrl = [(competition.league.shortcode, page['href'], competition.id)]
                                 if async:
                                     self.crawl_results_async(nextUrl)
                                 else:
-                                    print("visit".format(nextUrl))
+                                    print(u"visit {}".format(nextUrl))
                                     count += self.crawl_results(nextUrl)
 
         except Exception as e:
@@ -298,17 +290,17 @@ class SRSCrawler(object):
 
                         host = Team.objects.filter(name=teams2[0].strip())
                         if not host:
-                            logging.error("Hostteam not found: "+teams2[0].strip())
+                            logging.error(u"Hostteam not found: ".format(teams2[0].strip()))
                             logging.error(row)
-                            print "Hostteam not found: "+teams2[0].strip()
+                            print u"Hostteam not found: ".format(teams2[0].strip())
                             continue
                         else:
                             host = host[0]
                         guest = Team.objects.filter(name=teams2[1].strip())
                         if not guest:
-                            logging.error("Guestteam not found: "+teams2[1].strip())
+                            logging.error(u"Guestteam not found: ".format(teams2[1].strip()))
                             logging.error(row)
-                            print "Guestteam not found: "+teams2[1].strip()
+                            print u"Guestteam not found: ".format(teams2[1].strip())
                             continue
                         else:
                             guest = guest[0]
@@ -367,7 +359,7 @@ class SRSCrawler(object):
 
                         game.save()
 
-                        print "GameFixture " + str(Game.objects.get(id=game.id)) + " created / updated"
+                        print u"GameFixture {} created / updated".format(Game.objects.get(id=game.id))
 
                         # increment game counter
                         count += 1
@@ -383,7 +375,7 @@ class SRSCrawler(object):
                 if pagination:
                     current = pagination.find('span', attrs={'class': 'current'})
                     if current and int(current.find(text=True)) == 1:
-                        print("Follow pagination, {} pages.".format(len(pagination)))
+                        print(u"Follow pagination, {} pages.".format(len(pagination)))
                         for page in pagination.findAll('a', attrs={'class': 'inactive'}):
                             if int(page.find(text=True)) > current:
                                 nextUrl = [(competition.league.shortcode, page['href'], competition.id)]

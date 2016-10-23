@@ -21,7 +21,7 @@ def update_all(deep_crawl=True, season=config.CURRENT_SEASON, log_to_db=True):
 
     if log_to_db:
         CrawlerLogMessage.objects.create(
-            message="Update started for season {}. Deep crawl = {}.".format(current_season, deep_crawl),
+            message=u"Update started for season {}. Deep crawl = {}.".format(current_season, deep_crawl),
         )
 
     # get current timestamp to calculate time needed for script exec
@@ -30,7 +30,7 @@ def update_all(deep_crawl=True, season=config.CURRENT_SEASON, log_to_db=True):
     print "------------------------------------------------------------------"
     print ""
 
-    print "Getting data from suisserugby.com for season {}".format(Season.objects.filter(id=season).first())
+    print u"Getting data from suisserugby.com for season {}".format(Season.objects.filter(id=season).first())
     if deep_crawl:
         print "    deep_crawl = True - following pagination"
     else:
@@ -48,7 +48,7 @@ def update_all(deep_crawl=True, season=config.CURRENT_SEASON, log_to_db=True):
     teams_count = crawler.crawl_teams([(c.league.shortcode, c.get_league_url(), c.id) for c in Competition.objects.filter(season=current_season)])
 
     # update game table with fixtures
-    print("current season:" + config.CURRENT_SEASON)
+    print(u"current season:" + config.CURRENT_SEASON)
     fixtures_count = crawler.crawl_fixtures([(c.league.shortcode, c.get_fixtures_url(), c.id) for c in Competition.objects.filter(season=current_season)], deep_crawl)
 
     # update game table with results
@@ -67,7 +67,7 @@ def update_all(deep_crawl=True, season=config.CURRENT_SEASON, log_to_db=True):
 
     if log_to_db:
         CrawlerLogMessage.objects.create(
-            message="Crawling completed.\n{0} teams crawled\n{1} results crawled\n{2} fixtures crawled\nTime needed: {3}".format(teams_count, result_count, fixtures_count, (datetime.datetime.now() - start_time))
+            message=u"Crawling completed.\n{0} teams crawled\n{1} results crawled\n{2} fixtures crawled\nTime needed: {3}".format(teams_count, result_count, fixtures_count, (datetime.datetime.now() - start_time))
         )
 
 def update_statistics(log_to_db=True):
@@ -78,9 +78,22 @@ def update_statistics(log_to_db=True):
     """
     teams = Team.objects.all()
 
+    if log_to_db:
+        CrawlerLogMessage.objects.create(
+            message="Statistics update started."
+        )
+
+    # get current timestamp to calculate time needed for script exec
+    start_time = datetime.datetime.now()
+
     for t in teams:
         try:
             print(u"update {}".format(t.name))
             t.update_statistics()
         except Exception as e:
-            print("Exception! {}".format(e))
+            print(u"Exception! {}".format(e))
+
+    if log_to_db:
+        CrawlerLogMessage.objects.create(
+            message=u"Statistics update complete.\n{0} team statistics updated\nTime needed: {1}".format(teams.count(),(datetime.datetime.now() - start_time))
+        )
