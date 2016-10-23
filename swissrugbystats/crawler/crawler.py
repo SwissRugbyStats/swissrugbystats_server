@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from BeautifulSoup import BeautifulSoup
 from datetime import datetime
 from django.utils import timezone
@@ -51,9 +52,17 @@ class SRSCrawler(object):
         print("crawl {}".format(url[1]))
         try:
             r = requests.get(url[1], headers=self.headers)
+            print("r")
+            print(r)
+            try:
+                soup = BeautifulSoup(r.text)
+            except Exception as e:
+                print e
             soup = BeautifulSoup(r.text)
+            print("soup")
             # find all tables of the rugbymanager plugin, to be sure to get all the information
             tables = soup.findAll('table', attrs={'class': 'table'})
+            print("tables")
 
             for table in tables:
                 for row in table.findAll('tr'):
@@ -80,6 +89,7 @@ class SRSCrawler(object):
                             message="crawl_teams_per_league, {}".format(e.__str__())
                         )
         except Exception as e:
+            print("exception {}")
             CrawlerLogMessage.objects.create(
                 message_type=CrawlerLogMessage.ERROR,
                 message="crawl_teams_per_league, {}".format(e.__str__())

@@ -1,6 +1,7 @@
 .idea/
 settings_email.py
 env/
+win_env/
 *.pyc
 *.pyo
 *.sqlite3

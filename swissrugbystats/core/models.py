@@ -133,6 +133,15 @@ class Team(models.Model):
     custom_logo = ResizedImageField(size=[500, 500], upload_to='logos/', blank=True, null=True, help_text='Custom team logo.')
     current_competition = models.ForeignKey(Competition, null=True, blank=True, verbose_name='Aktueller Wettbewerb')
     club = models.ForeignKey(Club, null=True, blank=True)
+
+    point_count = models.IntegerField(blank=True, null=True)
+    card_count = models.IntegerField(blank=True, null=True)
+    try_count = models.IntegerField(blank=True, null=True)
+    win_count = models.IntegerField(blank=True, null=True)
+    draw_count = models.IntegerField(blank=True, null=True)
+    loss_count = models.IntegerField(blank=True, null=True)
+    game_count = models.IntegerField(blank=True, null=True)
+
     history = HistoricalRecords()
 
     def get_logo(self):
@@ -147,6 +156,20 @@ class Team(models.Model):
                     return self.club.logo.url
         
         return self.fsr_logo
+
+    def update_statistics(self):
+        """
+        Update all the statistics
+        :return:
+        """
+        self.point_count = self.get_point_count()
+        self.card_count = self.get_card_count()
+        self.try_count = self.get_try_count()
+        self.win_count = self.get_win_count()
+        self.draw_count = self.get_draw_count()
+        self.loss_count = self.get_loss_count()
+        self.game_count = self.get_game_count()
+
 
     def get_point_count(self):
         """

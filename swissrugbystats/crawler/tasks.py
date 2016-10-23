@@ -3,7 +3,7 @@ from django_admin_conf_vars.global_vars import config
 import logging
 from swissrugbystats.crawler.crawler import SRSCrawler, SRSAsyncCrawler
 from swissrugbystats.crawler.models import CrawlerLogMessage
-from swissrugbystats.core.models import Competition, Season
+from swissrugbystats.core.models import Competition, Season, Team
 
 # create logger
 logging.basicConfig(filename='crawler.log', level=logging.INFO, format='%(asctime)s- %(message)s', datefmt='%d.%m.%Y %I:%M:%S ')
@@ -68,3 +68,14 @@ def update_all(deep_crawl=True, season=config.CURRENT_SEASON, log_to_db=True):
         CrawlerLogMessage.objects.create(
             message="Crawling completed.\n{0} teams crawled\n{1} results crawled\n{2} fixtures crawled\nTime needed: {3}".format(teams_count, result_count, fixtures_count, (datetime.datetime.now() - start_time))
         )
+
+def update_statistics(log_to_db=True):
+    """
+
+    :param log_to_db:
+    :return:
+    """
+    teams = Team.objects.all()
+
+    for t in teams:
+        t.update_statistics()
