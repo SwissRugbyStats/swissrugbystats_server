@@ -11,6 +11,7 @@ win_env/
 celerybeat-schedule
 .swp
 *~
+**.log
 
 # custom rules
 RUN

@@ -169,6 +169,7 @@ class Team(models.Model):
         self.draw_count = self.get_draw_count()
         self.loss_count = self.get_loss_count()
         self.game_count = self.get_game_count()
+        self.save()
 
 
     def get_point_count(self):

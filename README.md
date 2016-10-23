@@ -42,6 +42,9 @@ without logging:
 
     python manage.py crawl_and_update > /dev/null 2> /dev/null &
 
+### update team statistics
+
+    python manage.py update_statistics
 
 ### export packages to requirements.txt
 
@@ -64,6 +67,7 @@ Create a script that runs your crawler, i.e. named update_srs.sh with the follow
     cd $srsdir
     source env/bin/activate
     python manage.py crawl_and_update > /path/to/your/script/update_srs.log 2> /path/to/your/script/update_srs_err.log
+    python manage.py update_statistics
 
 
 Open your crontab for editing with `crontab -e` and add the following lines:
