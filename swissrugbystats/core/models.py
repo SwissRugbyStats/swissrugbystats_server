@@ -373,7 +373,10 @@ class GameParticipation(models.Model):
         else:
             game = self.guestTeam_set.all().first()
 
-        return u"{}: {}".format(game.competition.league.__str__(), game.__str__())
+        if game:
+            return u"{}: {}".format(game.competition.league.__str__(), game.__str__())
+        else:
+            return u"Error getting game"
 
     def __unicode__(self):
         return self.team.name + " " + str(self.score) + " (" + str(self.tries) + "/" + str(self.redCards) + "/" + str(self.points) + ")"
