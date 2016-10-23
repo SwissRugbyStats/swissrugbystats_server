@@ -79,5 +79,8 @@ def update_statistics(log_to_db=True):
     teams = Team.objects.all()
 
     for t in teams:
-        print(u"update {}".format(t.name))
-        t.update_statistics()
+        try:
+            print(u"update {}".format(t.name))
+            t.update_statistics()
+        except Exception as e:
+            print("Exception! {}".format(e))
