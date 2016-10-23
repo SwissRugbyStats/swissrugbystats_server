@@ -185,7 +185,11 @@ class SRSCrawler(object):
                             scoreRow = 4
                             if rows[4].findAll('td')[1].find(text=True).strip() == "Forfait":
                                 scoreRow += 1
-                                #TODO: save forfait in db
+                                # save forfait in db
+                                if rows[4].findAll('td')[0].find(text=True).strip() != "":
+                                    hostParticipant.forfait = True
+                                elif rows[4].findAll('td')[2].find(text=True).strip() != "":
+                                    guestParticipant.forfait = True
 
                             hostParticipant.score = int(rows[scoreRow].findAll('td')[0].find(text=True))          # score host
                             guestParticipant.score = int(rows[scoreRow].findAll('td')[2].find(text=True))         # score guest

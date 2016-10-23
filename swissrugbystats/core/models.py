@@ -364,6 +364,7 @@ class GameParticipation(models.Model):
     tries = models.IntegerField(verbose_name="Tries", blank=True, null=True)
     redCards = models.IntegerField(verbose_name="Red Cards", blank=True, null=True)
     points = models.IntegerField(verbose_name="Points", blank=True, null=True)
+    forfait = models.BooleanField(default=False)
     history = HistoricalRecords()
 
     def get_game(self):

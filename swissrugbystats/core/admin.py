@@ -29,7 +29,7 @@ class GameAdmin(SimpleHistoryAdmin):
 
 class GameParticipationAdmin(SimpleHistoryAdmin):
     list_display = ['__str__', 'get_game']
-    list_filter = ['team', 'hostTeam_set__competition', 'guestTeam_set__competition']
+    list_filter = ['team', 'forfait', 'hostTeam_set__competition', 'guestTeam_set__competition']
 
 
 class FavoriteAdmin(SimpleHistoryAdmin):
