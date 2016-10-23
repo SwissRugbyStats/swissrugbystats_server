@@ -28,7 +28,7 @@ class GameAdmin(SimpleHistoryAdmin):
 
 
 class GameParticipationAdmin(SimpleHistoryAdmin):
-    list_display = ['__str__', 'get_game']
+    list_display = ['__str__', 'get_game', 'forfait']
     list_filter = ['team', 'forfait', 'hostTeam_set__competition', 'guestTeam_set__competition']
 
 
