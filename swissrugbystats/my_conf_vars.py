@@ -8,3 +8,4 @@ config.set("ARCHIVE_BASE_URL", default="http://www.suisserugby.com/competitions/
 config.set("FIXTURES_URL_ENDING", default="/lt/fixtures.html")
 config.set("RESULTS_URL_ENDING", default="/lt/results.html")
 config.set("LEAGUE_URL_ENDING", default=".html")
+config.set("SLACK_WEBHOOK_URL", default="")

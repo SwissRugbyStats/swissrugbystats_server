@@ -71,26 +71,27 @@ def update_all(deep_crawl=True, season=config.CURRENT_SEASON, log_to_db=True):
         logmsg = CrawlerLogMessage.objects.create(
             message=u"Crawling completed.\n{0} teams crawled\n{1} results crawled\n{2} fixtures crawled\nTime needed: {3}".format(teams_count, result_count, fixtures_count, (datetime.datetime.now() - start_time))
         )
-        # post update to slack
-        try:
-            import requests
-            import json
+        if config.SLACK_WEBHOOK_URL:
+            # post update to slack
+            try:
+                import requests
+                import json
 
-            r = 'admin:{}_{}_change'.format(logmsg._meta.app_label, logmsg._meta.model_name)
+                r = 'admin:{}_{}_change'.format(logmsg._meta.app_label, logmsg._meta.model_name)
 
-            text = "Crawl ended. Time needed {}. <{}{}|Click here>".format(
-                BASE_URL,
-                (datetime.datetime.now() - start_time),
-                reverse(r, args=(logmsg.id,))
-            )
-            url = "https://hooks.slack.com/services/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"
-            payload = {"text": text}
-            headers = {'content-type': 'application/json'}
+                text = "Crawl ended. Time needed {}. <{}{}|Click here>".format(
+                    (datetime.datetime.now() - start_time),
+                    BASE_URL,
+                    reverse(r, args=(logmsg.id,))
+                )
+                url = config.SLACK_WEBHOOK_URL
+                payload = {"text": text}
+                headers = {'content-type': 'application/json'}
 
-            response = requests.post(url, data=json.dumps(payload), headers=headers)
+                response = requests.post(url, data=json.dumps(payload), headers=headers)
 
-        except Exception as e:
-            print e
+            except Exception as e:
+                print e
 
 def update_statistics(log_to_db=True):
     """
