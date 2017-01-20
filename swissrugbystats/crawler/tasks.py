@@ -6,6 +6,7 @@ import logging
 from swissrugbystats.crawler.crawler import SRSCrawler, SRSAsyncCrawler
 from swissrugbystats.crawler.models import CrawlerLogMessage
 from swissrugbystats.core.models import Competition, Season, Team
+from velafrica.core.settings import BASE_URL
 
 # create logger
 logging.basicConfig(filename='crawler.log', level=logging.INFO, format='%(asctime)s- %(message)s', datefmt='%d.%m.%Y %I:%M:%S ')
@@ -77,7 +78,8 @@ def update_all(deep_crawl=True, season=config.CURRENT_SEASON, log_to_db=True):
 
             r = 'admin:{}_{}_change'.format(logmsg._meta.app_label, logmsg._meta.model_name)
 
-            text = "Crawl ended. Time needed {}. <{}|Click here>".format(
+            text = "Crawl ended. Time needed {}. <{}{}|Click here>".format(
+                BASE_URL,
                 (datetime.datetime.now() - start_time),
                 reverse(r, args=(logmsg.id,))
             )
