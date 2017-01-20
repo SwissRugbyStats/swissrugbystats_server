@@ -6,7 +6,7 @@ import logging
 from swissrugbystats.crawler.crawler import SRSCrawler, SRSAsyncCrawler
 from swissrugbystats.crawler.models import CrawlerLogMessage
 from swissrugbystats.core.models import Competition, Season, Team
-from velafrica.core.settings import BASE_URL
+from swissrugbystats.settings import BASE_URL
 
 # create logger
 logging.basicConfig(filename='crawler.log', level=logging.INFO, format='%(asctime)s- %(message)s', datefmt='%d.%m.%Y %I:%M:%S ')
