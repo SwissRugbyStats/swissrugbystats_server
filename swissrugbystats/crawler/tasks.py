@@ -79,7 +79,7 @@ def update_all(deep_crawl=True, season=config.CURRENT_SEASON, log_to_db=True):
 
             text = "Crawl ended. Time needed {}. <{}|Click here>".format(
                 (datetime.datetime.now() - start_time),
-                reverse(r, args=(logmsg.id))
+                reverse(r, args=(logmsg.id,))
             )
             url = "https://hooks.slack.com/services/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"
             payload = {"text": text}
