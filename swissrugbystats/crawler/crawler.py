@@ -174,47 +174,54 @@ class SRSCrawler(object):
                             table2 = soup2.find('table', attrs={'class': None})
                             rows = table2.findAll('tr')
 
-                            host.logo = rows[1].findAll('td')[0].find('img')['src']   # logo host
-                            guest.logo = rows[1].findAll('td')[2].find('img')['src']  # logo guest
+                            if len(rows) > 1:
+                                host.logo = rows[1].findAll('td')[0].find('img')['src']   # logo host
+                                guest.logo = rows[1].findAll('td')[2].find('img')['src']  # logo guest
 
-                            venueName = rows[3].findAll('td')[1].find(text=True)     # venue
-                            if not Venue.objects.filter(name=venueName):
-                                venue = Venue()
-                                venue.name = venueName
-                                print(u"Venue {} created".format(venueName))
-                            else:
-                                venue = Venue.objects.filter(name=venueName)[0]
+                                if len(rows) > 3:
+                                    venueName = rows[3].findAll('td')[1].find(text=True)     # venue
+                                    if not Venue.objects.filter(name=venueName):
+                                        venue = Venue()
+                                        venue.name = venueName
+                                        print(u"Venue {} created".format(venueName))
+                                    else:
+                                        venue = Venue.objects.filter(name=venueName)[0]
 
-                            scoreRow = 4
-                            if rows[4].findAll('td')[1].find(text=True).strip() == "Forfait":
-                                scoreRow += 1
-                                # save forfait in db
-                                if rows[4].findAll('td')[0].find(text=True).strip() != "":
-                                    print("host forfait")
-                                    hostParticipant.forfait = True
-                                elif rows[4].findAll('td')[2].find(text=True).strip() != "":
-                                    print("guest forfait")
-                                    guestParticipant.forfait = True
+                                scoreRow = 4
 
-                            hostParticipant.score = int(rows[scoreRow].findAll('td')[0].find(text=True))          # score host
-                            guestParticipant.score = int(rows[scoreRow].findAll('td')[2].find(text=True))         # score guest
-                            hostParticipant.tries = int(rows[scoreRow+1].findAll('td')[0].find(text=True))          # tries host
-                            guestParticipant.tries = int(rows[scoreRow+1].findAll('td')[2].find(text=True))         # tries guest
-                            hostParticipant.redCards = int(rows[scoreRow+2].findAll('td')[0].find(text=True))       # red cards host
-                            guestParticipant.redCards = int(rows[scoreRow+2].findAll('td')[2].find(text=True))      # red cards guest
+                                if len(rows) > scoreRow:
+                                    if rows[scoreRow].findAll('td')[1].find(text=True).strip() == "Forfait":
+                                        scoreRow += 1
+                                        # save forfait in db
+                                        if rows[scoreRow].findAll('td')[0].find(text=True).strip() != "":
+                                            print("host forfait")
+                                            hostParticipant.forfait = True
+                                        elif rows[scoreRow].findAll('td')[2].find(text=True).strip() != "":
+                                            print("guest forfait")
+                                            guestParticipant.forfait = True
 
-                            # referee is not always there
-                            if len(rows)>=scoreRow+5:
-                                refName = rows[scoreRow+4].findAll('td')[1].find(text=True).strip()     # referee
-                                # TODO: save performance by not reassigning referee if already set
-                                if not Referee.objects.filter(name=refName):
-                                    referee = Referee()
-                                    referee.name = refName
-                                    print(u"Referee {} created".format(refName))
-                                else:
-                                    referee = Referee.objects.filter(name=refName)[0]
-                                referee.save()
-                                game.referee = referee
+                                    hostParticipant.score = int(rows[scoreRow].findAll('td')[0].find(text=True))          # score host
+                                    guestParticipant.score = int(rows[scoreRow].findAll('td')[2].find(text=True))         # score guest
+
+                                    if len(rows) >= scoreRow+1:
+                                        hostParticipant.tries = int(rows[scoreRow+1].findAll('td')[0].find(text=True))          # tries host
+                                        guestParticipant.tries = int(rows[scoreRow+1].findAll('td')[2].find(text=True))         # tries guest
+                                        if len(rows) >= scoreRow+2:
+                                            hostParticipant.redCards = int(rows[scoreRow+2].findAll('td')[0].find(text=True))       # red cards host
+                                            guestParticipant.redCards = int(rows[scoreRow+2].findAll('td')[2].find(text=True))      # red cards guest
+
+                                            # referee is not always there
+                                            if len(rows)>=scoreRow+5:
+                                                refName = rows[scoreRow+4].findAll('td')[1].find(text=True).strip()     # referee
+                                                # TODO: save performance by not reassigning referee if already set
+                                                if not Referee.objects.filter(name=refName):
+                                                    referee = Referee()
+                                                    referee.name = refName
+                                                    print(u"Referee {} created".format(refName))
+                                                else:
+                                                    referee = Referee.objects.filter(name=refName)[0]
+                                                referee.save()
+                                                game.referee = referee
 
                             host.save()
                             guest.save()
@@ -230,7 +237,7 @@ class SRSCrawler(object):
 
                             game.save()
 
-                            print u"GameResult {} created / updated".format(Game.objects.get(id=game.id))
+                            print u"GameResult {} created / updated".format(Game.objects.get(id=game.id).__unicode__())
 
                             # increment game counter
                             count += 1
