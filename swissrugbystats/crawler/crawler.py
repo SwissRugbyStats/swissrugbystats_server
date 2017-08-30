@@ -54,7 +54,10 @@ class SRSCrawler(object):
             r = requests.get(url[1], headers=self.headers)
             soup = BeautifulSoup(r.text)
             # find all tables of the rugbymanager plugin, to be sure to get all the information
-            tables = soup.findAll('table', attrs={'class': 'table'})
+            if (soup):
+                tables = soup.findAll('table', attrs={'class': 'table'})
+            else:
+                tables = []
 
             for table in tables:
                 for row in table.findAll('tr'):
