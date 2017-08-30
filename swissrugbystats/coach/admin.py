@@ -13,7 +13,7 @@ class PlayerAdmin(SimpleHistoryAdmin):
 
 """
 class ClubAdmin(SimpleHistoryAdmin):
-    list_display = ('__str__', 'get_associations', 'website')
+    list_display = ('__unicode__', 'get_associations', 'website')
     search_fields = ['name', 'abbreviation']
     list_filter = ['associations', ]
 """
