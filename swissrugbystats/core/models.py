@@ -379,7 +379,7 @@ class GameParticipation(models.Model):
             return u"Error getting game"
 
     def __unicode__(self):
-        return self.team.name + " " + str(self.score) + " (" + str(self.tries) + "/" + str(self.redCards) + "/" + str(self.points) + ")"
+        return u"{} {} ({}/{}/{})".format(self.team.name, str(self.score), self.tries, self.redCards, self.points)
 
 
 class Game(models.Model):
