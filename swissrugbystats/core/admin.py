@@ -22,7 +22,7 @@ class CompetitionAdmin(SimpleHistoryAdmin):
 
 
 class GameAdmin(SimpleHistoryAdmin):
-    list_display = ('__unicode__', 'competition', 'venue')
+    list_display = ('__unicode__', 'date', 'competition', 'venue')
     search_fields = ['host__team', 'guest__team__name', 'venue__name']
     list_filter = ['date', 'competition', 'competition__season', 'competition__league']
 

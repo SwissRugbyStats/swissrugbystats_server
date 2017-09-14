@@ -10,7 +10,7 @@ class CrawlerLogMessageAdmin(admin.ModelAdmin):
     actions = ['crawl_and_update']
 
     def crawl_and_update(self, request, queryset):
-        tasks.update_all()
+        tasks.update_all(deep_crawl=False)
         self.message_user(request, "Crawl started! This may take some time. Check the logs in 5-10 minutes to see if it was successful.")
     crawl_and_update.short_description = "Start Crawler"
 
