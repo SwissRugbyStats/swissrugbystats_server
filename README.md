@@ -1,6 +1,8 @@
 swissrugbystats_server
 ======================
 
+TODO: default vars
+
 main components
 ---------------
 
