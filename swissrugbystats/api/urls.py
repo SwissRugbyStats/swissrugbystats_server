@@ -1,12 +1,13 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
+from django.conf.urls.i18n import i18n_patterns
 from rest_framework.urlpatterns import format_suffix_patterns
 from swissrugbystats.api import views
+from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 
-
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^$', views.api_root),
 
-    url(r'^config/?$', views.ConfigurationVariableList.as_view(), name="config"),
+    #url(r'^config/?$', views.ConfigurationVariableList.as_view(), name="config"),
 
     url(r'^leagues/?$', views.LeagueList.as_view(), name="leagues"),
     url(r'^leagues/(?P<pk>[0-9]+)/?$', views.LeagueDetail.as_view(), name='leagues_detail'),
@@ -47,9 +48,9 @@ urlpatterns = patterns('',
 
 
     # JWT Authentication
-    url(r'^api-token-auth/?', 'rest_framework_jwt.views.obtain_jwt_token'),
-    url(r'^api-token-refresh/?', 'rest_framework_jwt.views.refresh_jwt_token'),
+    url(r'^api-token-auth/?', obtain_jwt_token),
+    url(r'^api-token-refresh/?', refresh_jwt_token),
 
-)
+]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

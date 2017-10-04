@@ -34,16 +34,13 @@ SECRET_KEY = '6roh3)=1cp7vexm5^jbucmhwtif(p=f2j879vghfqrjm6z4qlb'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = True
-
-ALLOWED_HOSTS = ['api.swissrugbystats.ch']
+ALLOWED_HOSTS = ['api.swissrugbystats.ch', 'localhost']
 
 
 # Application definition
 
 INSTALLED_APPS = (
     'suit',
-    'django_admin_conf_vars',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -71,11 +68,6 @@ MIDDLEWARE_CLASSES = (
     'simple_history.middleware.HistoryRequestMiddleware',
 )
 
-from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
-
-TEMPLATE_CONTEXT_PROCESSORS = TCP + (
-    'django.core.context_processors.request',
-)
 
 ROOT_URLCONF = 'swissrugbystats.urls'
 
@@ -159,3 +151,30 @@ DJANGORESIZED_DEFAULT_KEEP_META = True
 
 # comment out following line for initial db migration
 VARS_MODULE_PATH = 'swissrugbystats.my_conf_vars'
+
+# custom global vars, can be overwritten by env
+CURRENT_SEASON = os.environ.get('CURRENT_SEASON', 1)
+COMPETITIONS_BASE_URL = os.environ.get("COMPETITIONS_BASE_URL", "http://www.suisserugby.com/competitions/")
+ARCHIVE_BASE_URL = os.environ.get("ARCHIVE_BASE_URL", "http://www.suisserugby.com/competitions/archiv/")
+FIXTURES_URL_ENDING = os.environ.get("FIXTURES_URL_ENDING", "/lt/fixtures.html")
+RESULTS_URL_ENDING = os.environ.get("RESULTS_URL_ENDING", "/lt/results.html")
+LEAGUE_URL_ENDING = os.environ.get("LEAGUE_URL_ENDING", ".html")
+SLACK_WEBHOOK_URL = os.environ.get("SLACK_WEBHOOK_URL", "")
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            os.path.join(PROJECT_DIR, 'frontend/templates/')
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]

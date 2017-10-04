@@ -39,7 +39,7 @@ class FavoriteAdmin(SimpleHistoryAdmin):
 
 class LeagueAdmin(SimpleHistoryAdmin):
     list_display = ['name', 'shortcode', 'description']
-    list_editable = ['name', 'shortcode']
+    list_editable = ['shortcode']
     search_fields = ['name', 'shortcode', 'description']
 
 

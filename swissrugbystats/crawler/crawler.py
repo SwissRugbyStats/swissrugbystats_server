@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 from datetime import datetime
 from django.utils import timezone
 from multiprocessing.pool import ThreadPool
@@ -73,11 +73,11 @@ class SRSCrawler(object):
                                     t = Team(name=team)
                                     t.save()
                                     count += 1
-                                    print (u"Team {0} created".format(t.__unicode__()))
+                                    print(u"Team {0} created".format(t.__unicode__()))
                                 else:
-                                    print (u"Team {0} already in DB".format(Team.objects.filter(name=team).first().__unicode__()))
+                                    print(u"Team {0} already in DB".format(Team.objects.filter(name=team).first().__unicode__()))
                             else:
-                                print (u"Less than 5 columns, must be finals table or similar. --> ignore")
+                                print(u"Less than 5 columns, must be finals table or similar. --> ignore")
                     except Exception as e:
                         CrawlerLogMessage.objects.create(
                             message_type=CrawlerLogMessage.ERROR,
@@ -131,7 +131,7 @@ class SRSCrawler(object):
                             if not host:
                                 logging.error(u"Hostteam not found: {}".format(teams2[0].strip()))
                                 logging.error(row)
-                                print u"Hostteam not found: {}".format(teams2[0].strip())
+                                print(u"Hostteam not found: {}".format(teams2[0].strip()))
                                 continue
                             else:
                                 host = host[0]
@@ -139,7 +139,7 @@ class SRSCrawler(object):
                             if not guest:
                                 logging.error(u"Guestteam not found: {}".format(teams2[1].strip()))
                                 logging.error(row)
-                                print u"Guestteam not found: {}".format(teams2[1].strip())
+                                print(u"Guestteam not found: {}".format(teams2[1].strip()))
                                 continue
                             else:
                                 guest = guest[0]
@@ -237,7 +237,7 @@ class SRSCrawler(object):
 
                             game.save()
 
-                            print u"GameResult {} created / updated".format(Game.objects.get(id=game.id).__unicode__())
+                            print(u"GameResult {} created / updated".format(Game.objects.get(id=game.id).__unicode__()))
 
                             # increment game counter
                             count += 1
@@ -308,7 +308,7 @@ class SRSCrawler(object):
                         if not host:
                             logging.error(u"Hostteam not found: ".format(teams2[0].strip()))
                             logging.error(row)
-                            print u"Hostteam not found: ".format(teams2[0].strip())
+                            print(u"Hostteam not found: ".format(teams2[0].strip()))
                             continue
                         else:
                             host = host[0]
@@ -316,7 +316,7 @@ class SRSCrawler(object):
                         if not guest:
                             logging.error(u"Guestteam not found: ".format(teams2[1].strip()))
                             logging.error(row)
-                            print u"Guestteam not found: ".format(teams2[1].strip())
+                            print(u"Guestteam not found: ".format(teams2[1].strip()))
                             continue
                         else:
                             guest = guest[0]
@@ -375,7 +375,7 @@ class SRSCrawler(object):
 
                         game.save()
 
-                        print u"GameFixture {} created / updated".format(Game.objects.get(id=game.id))
+                        print(u"GameFixture {} created / updated".format(Game.objects.get(id=game.id)))
 
                         # increment game counter
                         count += 1
@@ -465,7 +465,7 @@ class SRSAsyncCrawler(SRSCrawler):
                 if type(r) is int:
                     count += r
             except Exception as e:
-                print e
+                print(e)
         self.result_tasks = []
         return count
 
@@ -481,6 +481,6 @@ class SRSAsyncCrawler(SRSCrawler):
                 if type(r) is int:
                     count += r
             except Exception as e:
-                print e
+                print(e)
         self.fixture_tasks = []
         return count

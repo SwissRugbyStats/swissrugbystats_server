@@ -4,7 +4,6 @@ from rest_framework import generics, permissions
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from django_admin_conf_vars.models import ConfigurationVariable
 from django.shortcuts import get_object_or_404
 from django.core.mail import send_mail
 from swissrugbystats.api.http_errors import ResourceAlreadyExists
@@ -68,16 +67,6 @@ def api_root(request, format=None):
             '/': reverse('competitions', request=request, format=format),
         }
     })
-
-
-class ConfigurationVariableList(generics.ListAPIView):
-    """
-    Get a list of all configuration variables.
-    Only visible to authenticated users.
-    """
-
-    queryset = ConfigurationVariable.objects.all()
-    serializer_class = ConfigurationVariableSerializer
 
 
 class LeagueList(generics.ListAPIView):

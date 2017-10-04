@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from django_admin_conf_vars.global_vars import config
+from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django_resized import ResizedImageField
@@ -58,22 +58,22 @@ class League(models.Model):
     history = HistoricalRecords()
 
     def get_league_url(self):
-        return u"{}{}{}".format(config.COMPETITIONS_BASE_URL, self.shortcode, config.LEAGUE_URL_ENDING)
+        return u"{}{}{}".format(settings.COMPETITIONS_BASE_URL, self.shortcode, settings.LEAGUE_URL_ENDING)
 
     def get_fixtures_url(self):
-            return u"{}{}{}".format(config.COMPETITIONS_BASE_URL, self.shortcode, config.FIXTURES_URL_ENDING)
+            return u"{}{}{}".format(settings.COMPETITIONS_BASE_URL, self.shortcode, settings.FIXTURES_URL_ENDING)
 
     def get_results_url(self):
-            return u"{}{}{}".format(config.COMPETITIONS_BASE_URL, self.shortcode, config.RESULTS_URL_ENDING)
+            return u"{}{}{}".format(settings.COMPETITIONS_BASE_URL, self.shortcode, settings.RESULTS_URL_ENDING)
 
     def get_archive_league_url(self, season_slug):
-        return u"{}{}/{}{}".format(config.ARCHIVE_BASE_URL, season_slug, self.shortcode, config.LEAGUE_URL_ENDING)
+        return u"{}{}/{}{}".format(settings.ARCHIVE_BASE_URL, season_slug, self.shortcode, settings.LEAGUE_URL_ENDING)
 
     def get_archive_fixtures_url(self, season_slug):
-        return u"{}{}/{}{}".format(config.ARCHIVE_BASE_URL, season_slug, self.shortcode, config.FIXTURES_URL_ENDING)
+        return u"{}{}/{}{}".format(settings.ARCHIVE_BASE_URL, season_slug, self.shortcode, settings.FIXTURES_URL_ENDING)
 
     def get_archive_results_url(self, season_slug):
-        return u"{}{}/{}{}".format(config.ARCHIVE_BASE_URL, season_slug, self.shortcode, config.RESULTS_URL_ENDING)
+        return u"{}{}/{}{}".format(settings.ARCHIVE_BASE_URL, season_slug, self.shortcode, settings.RESULTS_URL_ENDING)
 
     def __unicode__(self):
         return self.name
@@ -103,19 +103,19 @@ class Competition(models.Model):
 
     def get_league_url(self):
         print("get_league_url {}".format(self.__unicode__()))
-        if self.season.id == int(config.CURRENT_SEASON):
+        if self.season.id == int(settings.CURRENT_SEASON):
             return self.league.get_league_url()
         else:
             return self.league.get_archive_league_url(self.season.fsr_url_slug)
 
     def get_fixtures_url(self):
-        if self.season.id == int(config.CURRENT_SEASON):
+        if self.season.id == int(settings.CURRENT_SEASON):
             return self.league.get_fixtures_url()
         else:
             return self.league.get_archive_fixtures_url(self.season.fsr_url_slug)
 
     def get_results_url(self):
-        if self.season.id == int(config.CURRENT_SEASON):
+        if self.season.id == int(settings.CURRENT_SEASON):
             return self.league.get_results_url()
         else:
             return self.league.get_archive_results_url(self.season.fsr_url_slug)
