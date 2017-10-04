@@ -34,7 +34,7 @@ SECRET_KEY = '6roh3)=1cp7vexm5^jbucmhwtif(p=f2j879vghfqrjm6z4qlb'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['api.swissrugbystats.ch', 'localhost']
+ALLOWED_HOSTS = ['api.swissrugbystats.ch', 'localhost', '*.herokuapp.com']
 
 
 # Application definition
