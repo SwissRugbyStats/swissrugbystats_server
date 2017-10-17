@@ -1,6 +1,8 @@
 swissrugbystats_server
 ======================
 
+[ ![Codeship Status for platzhersh/swissrugbystats_server](https://app.codeship.com/projects/42eac430-34ee-0132-4adf-727b7a01e426/status?branch=master)](https://app.codeship.com/projects/40857)
+
 main components
 ---------------
 
