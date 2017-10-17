@@ -292,7 +292,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=255)),
                 ('abbreviation', models.CharField(max_length=10)),
                 ('website', models.CharField(max_length=255, null=True, verbose_name='Website', blank=True)),
-                ('associations', models.ManyToManyField(related_name='clubs', to=b'core.Association', blank=True)),
+                ('associations', models.ManyToManyField(to=b'core.Association', related_name='clubs', blank=True)),
                 ('description', models.TextField(help_text='Tell us something about your club.', null=True, verbose_name='Description', blank=True)),
                 ('email', models.CharField(max_length=255, null=True, verbose_name='Main E-mail', blank=True)),
                 ('facebook', models.CharField(max_length=255, null=True, verbose_name='Facebook', blank=True)),
