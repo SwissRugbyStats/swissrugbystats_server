@@ -14,7 +14,9 @@ Run any manage.py cmds:
 
 
 
-TODO: rewrite README.md
+TODO: 
+- rewrite README.md
+- media files to external storage
 
 
 main components
@@ -25,21 +27,6 @@ main components
 - swissrugby: back- and frontend for the webapplication
 - docs: documentation
 
-
-required python packages
-------------------------
-- virtualenv
-- django
-- pytz
-- celery
-- rabbitmq
-- requests
-- pygments
-- BeautifulSoup
-- djangorestframework
-- django-cors-headers
-- django-simple-history
-- django-admin-conf-vars
 
 some notes
 ----------
