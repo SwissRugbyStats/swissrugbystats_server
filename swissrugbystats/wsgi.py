@@ -8,7 +8,7 @@ https://docs.djangoproject.com/en/1.7/howto/deployment/wsgi/
 """
 
 import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "swissrugbystats.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "swissrugbystats.settings_deployment")
 
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
