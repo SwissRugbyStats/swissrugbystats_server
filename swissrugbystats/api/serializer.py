@@ -10,6 +10,7 @@ class PlayerSerializer(serializers.ModelSerializer):
     """
 
     class Meta:
+        fields = '__all__'
         model = Player
 
 
@@ -19,6 +20,7 @@ class ClubSerializer(serializers.ModelSerializer):
     """
 
     class Meta:
+        fields = '__all__'
         model = Club
 
 
@@ -28,6 +30,7 @@ class LeagueSerializer(serializers.ModelSerializer):
     """
 
     class Meta:
+        fields = '__all__'
         model = League
 
 
@@ -37,6 +40,7 @@ class CompetitionSerializer(serializers.ModelSerializer):
     """
 
     class Meta:
+        fields = '__all__'
         model = Competition
 
 
@@ -46,6 +50,7 @@ class SeasonSerializer(serializers.ModelSerializer):
     """
 
     class Meta:
+        fields = '__all__'
         model = Season
 
 
@@ -56,6 +61,7 @@ class TeamSerializer(serializers.ModelSerializer):
     logo = serializers.ReadOnlyField(source='get_logo')
 
     class Meta:
+        fields = '__all__'
         model = Team
 
 
@@ -66,8 +72,8 @@ class GameParticipationSerializer(serializers.ModelSerializer):
     team = TeamSerializer(many=False, read_only=True)
 
     class Meta:
+        fields = '__all__'
         model = GameParticipation
-        #fields = ('name', 'shortcode')
 
 
 class RefereeSerializer(serializers.ModelSerializer):
@@ -75,6 +81,7 @@ class RefereeSerializer(serializers.ModelSerializer):
     Todo: document.
     """
     class Meta:
+        fields = '__all__'
         model = Referee
 
 
@@ -83,6 +90,7 @@ class VenueSerializer(serializers.ModelSerializer):
     Todo: document.
     """
     class Meta:
+        fields = '__all__'
         model = Venue
 
 
@@ -95,6 +103,7 @@ class GameSerializer(serializers.ModelSerializer):
     league = LeagueSerializer(many=False, read_only=True)
 
     class Meta:
+        fields = '__all__'
         model = Game
         ordering = 'date'
 
@@ -111,6 +120,7 @@ class GameDetailSerializer(serializers.ModelSerializer):
     venue = VenueSerializer(many=False, read_only=True)
 
     class Meta:
+        fields = '__all__'
         model = Game
 
 
@@ -123,6 +133,7 @@ class TeamInsightSerializer(serializers.ModelSerializer):
     lastGame = GameSerializer(source='get_last_game')
 
     class Meta:
+        fields = '__all__'
         model = Team
 
 
