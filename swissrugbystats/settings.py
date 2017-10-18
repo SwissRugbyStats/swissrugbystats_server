@@ -37,6 +37,10 @@ if 'PROD' in os.environ and os.environ['PROD'] == 'True':
 else:
     DEBUG = True
 
+# even in prod debug can be enabled
+if 'DEBUG' in os.environ and os.environ['DEBUG'] == 'True':
+    DEBUG = True
+
 ALLOWED_HOSTS = ['api.swissrugbystats.ch', 'localhost', 'swissrugbystats-backend.herokuapp.com']
 
 

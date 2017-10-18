@@ -15,8 +15,14 @@ Run any manage.py cmds:
 
 
 TODO: 
-- rewrite README.md
-- media files to external storage
+- [ ] rewrite README.md
+- [ ] media files to external storage
+- [x] Postgres instead of sqlite
+- [ ] global vars from os.environ
+- [ ] easier way to start crawler
+- [ ] migrate data
+- [x] django-jet
+- [ ] crawler cronjob (jet dashboard?)
 
 
 main components
@@ -26,7 +32,6 @@ main components
 - crawler: Webcrawler to get teams, fixtures and results from suisserugby.com
 - swissrugby: back- and frontend for the webapplication
 - docs: documentation
-- Postgres instead of sqlite
 
 some notes
 ----------
