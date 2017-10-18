@@ -16,3 +16,4 @@ pytz==2015.4
 requests==2.18.4
 gunicorn==19.7.1
 django-suit==0.2.25
+whitenoise==3.3.1
