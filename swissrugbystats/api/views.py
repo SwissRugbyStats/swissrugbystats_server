@@ -69,7 +69,7 @@ def api_root(request, format=None):
     })
 
 
-class LeagueList(generics.ListAPIView):
+class LeagueList(generics.ListCreateAPIView):
     """
     Get a list of all the leagues.
     """
@@ -81,7 +81,7 @@ class LeagueList(generics.ListAPIView):
 
 
 # League detail
-class LeagueDetail(generics.RetrieveAPIView):
+class LeagueDetail(generics.RetrieveUpdateAPIView):
     """
     Get details about a special league.
     """
@@ -89,7 +89,7 @@ class LeagueDetail(generics.RetrieveAPIView):
     serializer_class = LeagueDetailSerializer
 
 
-class ClubList(generics.ListAPIView):
+class ClubList(generics.ListCreateAPIView):
     """
     Get a list of all the clubs.
     """
@@ -100,7 +100,7 @@ class ClubList(generics.ListAPIView):
     ordering = ['name']
 
 
-class ClubDetail(generics.RetrieveAPIView):
+class ClubDetail(generics.RetrieveUpdateAPIView):
     """
     Get details about a special club.
     """
@@ -108,7 +108,7 @@ class ClubDetail(generics.RetrieveAPIView):
     serializer_class = ClubSerializer
 
 
-class PlayerList(generics.ListAPIView):
+class PlayerList(generics.ListCreateAPIView):
     """
     Get a list of all the players.
     """
@@ -119,7 +119,7 @@ class PlayerList(generics.ListAPIView):
     ordering = ['last_name', 'first_name']
 
 
-class PlayerDetail(generics.RetrieveAPIView):
+class PlayerDetail(generics.RetrieveUpdateAPIView):
     """
     Get details about a special player.
     """
@@ -127,7 +127,7 @@ class PlayerDetail(generics.RetrieveAPIView):
     serializer_class = PlayerSerializer
 
 
-class CompetitionList(generics.ListAPIView):
+class CompetitionList(generics.ListCreateAPIView):
     """
     Get a list of all the competitions.
     """
@@ -138,7 +138,7 @@ class CompetitionList(generics.ListAPIView):
     ordering = ['name']
 
 
-class GameList(generics.ListAPIView):
+class GameList(generics.ListCreateAPIView):
     """
     Todo: document.
     """
@@ -146,7 +146,7 @@ class GameList(generics.ListAPIView):
     serializer_class = GameSerializer
 
 
-class GameDetail(generics.RetrieveAPIView):
+class GameDetail(generics.RetrieveUpdateAPIView):
     """
     Todo: document.
     """
@@ -154,7 +154,7 @@ class GameDetail(generics.RetrieveAPIView):
     serializer_class = GameDetailSerializer
 
 
-class GameParticipationList(generics.ListAPIView):
+class GameParticipationList(generics.ListCreateAPIView):
     """
     Todo: document.
     """
@@ -162,7 +162,7 @@ class GameParticipationList(generics.ListAPIView):
     serializer_class = GameParticipationSerializer
 
 
-class GameParticipationDetail(generics.RetrieveAPIView):
+class GameParticipationDetail(generics.RetrieveUpdateAPIView):
     """
     Todo: document.
     """
@@ -170,7 +170,7 @@ class GameParticipationDetail(generics.RetrieveAPIView):
     serializer_class = GameParticipationSerializer
 
 
-class TeamList(generics.ListAPIView):
+class TeamList(generics.ListCreateAPIView):
     """
     Todo: document.
     """
@@ -181,7 +181,7 @@ class TeamList(generics.ListAPIView):
     ordering = ['name']
 
 
-class TeamDetail(generics.RetrieveAPIView):
+class TeamDetail(generics.RetrieveUpdateAPIView):
     """
     Todo: document.
     """
@@ -189,7 +189,7 @@ class TeamDetail(generics.RetrieveAPIView):
     serializer_class = TeamInsightSerializer
 
 
-class GameSchedule(generics.ListAPIView):
+class GameSchedule(generics.ListCreateAPIView):
     """
     Todo: document.
     """
@@ -211,7 +211,7 @@ class GameSchedule(generics.ListAPIView):
         return obj.get_games()
 
 
-class RefereeList(generics.ListAPIView):
+class RefereeList(generics.ListCreateAPIView):
     """
     Todo: document.
     """
@@ -222,7 +222,7 @@ class RefereeList(generics.ListAPIView):
     ordering = ['name']
 
 
-class RefereeDetail(generics.RetrieveAPIView):
+class RefereeDetail(generics.RetrieveUpdateAPIView):
     """
     Todo: document.
     """
@@ -230,7 +230,7 @@ class RefereeDetail(generics.RetrieveAPIView):
     serializer_class = VenueSerializer
 
 
-class VenueList(generics.ListAPIView):
+class VenueList(generics.ListCreateAPIView):
     """
     Todo: document.
     """
@@ -241,7 +241,7 @@ class VenueList(generics.ListAPIView):
     ordering = ['name']
 
 
-class VenueDetail(generics.RetrieveAPIView):
+class VenueDetail(generics.RetrieveUpdateAPIView):
     """
     Todo: document.
     """
@@ -249,7 +249,7 @@ class VenueDetail(generics.RetrieveAPIView):
     serializer_class = VenueSerializer
 
 
-class SeasonList(generics.ListAPIView):
+class SeasonList(generics.ListCreateAPIView):
     """
     Todo: document.
     """
@@ -260,7 +260,7 @@ class SeasonList(generics.ListAPIView):
     ordering = ['name']
 
 
-class NextGameByTeamId(generics.RetrieveAPIView):
+class NextGameByTeamId(generics.RetrieveUpdateAPIView):
     """
     Todo: document.
     """
@@ -283,7 +283,7 @@ class NextGameByTeamId(generics.RetrieveAPIView):
         return obj.get_next_game()
 
 
-class LastGameByTeamId(generics.RetrieveAPIView):
+class LastGameByTeamId(generics.RetrieveUpdateAPIView):
     queryset = Team.objects.all()
     serializer_class = GameSerializer
 
