@@ -52,7 +52,7 @@ class SRSCrawler(object):
         print("crawl {}".format(url[1]))
         try:
             r = requests.get(url[1], headers=self.headers)
-            soup = BeautifulSoup(r.text)
+            soup = BeautifulSoup(r.text, "html.parser")
             # find all tables of the rugbymanager plugin, to be sure to get all the information
             if (soup):
                 tables = soup.findAll('table', attrs={'class': 'table'})
@@ -112,7 +112,7 @@ class SRSCrawler(object):
         try:
             print(url)
             r = requests.get(url[1], headers=self.headers)
-            soup = BeautifulSoup(r.text)
+            soup = BeautifulSoup(r.text, "html.parser")
             tables = soup.findAll('table', attrs={'class': 'table'})
             print(u"{} tables found.".format(len(tables)))
             competition = Competition.objects.get(id=url[2])
@@ -170,7 +170,7 @@ class SRSCrawler(object):
 
                             # make new request to game detail page
                             r2 = requests.get(game.fsrUrl, headers=self.headers)
-                            soup2 = BeautifulSoup(r2.text)
+                            soup2 = BeautifulSoup(r2.text, "html.parser")
                             table2 = soup2.find('table', attrs={'class': None})
                             rows = table2.findAll('tr')
 
@@ -291,7 +291,7 @@ class SRSCrawler(object):
         try:
             print(url)
             r = requests.get(url[1], headers=self.headers)
-            soup = BeautifulSoup(r.text)
+            soup = BeautifulSoup(r.text, "html.parser")
             table = soup.find('table', attrs={'class': 'table'})
             competition = Competition.objects.get(id=url[2])
 
@@ -347,7 +347,7 @@ class SRSCrawler(object):
 
                         # make new request to game detail page
                         r2 = requests.get(game.fsrUrl, headers=self.headers)
-                        soup2 = BeautifulSoup(r2.text)
+                        soup2 = BeautifulSoup(r2.text, "html.parser")
                         table2 = soup2.find('table', attrs={'class': None})
                         rows = table2.findAll('tr')
 

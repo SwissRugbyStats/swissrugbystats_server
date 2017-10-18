@@ -11,7 +11,6 @@ from swissrugbystats.settings import BASE_URL
 # create logger
 logging.basicConfig(filename='crawler.log', level=logging.INFO, format='%(asctime)s- %(message)s', datefmt='%d.%m.%Y %I:%M:%S ')
 
-
 def update_all(deep_crawl=True, season=settings.CURRENT_SEASON, log_to_db=True):
     """
     Crawl suisserugby.com for the latest data.
@@ -50,7 +49,7 @@ def update_all(deep_crawl=True, season=settings.CURRENT_SEASON, log_to_db=True):
     teams_count = crawler.crawl_teams([(c.league.shortcode, c.get_league_url(), c.id) for c in Competition.objects.filter(season=current_season)])
 
     # update game table with fixtures
-    print(u"current season:" + settings.CURRENT_SEASON)
+    print(u"current season:" + str(settings.CURRENT_SEASON))
     fixtures_count = crawler.crawl_fixtures([(c.league.shortcode, c.get_fixtures_url(), c.id) for c in Competition.objects.filter(season=current_season)], deep_crawl)
 
     # update game table with results

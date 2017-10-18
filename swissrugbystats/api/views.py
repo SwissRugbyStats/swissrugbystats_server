@@ -65,6 +65,9 @@ def api_root(request, format=None):
         },
         '/competitions': {
             '/': reverse('competitions', request=request, format=format),
+        },
+        '/crawler': {
+            '/start': reverse('crawler-start', request=request, format=format)
         }
     })
 
