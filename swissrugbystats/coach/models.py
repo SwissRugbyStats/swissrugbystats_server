@@ -10,7 +10,7 @@ class Position(models.Model):
     """
     name = models.CharField(max_length=50, null=False, blank=False, help_text='')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -31,7 +31,7 @@ class Player(models.Model):
     def get_full_name(self):
         return u"{} {}".format(self.first_name, self.last_name)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.get_full_name()
 
 
@@ -44,7 +44,7 @@ class TrophyType(models.Model):
     # club
     # public
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -53,7 +53,7 @@ class Trophy(models.Model):
     game = models.ForeignKey(Game, help_text='')
     player = models.ForeignKey(Player, help_text='')
 
-    def __unicode__(self):
+    def __str__(self):
         return u"{} in {} is {}".format(self.trophy_type, self.game, self.player)
 
 
@@ -63,7 +63,7 @@ class LineUp(models.Model):
     """
     game = models.ForeignKey(GameParticipation, help_text='')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.game
 
 
@@ -75,7 +75,7 @@ class LineUpPosition(models.Model):
     position_number = models.IntegerField(help_text='')
     lineup = models.ForeignKey(LineUp, help_text='')
 
-    def __unicode__(self):
+    def __str__(self):
         return u"{}: {}".format(self.position_number, self.player)
 
 
@@ -95,7 +95,7 @@ class PointType(models.Model):
     name = models.CharField(max_length=50, help_text='Name of the point type (i.e. "Try" or "Goal")')
     value = models.IntegerField(help_text='Numeric value of the point type (i.e. 5 for a try, 3 for a penalty)')
 
-    def __unicode__(self):
+    def __str__(self):
         return u"{} ({} points)".format(self.name, self.value)
 
 
@@ -107,7 +107,7 @@ class Point(models.Model):
     game = models.ForeignKey(Game, help_text='Game during which this point has been scored.')
     player = models.ForeignKey(Player, help_text='Player who actually scored the point.')
 
-    def __unicode__(self):
+    def __str__(self):
         return "{} by {}".format(self.pointType.name, self.player.get_name())
 
 
@@ -118,7 +118,7 @@ class CardType(models.Model):
     """
     name = models.CharField(max_length=50, help_text='Name of the card type.')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -131,5 +131,5 @@ class Card(models.Model):
     game = models.ForeignKey(Game, help_text='Game during which this card has been received.')
     notes = models.CharField(max_length=255, null=True, blank=True, help_text='Additional notes regarding the card, i.e. "High Tackle" or similar.')
 
-    def __unicode__(self):
+    def __str__(self):
         return u"{} ({}) in {}".format(self.cardType.name, self.player.get_full_name(), self.game)

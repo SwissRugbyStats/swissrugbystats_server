@@ -73,9 +73,9 @@ class SRSCrawler(object):
                                     t = Team(name=team)
                                     t.save()
                                     count += 1
-                                    print(u"Team {0} created".format(t.__unicode__()))
+                                    print(u"Team {0} created".format(t.__str__()))
                                 else:
-                                    print(u"Team {0} already in DB".format(Team.objects.filter(name=team).first().__unicode__()))
+                                    print(u"Team {0} already in DB".format(Team.objects.filter(name=team).first().__str__()))
                             else:
                                 print(u"Less than 5 columns, must be finals table or similar. --> ignore")
                     except Exception as e:
@@ -237,7 +237,7 @@ class SRSCrawler(object):
 
                             game.save()
 
-                            print(u"GameResult {} created / updated".format(Game.objects.get(id=game.id).__unicode__()))
+                            print(u"GameResult {} created / updated".format(Game.objects.get(id=game.id).__str__()))
 
                             # increment game counter
                             count += 1
