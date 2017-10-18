@@ -32,7 +32,13 @@ EMAIL_PORT = 587
 SECRET_KEY = '6roh3)=1cp7vexm5^jbucmhwtif(p=f2j879vghfqrjm6z4qlb'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if 'PROD' in os.environ:
+    if os.environ['PROD'] == 'True':
+        DEBUG = False
+    else:
+        DEBUG = True
+else:
+    DEBUG = True
 
 ALLOWED_HOSTS = ['api.swissrugbystats.ch', 'localhost', 'swissrugbystats-backend.herokuapp.com']
 
@@ -178,3 +184,4 @@ TEMPLATES = [
         },
     },
 ]
+
