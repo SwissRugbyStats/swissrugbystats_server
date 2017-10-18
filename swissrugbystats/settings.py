@@ -40,7 +40,7 @@ ALLOWED_HOSTS = ['api.swissrugbystats.ch', 'localhost', 'swissrugbystats-backend
 # Application definition
 
 INSTALLED_APPS = (
-    'suit',
+    'jet',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
