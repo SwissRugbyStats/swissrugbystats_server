@@ -32,11 +32,8 @@ EMAIL_PORT = 587
 SECRET_KEY = '6roh3)=1cp7vexm5^jbucmhwtif(p=f2j879vghfqrjm6z4qlb'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if 'PROD' in os.environ:
-    if os.environ['PROD'] == 'True':
-        DEBUG = False
-    else:
-        DEBUG = True
+if 'PROD' in os.environ and os.environ['PROD'] == 'True':
+    DEBUG = False
 else:
     DEBUG = True
 
@@ -84,12 +81,19 @@ WSGI_APPLICATION = 'swissrugbystats.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+if 'PROD' in os.environ and os.environ['PROD'] == 'True':
+    import dj_database_url
+
+    DATABASES = {
+        'default': dj_database_url.config()
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/

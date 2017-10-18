@@ -26,7 +26,7 @@ main components
 - crawler: Webcrawler to get teams, fixtures and results from suisserugby.com
 - swissrugby: back- and frontend for the webapplication
 - docs: documentation
-
+- Postgres instead of sqlite
 
 some notes
 ----------
