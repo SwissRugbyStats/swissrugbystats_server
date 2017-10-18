@@ -17,8 +17,9 @@ Run any manage.py cmds:
 TODO: 
 - [ ] rewrite README.md
 - [ ] media files to external storage
-- [x] Postgres instead of sqlite
-- [ ] global vars from os.environ
+- [x] Postgres instead of sqlite in PROD
+- [ ] Postgres instead of sqlite in DEV
+- [x] global vars from os.environ
 - [ ] easier way to start crawler
 - [ ] migrate data
 - [x] django-jet
