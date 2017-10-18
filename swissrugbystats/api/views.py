@@ -134,8 +134,8 @@ class CompetitionList(generics.ListCreateAPIView):
     queryset = Competition.objects.all()
     serializer_class = CompetitionSerializer
     filter_backends = [filters.OrderingFilter]
-    ordering_fields = ['name']
-    ordering = ['name']
+    ordering_fields = ['season', 'league']
+    ordering = ['season', 'league']
 
 
 class GameList(generics.ListCreateAPIView):
