@@ -3,6 +3,31 @@ swissrugbystats_server
 
 [!['Circle CI Status'](https://circleci.com/gh/SwissRugbyStats/swissrugbystats_server.svg?style=shield&circle-token=b93da3c79f6767c85fcd0e8e972f0ed7e9583f14)](https://circleci.com/gh/SwissRugbyStats/swissrugbystats_server)
 
+
+Run the project locally:
+
+    heroku local:start -f Procfile_dev
+
+Run any manage.py cmds:
+
+    heroku local:run python manage.py <cmd>
+
+
+
+TODO: 
+- [ ] rewrite README.md
+- [ ] media files to external storage
+- [x] Postgres instead of sqlite in PROD
+- [ ] Postgres instead of sqlite in DEV
+- [x] global vars from os.environ
+- [ ] easier way to start crawler
+- [x] REST Endpoint to start crawler
+- [ ] Refactor crawler
+- [ ] migrate data
+- [x] django-jet
+- [ ] crawler cronjob (jet dashboard?)
+
+
 main components
 ---------------
 
@@ -10,22 +35,6 @@ main components
 - crawler: Webcrawler to get teams, fixtures and results from suisserugby.com
 - swissrugby: back- and frontend for the webapplication
 - docs: documentation
-
-
-required python packages
-------------------------
-- virtualenv
-- django
-- pytz
-- celery
-- rabbitmq
-- requests
-- pygments
-- BeautifulSoup
-- djangorestframework
-- django-cors-headers
-- django-simple-history
-- django-admin-conf-vars
 
 some notes
 ----------

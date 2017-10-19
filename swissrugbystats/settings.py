@@ -32,7 +32,14 @@ EMAIL_PORT = 587
 SECRET_KEY = '6roh3)=1cp7vexm5^jbucmhwtif(p=f2j879vghfqrjm6z4qlb'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if 'PROD' in os.environ and os.environ['PROD'] == 'True':
+    DEBUG = False
+else:
+    DEBUG = True
+
+# even in prod debug can be enabled
+if 'DEBUG' in os.environ and os.environ['DEBUG'] == 'True':
+    DEBUG = True
 
 ALLOWED_HOSTS = ['api.swissrugbystats.ch', 'localhost', 'swissrugbystats-backend.herokuapp.com']
 
@@ -40,7 +47,7 @@ ALLOWED_HOSTS = ['api.swissrugbystats.ch', 'localhost', 'swissrugbystats-backend
 # Application definition
 
 INSTALLED_APPS = (
-    'suit',
+    'jet',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -57,6 +64,7 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -77,12 +85,19 @@ WSGI_APPLICATION = 'swissrugbystats.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+if 'PROD' in os.environ and os.environ['PROD'] == 'True':
+    import dj_database_url
+
+    DATABASES = {
+        'default': dj_database_url.config()
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
@@ -102,8 +117,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(PROJECT_DIR, "static")
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files (Files uploaded by user)
 
@@ -178,3 +193,4 @@ TEMPLATES = [
         },
     },
 ]
+

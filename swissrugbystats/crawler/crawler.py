@@ -52,7 +52,7 @@ class SRSCrawler(object):
         print("crawl {}".format(url[1]))
         try:
             r = requests.get(url[1], headers=self.headers)
-            soup = BeautifulSoup(r.text)
+            soup = BeautifulSoup(r.text, "html.parser")
             # find all tables of the rugbymanager plugin, to be sure to get all the information
             if (soup):
                 tables = soup.findAll('table', attrs={'class': 'table'})
@@ -73,9 +73,9 @@ class SRSCrawler(object):
                                     t = Team(name=team)
                                     t.save()
                                     count += 1
-                                    print(u"Team {0} created".format(t.__unicode__()))
+                                    print(u"Team {0} created".format(t.__str__()))
                                 else:
-                                    print(u"Team {0} already in DB".format(Team.objects.filter(name=team).first().__unicode__()))
+                                    print(u"Team {0} already in DB".format(Team.objects.filter(name=team).first().__str__()))
                             else:
                                 print(u"Less than 5 columns, must be finals table or similar. --> ignore")
                     except Exception as e:
@@ -112,7 +112,7 @@ class SRSCrawler(object):
         try:
             print(url)
             r = requests.get(url[1], headers=self.headers)
-            soup = BeautifulSoup(r.text)
+            soup = BeautifulSoup(r.text, "html.parser")
             tables = soup.findAll('table', attrs={'class': 'table'})
             print(u"{} tables found.".format(len(tables)))
             competition = Competition.objects.get(id=url[2])
@@ -170,7 +170,7 @@ class SRSCrawler(object):
 
                             # make new request to game detail page
                             r2 = requests.get(game.fsrUrl, headers=self.headers)
-                            soup2 = BeautifulSoup(r2.text)
+                            soup2 = BeautifulSoup(r2.text, "html.parser")
                             table2 = soup2.find('table', attrs={'class': None})
                             rows = table2.findAll('tr')
 
@@ -237,7 +237,7 @@ class SRSCrawler(object):
 
                             game.save()
 
-                            print(u"GameResult {} created / updated".format(Game.objects.get(id=game.id).__unicode__()))
+                            print(u"GameResult {} created / updated".format(Game.objects.get(id=game.id).__str__()))
 
                             # increment game counter
                             count += 1
@@ -291,7 +291,7 @@ class SRSCrawler(object):
         try:
             print(url)
             r = requests.get(url[1], headers=self.headers)
-            soup = BeautifulSoup(r.text)
+            soup = BeautifulSoup(r.text, "html.parser")
             table = soup.find('table', attrs={'class': 'table'})
             competition = Competition.objects.get(id=url[2])
 
@@ -347,7 +347,7 @@ class SRSCrawler(object):
 
                         # make new request to game detail page
                         r2 = requests.get(game.fsrUrl, headers=self.headers)
-                        soup2 = BeautifulSoup(r2.text)
+                        soup2 = BeautifulSoup(r2.text, "html.parser")
                         table2 = soup2.find('table', attrs={'class': None})
                         rows = table2.findAll('tr')
 

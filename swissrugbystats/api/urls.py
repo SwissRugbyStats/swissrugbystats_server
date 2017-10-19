@@ -2,6 +2,7 @@ from django.conf.urls import url
 from django.conf.urls.i18n import i18n_patterns
 from rest_framework.urlpatterns import format_suffix_patterns
 from swissrugbystats.api import views
+from swissrugbystats.api.crawler import views as crawler_views
 from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 
 urlpatterns = [
@@ -46,6 +47,7 @@ urlpatterns = [
     # url(r'^users/changePW$', views.CreateUser.as_view(), name='create-user'),
     url(r'^favorites/?$', views.CreateFavorite.as_view(), name='create-favorite'),
 
+    url(r'^crawler/start/?$', crawler_views.start, name='crawler-start'),
 
     # JWT Authentication
     url(r'^api-token-auth/?', obtain_jwt_token),

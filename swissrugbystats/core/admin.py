@@ -6,29 +6,29 @@ from simple_history.admin import SimpleHistoryAdmin
 # custom AdminModels
 
 class TeamAdmin(SimpleHistoryAdmin):
-    list_display = ('__unicode__', 'club', 'current_competition')
+    list_display = ('__str__', 'club', 'current_competition')
     search_fields = ['name', 'club__name']
     list_filter = ['club', 'current_competition']
 
 class ClubAdmin(SimpleHistoryAdmin):
-    list_display = ('__unicode__', 'get_associations', 'website')
+    list_display = ('__str__', 'get_associations', 'website')
     search_fields = ['name', 'abbreviation']
     list_filter = ['associations', ]
 
 
 class CompetitionAdmin(SimpleHistoryAdmin):
-    list_display = ('__unicode__', )
+    list_display = ('__str__', )
     list_filter = ('league', 'season')
 
 
 class GameAdmin(SimpleHistoryAdmin):
-    list_display = ('__unicode__', 'date', 'competition', 'venue')
+    list_display = ('__str__', 'date', 'competition', 'venue')
     search_fields = ['host__team', 'guest__team__name', 'venue__name']
     list_filter = ['date', 'competition', 'competition__season', 'competition__league']
 
 
 class GameParticipationAdmin(SimpleHistoryAdmin):
-    list_display = ['__unicode__', 'get_game', 'forfait']
+    list_display = ['__str__', 'get_game', 'forfait']
     list_filter = ['team', 'forfait', 'hostTeam_set__competition', 'guestTeam_set__competition']
 
 

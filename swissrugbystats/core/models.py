@@ -18,7 +18,7 @@ class Association(models.Model):
     parent_association = models.ForeignKey('self', verbose_name="Parent Association", related_name="child_associations", null=True, blank=True)
     history = HistoricalRecords()
 
-    def __unicode__(self):
+    def __str__(self):
         return u"{} ({})".format(self.name, self.abbreviation)
 
 
@@ -44,7 +44,7 @@ class Club(models.Model):
     def get_associations(self):
         return u", ".join([unicode(a) for a in self.associations.all()])
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -75,7 +75,7 @@ class League(models.Model):
     def get_archive_results_url(self, season_slug):
         return u"{}{}/{}{}".format(settings.ARCHIVE_BASE_URL, season_slug, self.shortcode, settings.RESULTS_URL_ENDING)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -87,7 +87,7 @@ class Season(models.Model):
     fsr_url_slug = models.CharField(max_length=50, unique=True, null=True, blank=True)
     history = HistoricalRecords()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -102,7 +102,7 @@ class Competition(models.Model):
     unique_together = ("league", "season")
 
     def get_league_url(self):
-        print("get_league_url {}".format(self.__unicode__()))
+        print("get_league_url {}".format(self.__str__()))
         if self.season.id == int(settings.CURRENT_SEASON):
             return self.league.get_league_url()
         else:
@@ -120,7 +120,7 @@ class Competition(models.Model):
         else:
             return self.league.get_archive_results_url(self.season.fsr_url_slug)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"{} ({})".format(self.league, self.season)
 
 
@@ -329,7 +329,7 @@ class Team(models.Model):
                     return g
         return None
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -340,7 +340,7 @@ class Venue(models.Model):
     name = models.CharField(max_length=100)
     history = HistoricalRecords()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -351,7 +351,7 @@ class Referee(models.Model):
     name = models.CharField(max_length=100)
     history = HistoricalRecords()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -374,11 +374,11 @@ class GameParticipation(models.Model):
             game = self.guestTeam_set.all().first()
 
         if game:
-            return u"{}: {}".format(game.competition.league.__str__(), game.__unicode__())
+            return u"{}: {}".format(game.competition.league.__str__(), game.__str__())
         else:
             return u"Error getting game"
 
-    def __unicode__(self):
+    def __str__(self):
         return u"{} {} ({}/{}/{})".format(self.team.name, self.score, self.tries, self.redCards, self.points)
 
 
@@ -396,7 +396,7 @@ class Game(models.Model):
     guest = models.ForeignKey(GameParticipation, verbose_name="Guest Participation", related_name="guestTeam_set")
     history = HistoricalRecords()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.date.strftime('%d.%m.%Y') + ": " + self.host.team.name + " vs " + self.guest.team.name
 
     def get_host_points(self):
