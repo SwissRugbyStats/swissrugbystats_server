@@ -1,6 +1,5 @@
 from django.db import models
 
-
 class CrawlerLogMessage(models.Model):
     """
     Used to enable a nice logging system, that is visible in the admin backend.

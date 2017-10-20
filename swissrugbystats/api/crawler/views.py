@@ -20,7 +20,7 @@ def start(request):
 
             deep = request.data.get('deep', False)
             season = request.data.get('season', settings.CURRENT_SEASON)
-            t = threading.Thread(target=tasks.update_all, args=(deep, season))
+            t = threading.Thread(target=tasks.crawl_and_update, args=(deep, season))
             t.start()
 
             return Response({"Success": {"Crawler started"}}, status=status.HTTP_200_OK)

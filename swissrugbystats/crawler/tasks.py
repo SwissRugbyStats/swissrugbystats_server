@@ -119,3 +119,7 @@ def update_statistics(log_to_db=True):
         CrawlerLogMessage.objects.create(
             message=u"Statistics update complete.\n{0} team statistics updated\nTime needed: {1}".format(teams.count(),(datetime.datetime.now() - start_time))
         )
+
+def crawl_and_update(deep_crawl=True, season=settings.CURRENT_SEASON, log_to_db=True):
+    update_all(deep_crawl, season, log_to_db)
+    update_statistics(log_to_db)

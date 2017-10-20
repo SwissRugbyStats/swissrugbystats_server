@@ -14,8 +14,8 @@ logging.basicConfig(filename='crawler.log', level=logging.INFO, format='%(asctim
 # TODO: try to combine crawlLeagueFixtures and crawlLeagueResults into one function
 # TODO: add verbose option, don't show all the print() messages per default
 # TODO: log count of objects at beginning, count of objects created / updated and count of objects after script completion
-# TODO: save forfaits
-# TODO: print summary of fetched data and how long it took at the end
+# TODO: save forfaits --> Done
+# TODO: print summary of fetched data and how long it took at the end --> partially done
 # TODO: detect playoff and playdown games
 # TODO: possibility to get old seasons (like 2013/2014)
 # TODO: concurrency
