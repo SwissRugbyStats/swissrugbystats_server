@@ -21,9 +21,30 @@ def update_all(deep_crawl=True, season=settings.CURRENT_SEASON, log_to_db=True):
     logging.info("update started for season {}".format(current_season))
 
     if log_to_db:
-        CrawlerLogMessage.objects.create(
+        logmsg = CrawlerLogMessage.objects.create(
             message=u"Update started for season {}. Deep crawl = {}.".format(current_season, deep_crawl),
         )
+        if settings.SLACK_WEBHOOK_URL:
+            # post update to slack
+            try:
+                import requests
+                import json
+
+                r = 'admin:{}_{}_change'.format(logmsg._meta.app_label, logmsg._meta.model_name)
+
+                text = "{}. <{}{}|Click here>".format(
+                    logmsg.message,
+                    BASE_URL,
+                    reverse(r, args=(logmsg.id,))
+                )
+                url = settings.SLACK_WEBHOOK_URL
+                payload = {"text": text}
+                headers = {'content-type': 'application/json'}
+
+                response = requests.post(url, data=json.dumps(payload), headers=headers)
+
+            except Exception as e:
+                print(e)
 
     # get current timestamp to calculate time needed for script exec
     start_time = datetime.datetime.now()
@@ -78,8 +99,8 @@ def update_all(deep_crawl=True, season=settings.CURRENT_SEASON, log_to_db=True):
 
                 r = 'admin:{}_{}_change'.format(logmsg._meta.app_label, logmsg._meta.model_name)
 
-                text = "Crawl ended. Time needed {}. <{}{}|Click here>".format(
-                    (datetime.datetime.now() - start_time),
+                text = "{}. <{}{}|Click here>".format(
+                    logmsg.message,
                     BASE_URL,
                     reverse(r, args=(logmsg.id,))
                 )
