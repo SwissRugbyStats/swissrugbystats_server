@@ -41,10 +41,8 @@ class SRSCrawler(object):
         :param league_urls: list of URLs to crawl for teams
         :return: number of fetched teams
         """
-        self.statistics['teams'] = 0
         for url in league_urls:
             self.crawl_teams_per_league(url)
-        return self.statistics['teams']
 
     def crawl_teams_per_league(self, url, lock=None):
         """
@@ -106,13 +104,9 @@ class SRSCrawler(object):
         Fetch all the results from a list of league urls.
         :param league_results_urls:    list of tuples [(league_shortcode, league_url), ..]
         :param deep_crawl:  defaults to False. Set True to follow pagination
-        :return: number of crawled game results
         """
-
-        self.statistics['results'] = 0
         for url in league_results_urls:
             self.crawl_results_per_league(url, deep_crawl)
-        return self.statistics['results']
 
     def crawl_results_per_league(self, url, deep_crawl=False, lock=None):
         """
@@ -297,13 +291,9 @@ class SRSCrawler(object):
         Fetch all the fixtures from the provided league urls.
         :param league_fixtures_urls: list of urls to fetch fixtures from
         :param deep_crawl: follow pagination?
-        :return: number of fetched fixtures
         """
-        self.statistics['fixtures'] = 0
-
         for url in league_fixtures_urls:
             self.crawl_fixture_per_league(url, deep_crawl)
-        return self.statistics['fixtures']
 
     def crawl_fixture_per_league(self, url, deep_crawl=False, lock=None):
         """
