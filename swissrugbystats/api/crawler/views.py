@@ -26,7 +26,6 @@ def start(request):
             season = request.data.get('season', settings.CURRENT_SEASON)
             async = request.data.get('async', False)
 
-
             t = threading.Thread(target=tasks.update_all, args=(deep, season, async))
             t.start()
 

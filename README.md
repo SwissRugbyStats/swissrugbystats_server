@@ -1,7 +1,7 @@
 swissrugbystats_server
 ======================
 
-!['Circle CI Status'](https://circleci.com/gh/SwissRugbyStats/swissrugbystats_server.svg?style=shield&circle-token=b93da3c79f6767c85fcd0e8e972f0ed7e9583f14)
+[!['Circle CI Status'](https://circleci.com/gh/SwissRugbyStats/swissrugbystats_server.svg?style=shield&circle-token=b93da3c79f6767c85fcd0e8e972f0ed7e9583f14)](https://circleci.com/gh/SwissRugbyStats/swissrugbystats_server)
 
 
 Run the project locally:

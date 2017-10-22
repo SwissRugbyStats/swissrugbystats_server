@@ -33,7 +33,6 @@ def api_root(request, format=None):
             reverse('clubs', request=request, format=format): 'list of all clubs',
             "{}/<id>".format(reverse('clubs', request=request, format=format)): 'club detail',
         },
-        '/config': 'list of all config',
         '/teams': {
             reverse('teams', request=request, format=format): 'list of all teams',
             "{}/<team-id>".format(reverse('teams', request=request, format=format)): {
