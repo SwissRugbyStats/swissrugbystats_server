@@ -365,7 +365,7 @@ class SRSCrawler(object):
                             if int(page.find(text=True)) > int(current.find(text=True)):
                                 nextUrl = [(competition.league.shortcode, page['href'], competition.id)]
                                 print(u"visit {}".format(nextUrl))
-                                count += self.crawl_results(nextUrl)
+                                self.crawl_results(nextUrl)
 
         except Exception as e:
             CrawlerLogMessage.objects.create(
@@ -508,7 +508,7 @@ class SRSCrawler(object):
                         for page in pagination.findAll('a', attrs={'class': 'inactive'}):
                             if int(page.find(text=True)) > current:
                                 nextUrl = [(competition.league.shortcode, page['href'], competition.id)]
-                                count += self.crawl_fixtures(nextUrl)
+                                self.crawl_fixtures(nextUrl)
         except Exception as e:
             CrawlerLogMessage.objects.create(
                 message_type=CrawlerLogMessage.ERROR,
