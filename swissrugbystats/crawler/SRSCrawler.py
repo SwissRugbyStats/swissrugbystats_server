@@ -34,6 +34,8 @@ class SRSCrawler(object):
             'results': 0
         }
 
+        print(self.statistics)
+
     def crawl_teams(self, league_urls):
         """
         Go through all the urls in league_urls and call crawl_teams_per_league.
@@ -43,6 +45,8 @@ class SRSCrawler(object):
         """
         for url in league_urls:
             self.crawl_teams_per_league(url)
+        return self.statistics['teams']
+
 
     def crawl_teams_per_league(self, url, lock=None):
         """
@@ -107,6 +111,7 @@ class SRSCrawler(object):
         """
         for url in league_results_urls:
             self.crawl_results_per_league(url, deep_crawl)
+        return self.statistics['results']
 
     def crawl_results_per_league(self, url, deep_crawl=False, lock=None):
         """
@@ -294,6 +299,8 @@ class SRSCrawler(object):
         """
         for url in league_fixtures_urls:
             self.crawl_fixture_per_league(url, deep_crawl)
+        return self.statistics['fixtures']
+
 
     def crawl_fixture_per_league(self, url, deep_crawl=False, lock=None):
         """

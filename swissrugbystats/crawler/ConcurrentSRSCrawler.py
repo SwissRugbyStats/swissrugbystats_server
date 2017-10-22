@@ -12,7 +12,6 @@ class SRSAsyncCrawler(SRSCrawler):
         TODO: write doc.
         """
         lock = threading.Lock()
-        self.statistics['teams'] = 0
         threads = []
         for url in league_urls:
             t = threading.Thread(target=self.crawl_teams_per_league, args=(url,lock))
@@ -22,6 +21,7 @@ class SRSAsyncCrawler(SRSCrawler):
             t.join()
         return self.statistics['teams']
 
+
     def crawl_results(self, league_results_urls, deep_crawl=False):
         """
         :param league_results_urls:    list of tuples [(league_shortcode, league_url), ..]
@@ -30,7 +30,6 @@ class SRSAsyncCrawler(SRSCrawler):
         """
         # url is tupel of (leagueName, leagueUrl)
         lock = threading.Lock()
-        self.statistics['results'] = 0
         threads = []
         for url in league_results_urls:
             t = threading.Thread(target=self.crawl_results_per_league, args=(url, deep_crawl, lock))
@@ -40,6 +39,7 @@ class SRSAsyncCrawler(SRSCrawler):
             t.join()
         return self.statistics['results']
 
+
     def crawl_fixtures(self, league_fixtures_urls, deep_crawl=False):
         """
         Fetch all the fixtures asynchronously and add the AsynchronousResults to fixture_tasks
@@ -48,10 +48,11 @@ class SRSAsyncCrawler(SRSCrawler):
         :return:
         """
         lock = threading.Lock()
-        self.statistics['fixtures'] = 0
         threads = []
         for url in league_fixtures_urls:
             t = threading.Thread(target=self.crawl_fixture_per_league, args=(url, deep_crawl, lock))
             t.start()
             threads.append(t)
+        for t in threads:
+            t.join()
         return self.statistics['fixtures']
