@@ -47,6 +47,8 @@ urlpatterns = [
     # url(r'^users/changePW$', views.CreateUser.as_view(), name='create-user'),
     url(r'^favorites/?$', views.CreateFavorite.as_view(), name='create-favorite'),
 
+    url(r'^crawler/logs/?$', crawler_views.CrawlerLogMessageList.as_view(), name='crawler-logs'),
+    url(r'^crawler/logs/(?P<pk>[0-9]+)/?$', crawler_views.CrawlerLogMessageDetail.as_view(), name='crawler-log-detail'),
     url(r'^crawler/start/?$', crawler_views.start, name='crawler-start'),
 
     # JWT Authentication

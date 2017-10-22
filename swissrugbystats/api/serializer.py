@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from rest_framework import serializers
 from swissrugbystats.coach.models import Player
 from swissrugbystats.core.models import Club, Competition, League, Team, Game, GameParticipation, Referee, Venue, Season, Favorite

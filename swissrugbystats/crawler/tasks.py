@@ -11,7 +11,39 @@ from swissrugbystats.settings import BASE_URL
 # create logger
 logging.basicConfig(filename='crawler.log', level=logging.INFO, format='%(asctime)s- %(message)s', datefmt='%d.%m.%Y %I:%M:%S ')
 
-def update_all(deep_crawl=True, season=settings.CURRENT_SEASON, log_to_db=True):
+def crawler_log(msg, log_to_db):
+    """
+    helper method that should be put into separate class.
+    actually logging should be completely moved into the crawler
+    :param msg:
+    :param log_to_db:
+    :return:
+    """
+    if log_to_db:
+        logmsg = CrawlerLogMessage.objects.create(message=msg)
+
+        if settings.SLACK_WEBHOOK_URL:
+            # post update to slack
+            try:
+                import requests
+                import json
+
+                r = 'admin:{}_{}_change'.format(logmsg._meta.app_label, logmsg._meta.model_name)
+
+                text = logmsg.message + "<{}{}|Click here>".format(
+                    BASE_URL,
+                    reverse(r, args=(logmsg.id,))
+                )
+                url = settings.SLACK_WEBHOOK_URL
+                payload = {"text": text}
+                headers = {'content-type': 'application/json'}
+
+                response = requests.post(url, data=json.dumps(payload), headers=headers)
+
+            except Exception as e:
+                print(e)
+
+def update_all(deep_crawl=True, season=settings.CURRENT_SEASON, async=False, log_to_db=True):
     """
     Crawl suisserugby.com for the latest data.
     :param deep_crawl: crawl through pagination
@@ -20,10 +52,7 @@ def update_all(deep_crawl=True, season=settings.CURRENT_SEASON, log_to_db=True):
     current_season = Season.objects.get(id=season)
     logging.info("update started for season {}".format(current_season))
 
-    if log_to_db:
-        CrawlerLogMessage.objects.create(
-            message=u"Update started for season {}. Deep crawl = {}.".format(current_season, deep_crawl),
-        )
+    crawler_log(u"Update started for season {}.\n    deep crawl = {}\n    async = {}".format(current_season, deep_crawl, async), log_to_db)
 
     # get current timestamp to calculate time needed for script exec
     start_time = datetime.datetime.now()
@@ -37,12 +66,19 @@ def update_all(deep_crawl=True, season=settings.CURRENT_SEASON, log_to_db=True):
     else:
         print("    deep_crawl = False (default) - not following pagination")
 
+    if async:
+        print("    async = True (experimental) - starting the multithreaded crawler")
+    else:
+        print("    async = False (default) - using the single thread crawler")
+
     print("")
     print("------------------------------------------------------------------")
     print("")
 
-    crawler = SRSCrawler()
-    #crawler = SRSAsyncCrawler()
+    if (async):
+        crawler = SRSAsyncCrawler()
+    else:
+        crawler = SRSCrawler()
 
     # update team table
     print("crawl Teams")
@@ -66,31 +102,17 @@ def update_all(deep_crawl=True, season=settings.CURRENT_SEASON, log_to_db=True):
     print("{} {}".format("Time needed:", (datetime.datetime.now() - start_time)))
     print("")
 
-    if log_to_db:
-        logmsg = CrawlerLogMessage.objects.create(
-            message=u"Crawling completed.\n{0} teams crawled\n{1} results crawled\n{2} fixtures crawled\nTime needed: {3}".format(teams_count, result_count, fixtures_count, (datetime.datetime.now() - start_time))
-        )
-        if settings.SLACK_WEBHOOK_URL:
-            # post update to slack
-            try:
-                import requests
-                import json
 
-                r = 'admin:{}_{}_change'.format(logmsg._meta.app_label, logmsg._meta.model_name)
+    logmessage = u"""
+        Crawling completed.\n
+        {0} teams crawled\n
+        {1} results crawled\n
+        {2} fixtures crawled\n
+        Time needed: {3}
+    """.format(teams_count, result_count, fixtures_count, (datetime.datetime.now() - start_time))
 
-                text = "Crawl ended. Time needed {}. <{}{}|Click here>".format(
-                    (datetime.datetime.now() - start_time),
-                    BASE_URL,
-                    reverse(r, args=(logmsg.id,))
-                )
-                url = settings.SLACK_WEBHOOK_URL
-                payload = {"text": text}
-                headers = {'content-type': 'application/json'}
+    crawler_log(logmessage, log_to_db)
 
-                response = requests.post(url, data=json.dumps(payload), headers=headers)
-
-            except Exception as e:
-                print(e)
 
 def update_statistics(log_to_db=True):
     """

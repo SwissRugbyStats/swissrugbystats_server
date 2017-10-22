@@ -1,4 +1,3 @@
-from swissrugbystats.core.models import *
 from swissrugbystats.api.serializer import *
 from rest_framework import generics, permissions
 from rest_framework.decorators import api_view
@@ -67,7 +66,12 @@ def api_root(request, format=None):
             '/': reverse('competitions', request=request, format=format),
         },
         '/crawler': {
-            '/start': reverse('crawler-start', request=request, format=format)
+            '/start': reverse('crawler-start', request=request, format=format),
+            '/logs': {
+                '/': reverse('crawler-logs', request=request, format=format),
+                '/{id}': 'crawler log details'
+            }
+
         }
     })
 
