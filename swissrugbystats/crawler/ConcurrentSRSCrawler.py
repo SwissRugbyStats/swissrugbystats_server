@@ -4,7 +4,8 @@ from swissrugbystats.crawler.SRSCrawler import SRSCrawler
 
 class SRSAsyncCrawler(SRSCrawler):
     """
-    Todo: document, fix bugs.
+    TODO: document, fix bugs.
+    TODO: Can be further improved by not blocking results / fixtures by eachother.
     """
 
     def crawl_teams(self, league_urls):

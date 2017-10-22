@@ -5,109 +5,7 @@ from django.core.urlresolvers import reverse
 from swissrugbystats.crawler.SRSCrawler import SRSCrawler
 from swissrugbystats.crawler.ConcurrentSRSCrawler import SRSAsyncCrawler
 from swissrugbystats.crawler.models import CrawlerLogMessage
-from swissrugbystats.core.models import Competition, Season, Team
-from swissrugbystats.settings import BASE_URL
-
-def crawler_log(msg, log_to_db):
-    """
-    helper method that should be put into separate class.
-    actually logging should be completely moved into the crawler
-    :param msg:
-    :param log_to_db:
-    :return:
-    """
-    if log_to_db:
-        logmsg = CrawlerLogMessage.objects.create(message=msg)
-
-        if settings.SLACK_WEBHOOK_URL:
-            # post update to slack
-            try:
-                import requests
-                import json
-
-                r = 'admin:{}_{}_change'.format(logmsg._meta.app_label, logmsg._meta.model_name)
-
-                text = logmsg.message + "<{}{}|Click here>".format(
-                    BASE_URL,
-                    reverse(r, args=(logmsg.id,))
-                )
-                url = settings.SLACK_WEBHOOK_URL
-                payload = {"text": text}
-                headers = {'content-type': 'application/json'}
-
-                response = requests.post(url, data=json.dumps(payload), headers=headers)
-
-            except Exception as e:
-                print(e)
-
-def update_all(deep_crawl=True, season=settings.CURRENT_SEASON, async=False, log_to_db=True):
-    """
-    Crawl suisserugby.com for the latest data.
-    :param deep_crawl: crawl through pagination
-    :return: none
-    """
-    current_season = Season.objects.get(id=season)
-
-    crawler_log(u"Update started for season {}.\n    deep crawl = {}\n    async = {}".format(current_season, deep_crawl, async), log_to_db)
-
-    # get current timestamp to calculate time needed for script exec
-    start_time = datetime.datetime.now()
-
-    print("------------------------------------------------------------------")
-    print("")
-
-    print(u"Getting data from suisserugby.com for season {}".format(Season.objects.filter(id=season).first()))
-    if deep_crawl:
-        print("    deep_crawl = True - following pagination")
-    else:
-        print("    deep_crawl = False (default) - not following pagination")
-
-    if async:
-        print("    async = True (experimental) - starting the multithreaded crawler")
-    else:
-        print("    async = False (default) - using the single thread crawler")
-
-    print("")
-    print("------------------------------------------------------------------")
-    print("")
-
-    if (async):
-        crawler = SRSAsyncCrawler()
-    else:
-        crawler = SRSCrawler()
-
-    # update team table
-    print("crawl Teams")
-    teams_count = crawler.crawl_teams([(c.league.shortcode, c.get_league_url(), c.id) for c in Competition.objects.filter(season=current_season)])
-
-    # update game table with fixtures
-    print(u"current season:" + str(settings.CURRENT_SEASON))
-    fixtures_count = crawler.crawl_fixtures([(c.league.shortcode, c.get_fixtures_url(), c.id) for c in Competition.objects.filter(season=current_season)], deep_crawl)
-
-    # update game table with results
-    result_count = crawler.crawl_results([(c.league.shortcode, c.get_results_url(), c.id) for c in Competition.objects.filter(season=current_season)], deep_crawl)
-
-    print("")
-    print("------------------------------------------------------------------")
-    print("")
-    print("{} {}".format(teams_count, "teams crawled"))
-    print("{} {}".format(result_count, "results crawled"))
-    print("{} {}".format(fixtures_count, "fixtures crawled"))
-
-    print("")
-    print("{} {}".format("Time needed:", (datetime.datetime.now() - start_time)))
-    print("")
-
-    logmessage = u"""
-        Crawling completed.\n
-        {0} teams crawled\n
-        {1} results crawled\n
-        {2} fixtures crawled\n
-        Time needed: {3}
-    """.format(teams_count, result_count, fixtures_count, (datetime.datetime.now() - start_time))
-
-    crawler_log(logmessage, log_to_db)
-
+from swissrugbystats.core.models import Team
 
 def update_statistics(log_to_db=True):
     """
@@ -137,6 +35,10 @@ def update_statistics(log_to_db=True):
             message=u"Statistics update complete.\n{0} team statistics updated\nTime needed: {1}".format(teams.count(),(datetime.datetime.now() - start_time))
         )
 
-def crawl_and_update(deep_crawl=True, season=settings.CURRENT_SEASON, log_to_db=True):
-    update_all(deep_crawl, season, log_to_db)
+def crawl_and_update(deep_crawl=True, season=settings.CURRENT_SEASON, async=False, log_to_db=True):
+    if (async):
+        crawler = SRSAsyncCrawler(enable_logging=log_to_db)
+    else:
+        crawler = SRSCrawler(enable_logging=log_to_db)
+    crawler.start(season, deep_crawl)
     update_statistics(log_to_db)

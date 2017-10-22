@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 from bs4 import BeautifulSoup
 from datetime import datetime
+from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.utils import timezone
 import logging
 import requests
-from swissrugbystats.core.models import Competition, Team, League, Game, GameParticipation, Venue, Referee
+from swissrugbystats.core.models import Competition, Team, Season, Game, GameParticipation, Venue, Referee
 from swissrugbystats.crawler.models import CrawlerLogMessage
 
 # TODO: try to combine crawlLeagueFixtures and crawlLeagueResults into one function
@@ -21,7 +23,7 @@ class SRSCrawler(object):
     Todo: document.
     """
 
-    def __init__(self, headers={'User-Agent': 'Mozilla 5.0'}):
+    def __init__(self, headers={'User-Agent': 'Mozilla 5.0'}, enable_logging=True):
         """
         Create SRSCrawler instance.
         :param headers: HTTP Headers to send with.
@@ -33,8 +35,97 @@ class SRSCrawler(object):
             'fixtures': 0,
             'results': 0
         }
+        self.log_to_db = enable_logging
 
-        print(self.statistics)
+    @classmethod
+    def get_classname(cls):
+        return cls.__name__
+
+    def log(self, msg):
+        """
+        helper method that should be put into separate class.
+        actually logging should be completely moved into the crawler
+        :param msg:
+        :param log_to_db:
+        :return:
+        """
+        if self.log_to_db:
+
+            msg = u'{}: {}'.format(self.get_classname(), msg)
+            logmsg = CrawlerLogMessage.objects.create(message=msg)
+
+            if settings.SLACK_WEBHOOK_URL:
+                # post update to slack
+                try:
+                    import requests
+                    import json
+
+                    r = 'admin:{}_{}_change'.format(logmsg._meta.app_label, logmsg._meta.model_name)
+
+                    text = logmsg.message + "\n<{}{}|Click here>".format(
+                        settings.BASE_URL,
+                        reverse(r, args=(logmsg.id,))
+                    )
+                    url = settings.SLACK_WEBHOOK_URL
+                    payload = {"text": text}
+                    headers = {'content-type': 'application/json'}
+
+                    response = requests.post(url, data=json.dumps(payload), headers=headers)
+
+                except Exception as e:
+                    print(e)
+
+    def start(self, season=settings.CURRENT_SEASON, deep_crawl=False):
+        current_season = Season.objects.get(id=season)
+
+        self.log(u"Update started for season {}.\n    deep crawl = {}".format(current_season, deep_crawl))
+
+        # get current timestamp to calculate time needed for script exec
+        start_time = datetime.now()
+
+        print("------------------------------------------------------------------")
+        print("")
+
+        print(u"{}: Getting data from suisserugby.com for season {}".format(self.get_classname(), Season.objects.filter(id=season).first()))
+        if deep_crawl:
+            print("    deep_crawl = True - following pagination")
+        else:
+            print("    deep_crawl = False (default) - not following pagination")
+
+        print("")
+        print("------------------------------------------------------------------")
+        print("")
+
+        # update team table
+        print("crawl Teams")
+        self.crawl_teams(
+            [(c.league.shortcode, c.get_league_url(), c.id) for c in Competition.objects.filter(season=current_season)])
+
+        # update game table with fixtures
+        print(u"current season:" + str(settings.CURRENT_SEASON))
+        self.crawl_fixtures([(c.league.shortcode, c.get_fixtures_url(), c.id) for c in
+                                                 Competition.objects.filter(season=current_season)], deep_crawl)
+
+        # update game table with results
+        self.crawl_results([(c.league.shortcode, c.get_results_url(), c.id) for c in
+                                              Competition.objects.filter(season=current_season)], deep_crawl)
+
+        results_log = u"""
+                Crawling completed.\n
+                {0} teams crawled\n
+                {1} results crawled\n
+                {2} fixtures crawled\n
+                Time needed: {3}
+            """.format(self.statistics.get('teams', 0), self.statistics.get('results', 0), self.statistics.get('fixtures', 0), (datetime.now() - start_time))
+
+        self.log(results_log)
+
+        print("")
+        print("------------------------------------------------------------------")
+        print("")
+        print(results_log)
+        print("")
+
 
     def crawl_teams(self, league_urls):
         """
@@ -267,7 +358,6 @@ class SRSCrawler(object):
                 pagination = soup.find('div', attrs={'class': 'pagination'})
                 if pagination:
                     current = pagination.find('span', attrs={'class': 'current'})
-                    print(current.find(text=True))
                     if current and int(current.find(text=True)) == 1:
                         print(u"Follow pagination, {} pages.".format(len(pagination)))
                         for page in pagination.findAll('a', attrs={'class': 'inactive'}):

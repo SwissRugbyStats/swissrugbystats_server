@@ -26,7 +26,7 @@ def start(request):
             season = request.data.get('season', settings.CURRENT_SEASON)
             async = request.data.get('async', False) == "True"
 
-            t = threading.Thread(target=tasks.update_all, args=(deep, season, async))
+            t = threading.Thread(target=tasks.crawl_and_update, args=(deep, season, async))
             t.start()
 
             season_object = Season.objects.get(id=season)
@@ -44,6 +44,7 @@ def start(request):
             }}, status.HTTP_200_OK)
     else:
         return Response ({"Error": "You are not allowed to start the crawler. Please login with an account with according permissions."}, status.HTTP_403_FORBIDDEN)
+
 
 class CrawlerLogMessageList(generics.ListCreateAPIView):
     """
