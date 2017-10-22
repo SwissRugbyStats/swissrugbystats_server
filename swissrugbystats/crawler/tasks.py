@@ -2,14 +2,11 @@
 import datetime
 from django.conf import settings
 from django.core.urlresolvers import reverse
-import logging
-from swissrugbystats.crawler.crawler import SRSCrawler, SRSAsyncCrawler
+from swissrugbystats.crawler.SRSCrawler import SRSCrawler
+from swissrugbystats.crawler.ConcurrentSRSCrawler import SRSAsyncCrawler
 from swissrugbystats.crawler.models import CrawlerLogMessage
 from swissrugbystats.core.models import Competition, Season, Team
 from swissrugbystats.settings import BASE_URL
-
-# create logger
-logging.basicConfig(filename='crawler.log', level=logging.INFO, format='%(asctime)s- %(message)s', datefmt='%d.%m.%Y %I:%M:%S ')
 
 def crawler_log(msg, log_to_db):
     """
@@ -50,7 +47,6 @@ def update_all(deep_crawl=True, season=settings.CURRENT_SEASON, async=False, log
     :return: none
     """
     current_season = Season.objects.get(id=season)
-    logging.info("update started for season {}".format(current_season))
 
     crawler_log(u"Update started for season {}.\n    deep crawl = {}\n    async = {}".format(current_season, deep_crawl, async), log_to_db)
 

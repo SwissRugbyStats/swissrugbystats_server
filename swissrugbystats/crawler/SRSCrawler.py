@@ -2,14 +2,10 @@
 from bs4 import BeautifulSoup
 from datetime import datetime
 from django.utils import timezone
-from multiprocessing.pool import ThreadPool
 import logging
 import requests
 from swissrugbystats.core.models import Competition, Team, League, Game, GameParticipation, Venue, Referee
 from swissrugbystats.crawler.models import CrawlerLogMessage
-
-# create logger
-logging.basicConfig(filename='crawler.log', level=logging.INFO, format='%(asctime)s- %(message)s', datefmt='%d.%m.%Y %I:%M:%S ')
 
 # TODO: try to combine crawlLeagueFixtures and crawlLeagueResults into one function
 # TODO: add verbose option, don't show all the print() messages per default
@@ -19,7 +15,6 @@ logging.basicConfig(filename='crawler.log', level=logging.INFO, format='%(asctim
 # TODO: detect playoff and playdown games
 # TODO: possibility to get old seasons (like 2013/2014)
 # TODO: concurrency
-
 
 class SRSCrawler(object):
     """
@@ -33,20 +28,29 @@ class SRSCrawler(object):
         :return: void
         """
         self.headers = headers
+        self.statistics = {
+            'teams': 0,
+            'fixtures': 0,
+            'results': 0
+        }
 
     def crawl_teams(self, league_urls):
         """
+        Go through all the urls in league_urls and call crawl_teams_per_league.
+        :param self:
         :param league_urls: list of URLs to crawl for teams
-        :return: -
+        :return: number of fetched teams
         """
-        count = 0
+        self.statistics['teams'] = 0
         for url in league_urls:
-            count += self.crawl_teams_per_league(url)
-        return count
+            self.crawl_teams_per_league(url)
+        return self.statistics['teams']
 
-    def crawl_teams_per_league(self, url):
+    def crawl_teams_per_league(self, url, lock=None):
         """
-        TODO: write doc.
+        Fetch all the teams that are participating in a league.
+        :param url: url of the league
+        :return: number of fetched teams
         """
         count = 0
         print("crawl {}".format(url[1]))
@@ -54,7 +58,7 @@ class SRSCrawler(object):
             r = requests.get(url[1], headers=self.headers)
             soup = BeautifulSoup(r.text, "html.parser")
             # find all tables of the rugbymanager plugin, to be sure to get all the information
-            if (soup):
+            if soup:
                 tables = soup.findAll('table', attrs={'class': 'table'})
             else:
                 tables = []
@@ -89,24 +93,36 @@ class SRSCrawler(object):
                 message_type=CrawlerLogMessage.ERROR,
                 message=u"crawl_teams_per_league, {}".format(e.__str__())
             )
+        if lock:
+            with lock:
+                self.statistics['teams'] += count
+        else:
+            self.statistics['teams'] += count
+
         return count
 
     def crawl_results(self, league_results_urls, deep_crawl=False):
         """
+        Fetch all the results from a list of league urls.
         :param league_results_urls:    list of tuples [(league_shortcode, league_url), ..]
         :param deep_crawl:  defaults to False. Set True to follow pagination
         :return: number of crawled game results
         """
 
-        count = 0
+        self.statistics['results'] = 0
         for url in league_results_urls:
-            count += self.crawl_results_per_league(url, deep_crawl)
-        return count
+            self.crawl_results_per_league(url, deep_crawl)
+        return self.statistics['results']
 
-    def crawl_results_per_league(self, url, deep_crawl=False, async=False):
+    def crawl_results_per_league(self, url, deep_crawl=False, lock=None):
         """
-        TODO: write doc.
+        Fetch all the results of a specific league.
+
         TODO: crawl also special tables like finals / semi finals
+        :param url: the url of the league to crawl
+        :param deep_crawl: follow pagination?
+        :param lock:
+        :return:
         """
         count = 0
         try:
@@ -259,33 +275,43 @@ class SRSCrawler(object):
                             print(u"Page: {}, Current: {}".format(int(page.find(text=True)), int(current.find(text=True))))
                             if int(page.find(text=True)) > int(current.find(text=True)):
                                 nextUrl = [(competition.league.shortcode, page['href'], competition.id)]
-                                if async:
-                                    self.crawl_results_async(nextUrl)
-                                else:
-                                    print(u"visit {}".format(nextUrl))
-                                    count += self.crawl_results(nextUrl)
+                                print(u"visit {}".format(nextUrl))
+                                count += self.crawl_results(nextUrl)
 
         except Exception as e:
             CrawlerLogMessage.objects.create(
                 message_type=CrawlerLogMessage.ERROR,
                 message=e.__str__()
             )
+
+        if lock:
+            with lock:
+                self.statistics['results'] += count
+        else:
+            self.statistics['results'] += count
+
         return count
 
     def crawl_fixtures(self, league_fixtures_urls, deep_crawl=False):
         """
-        TODO: write doc.
+        Fetch all the fixtures from the provided league urls.
+        :param league_fixtures_urls: list of urls to fetch fixtures from
+        :param deep_crawl: follow pagination?
+        :return: number of fetched fixtures
         """
-        count = 0
+        self.statistics['fixtures'] = 0
 
         for url in league_fixtures_urls:
-            count += self.crawl_fixture_per_league(url, deep_crawl)
+            self.crawl_fixture_per_league(url, deep_crawl)
+        return self.statistics['fixtures']
 
-        return count
-
-    def crawl_fixture_per_league(self, url, deep_crawl=False, async=False):
+    def crawl_fixture_per_league(self, url, deep_crawl=False, lock=None):
         """
-        TODO: write doc.
+        Fetch all fixtures of a specific league.
+        :param url: url to fetch fixtures from
+        :param deep_crawl: deep_crawl: follow pagination?
+        :param lock: ?
+        :return: number of fetched fixtures
         """
         count = 0
         try:
@@ -395,92 +421,18 @@ class SRSCrawler(object):
                         for page in pagination.findAll('a', attrs={'class': 'inactive'}):
                             if int(page.find(text=True)) > current:
                                 nextUrl = [(competition.league.shortcode, page['href'], competition.id)]
-                                if async:
-                                    self.crawl_fixtures_async(nextUrl)
-                                else:
-                                    count += self.crawl_fixtures(nextUrl)
+                                count += self.crawl_fixtures(nextUrl)
         except Exception as e:
             CrawlerLogMessage.objects.create(
                 message_type=CrawlerLogMessage.ERROR,
                 message=e.__str__()
             )
+
+        if lock:
+            with lock:
+                self.statistics['fixtures'] += count
+        else:
+            self.statistics['fixtures'] += count
+
         return count
 
-
-class SRSAsyncCrawler(SRSCrawler):
-    """
-    Todo: document, fix bugs.
-    """
-
-    def __init__(self, processes=50, headers={'User-Agent': 'Mozilla 5.0'}):
-        """
-        Create SRSCrawler instance.
-        :param processes: Number of processes for async processing.
-        :param headers: HTTP Headers to send with.
-        :return: void
-        """
-        self.pool = ThreadPool(processes=processes)
-        self.result_tasks = []
-        self.fixture_tasks = []
-        self.headers = headers
-
-    def crawl_teams(self, league_urls):
-        """
-        TODO: write doc.
-        """
-        for url in league_urls:
-            self.pool.apply_async(self.crawl_teams_per_league, url, )
-
-    def crawl_results(self, league_results_urls, deep_crawl=False):
-        """
-        :param league_results_urls:    list of tuples [(league_shortcode, league_url), ..]
-        :param deep_crawl:  defaults to False. Set True to follow pagination
-        :return: -
-        """
-        # url is tupel of (leagueName, leagueUrl)
-        for url in league_results_urls:
-            self.result_tasks += [self.pool.apply_async(self.crawl_results_per_league, (url, deep_crawl, True))]
-        return self.get_results_count()
-
-    def crawl_fixtures(self, league_fixtures_urls, deep_crawl=False):
-        """
-        Fetch all the fixtures asynchronously and add the AsynchronousResults to fixture_tasks
-        :param league_fixtures_urls:
-        :param deep_crawl:
-        :return:
-        """
-        for url in league_fixtures_urls:
-            self.fixture_tasks += [self.pool.apply_async(self.crawl_fixture_per_league, (url, deep_crawl, True))]
-        return self.get_fixtures_count()
-
-    def get_results_count(self):
-        """
-        Wait for all pending tasks to finish and then summarize the results.
-        :return: number of crawled results
-        """
-        count = 0
-        for t in self.result_tasks:
-            try:
-                r = t.get(5)
-                if type(r) is int:
-                    count += r
-            except Exception as e:
-                print(e)
-        self.result_tasks = []
-        return count
-
-    def get_fixtures_count(self):
-        """
-        wait for all pending tasks to finish and then summarize the results
-        :return: number of fixtures crawled
-        """
-        count = 0
-        for t in self.fixture_tasks:
-            try:
-                r = t.get(5)
-                if type(r) is int:
-                    count += r
-            except Exception as e:
-                print(e)
-        self.fixture_tasks = []
-        return count

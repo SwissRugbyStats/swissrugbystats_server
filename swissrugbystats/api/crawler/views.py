@@ -22,9 +22,9 @@ def start(request):
         if request.method == 'POST':
             print("Crawler: start {}".format(request))
 
-            deep = request.data.get('deep', False)
+            deep = request.data.get('deep', False) == "True"
             season = request.data.get('season', settings.CURRENT_SEASON)
-            async = request.data.get('async', False)
+            async = request.data.get('async', False) == "True"
 
             t = threading.Thread(target=tasks.update_all, args=(deep, season, async))
             t.start()
