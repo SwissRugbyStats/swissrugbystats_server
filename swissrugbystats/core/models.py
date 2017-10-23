@@ -135,6 +135,7 @@ class Team(models.Model):
     club = models.ForeignKey(Club, null=True, blank=True)
 
     point_count = models.IntegerField(blank=True, null=True)
+    score_count = models.IntegerField(blank=True, null=True)
     card_count = models.IntegerField(blank=True, null=True)
     try_count = models.IntegerField(blank=True, null=True)
     win_count = models.IntegerField(blank=True, null=True)
@@ -163,6 +164,7 @@ class Team(models.Model):
         :return:
         """
         self.point_count = self.get_point_count()
+        self.score_count = self.get_score_count()
         self.card_count = self.get_card_count()
         self.try_count = self.get_try_count()
         self.win_count = self.get_win_count()
@@ -170,6 +172,18 @@ class Team(models.Model):
         self.loss_count = self.get_loss_count()
         self.game_count = self.get_game_count()
         self.save()
+
+    def get_score_count(self):
+        games = Game.objects.all()
+        score = 0
+
+        for g in [x for x in games if (x.host.team == self) & (x.host.score is not None)]:
+            score += g.host.score
+
+        for g in [x for x in games if (x.guest.team == self) & (x.guest.score is not None)]:
+            score += g.guest.score
+
+        return score
 
 
     def get_point_count(self):

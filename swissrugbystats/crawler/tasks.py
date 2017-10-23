@@ -41,4 +41,18 @@ def crawl_and_update(deep_crawl=True, season=settings.CURRENT_SEASON, async=Fals
     else:
         crawler = SRSCrawler(enable_logging=log_to_db)
     crawler.start(season, deep_crawl)
-    update_statistics(log_to_db)
+
+    crawler.log("Statistics update started.")
+
+    # get current timestamp to calculate time needed for script exec
+    start_time = datetime.datetime.now()
+
+    teams = Team.objects.all()
+    for t in teams:
+        try:
+            print(u"update {}".format(t.name))
+            t.update_statistics()
+        except Exception as e:
+            print(u"Exception! {}".format(e))
+
+    crawler.log(u"Statistics update complete.\n{0} team statistics updated\nTime needed: {1}".format(teams.count(),(datetime.datetime.now() - start_time)))
