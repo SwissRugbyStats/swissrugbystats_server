@@ -1,5 +1,5 @@
 from swissrugbystats.api.serializer import *
-from rest_framework import generics, permissions
+from rest_framework import filters, generics, permissions, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -7,8 +7,7 @@ from django.shortcuts import get_object_or_404
 from django.core.mail import send_mail
 from swissrugbystats.api.http_errors import ResourceAlreadyExists
 from django.contrib.auth import get_user_model
-from rest_framework import status
-from rest_framework import filters
+from django_filters import rest_framework as filters
 
 @api_view(('GET',))
 def api_root(request, format=None):
@@ -136,12 +135,13 @@ class PlayerDetail(generics.RetrieveUpdateAPIView):
 class CompetitionList(generics.ListCreateAPIView):
     """
     Get a list of all the competitions.
+    You can filter the list by using the query parameters.
+    i.e.
+    ...?league=1&season=3
     """
     queryset = Competition.objects.all()
     serializer_class = CompetitionSerializer
-    filter_backends = [filters.OrderingFilter]
-    ordering_fields = ['season', 'league']
-    ordering = ['season', 'league']
+    filter_fields = ['season', 'league']
 
 
 class GameList(generics.ListCreateAPIView):
