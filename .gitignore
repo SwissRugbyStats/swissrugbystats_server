@@ -22,3 +22,5 @@ staticfiles
 # ignore MEDIA_ROOT folder
 swissrugbystats/media
 
+# ignore .env file, to protect valid information
+.env
