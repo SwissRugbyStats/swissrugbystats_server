@@ -41,7 +41,12 @@ else:
 if 'DEBUG' in os.environ and os.environ['DEBUG'] == 'True':
     DEBUG = True
 
-ALLOWED_HOSTS = ['api.swissrugbystats.ch', 'localhost', 'swissrugbystats-backend.herokuapp.com']
+ALLOWED_HOSTS = [
+    'api.swissrugbystats.ch',
+    'api3.swissrugbystats.ch',
+    'localhost',
+    'swissrugbystats-backend.herokuapp.com'
+]
 
 
 # Application definition
