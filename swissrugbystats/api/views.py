@@ -80,8 +80,6 @@ class LeagueList(generics.ListCreateAPIView):
     """
     queryset = League.objects.all()
     serializer_class = LeagueSerializer
-    filter_backends = [filters.OrderingFilter]
-    ordering_fields = ['name']
     ordering = ['name']
 
 
@@ -100,8 +98,6 @@ class ClubList(generics.ListCreateAPIView):
     """
     queryset = Club.objects.all()
     serializer_class = ClubSerializer
-    filter_backends = [filters.OrderingFilter]
-    ordering_fields = ['name']
     ordering = ['name']
 
 
@@ -119,8 +115,7 @@ class PlayerList(generics.ListCreateAPIView):
     """
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
-    filter_backends = [filters.OrderingFilter]
-    ordering_fields = ['last_name', 'first_name']
+    filter_fields = ['last_name', 'first_name']
     ordering = ['last_name', 'first_name']
 
 
@@ -182,8 +177,7 @@ class TeamList(generics.ListCreateAPIView):
     """
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
-    filter_backends = [filters.OrderingFilter]
-    ordering_fields = ['name']
+    filter_fields = ['name']
     ordering = ['name']
 
 
@@ -223,8 +217,7 @@ class RefereeList(generics.ListCreateAPIView):
     """
     queryset = Referee.objects.all()
     serializer_class = RefereeSerializer
-    filter_backends = [filters.OrderingFilter]
-    ordering_fields = ['name']
+    filter_fields = ['name']
     ordering = ['name']
 
 
@@ -242,8 +235,6 @@ class VenueList(generics.ListCreateAPIView):
     """
     queryset = Venue.objects.all()
     serializer_class = VenueSerializer
-    filter_backends = [filters.OrderingFilter]
-    ordering_fields = ['name']
     ordering = ['name']
 
 
@@ -261,8 +252,6 @@ class SeasonList(generics.ListCreateAPIView):
     """
     queryset = Season.objects.all()
     serializer_class = SeasonSerializer
-    filter_backends = [filters.OrderingFilter]
-    ordering_fields = ['name']
     ordering = ['name']
 
 

@@ -464,8 +464,8 @@ class SRSCrawler(object):
                         table2 = soup2.find('table', attrs={'class': None})
                         rows = table2.findAll('tr')
 
-                        host.logo = rows[1].findAll('td')[0].find('img')['src']   # logo host
-                        guest.logo = rows[1].findAll('td')[2].find('img')['src']  # logo guest
+                        host.fsr_logo = rows[1].findAll('td')[0].find('img')['src']   # logo host
+                        guest.fsr_logo = rows[1].findAll('td')[2].find('img')['src']  # logo guest
                         venueName = rows[3].findAll('td')[1].find(text=True)     # venue
                         if not Venue.objects.filter(name=venueName):
                             venue = Venue()
