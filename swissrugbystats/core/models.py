@@ -15,7 +15,7 @@ class Association(models.Model):
     """
     name = models.CharField(max_length=255, null=True, blank=True)
     abbreviation = models.CharField(max_length=10, null=False, unique=True)
-    parent_association = models.ForeignKey('self', verbose_name="Parent Association", related_name="child_associations", null=True, blank=True)
+    parent_association = models.ForeignKey('self', verbose_name="Parent Association", related_name="child_associations", null=True, blank=True, on_delete=models.SET_NULL)
     history = HistoricalRecords()
 
     def __str__(self):
