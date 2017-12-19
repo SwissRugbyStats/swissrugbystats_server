@@ -5,7 +5,7 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django_resized import ResizedImageField
-from django.utils.encoding import smart_unicode
+from django.utils.encoding import smart_unicode, python_2_unicode_compatible
 from swissrugbystats import settings
 from simple_history.models import HistoricalRecords
 
@@ -23,6 +23,7 @@ class Association(models.Model):
         return u"{} ({})".format(self.name, self.abbreviation)
 
 
+@python_2_unicode_compatible
 class Club(models.Model):
     """
     Represents a Rugby Club.
@@ -46,7 +47,7 @@ class Club(models.Model):
         return u", ".join([unicode(a) for a in self.associations.all()])
 
     def __str__(self):
-        return smart_unicode(self.name)
+        return smart_unicode(self.name) or u''
 
 
 class League(models.Model):
@@ -125,6 +126,7 @@ class Competition(models.Model):
         return u"{} ({})".format(self.league, self.season)
 
 
+@python_2_unicode_compatible
 class Team(models.Model):
     """
     Todo: document.
@@ -345,7 +347,7 @@ class Team(models.Model):
         return None
 
     def __str__(self):
-        return smart_unicode(self.name)
+        return smart_unicode(self.name) or u''
 
 
 class Venue(models.Model):
