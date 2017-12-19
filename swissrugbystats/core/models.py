@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from datetime import datetime
 from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django_resized import ResizedImageField
-from datetime import datetime
+from django.utils.encoding import smart_unicode
 from swissrugbystats import settings
 from simple_history.models import HistoricalRecords
 
@@ -344,7 +345,7 @@ class Team(models.Model):
         return None
 
     def __str__(self):
-        return u"{}".format(self.name)
+        return smart_unicode(self.name)
 
 
 class Venue(models.Model):
