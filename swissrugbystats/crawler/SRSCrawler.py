@@ -175,16 +175,20 @@ class SRSCrawler(object):
                         if len(cells) > 0:
                             # check if we are looking at the season table and not a playdown / playoff / finals table
                             if len(cells) > 5:
-                                # parse Teamname and remove leading and tailing spaces
-                                team = smart_unicode(cells[1].find(text=True).strip())
+                                team_name_raw = cells[1].find(text=True)
+                                try:
+                                    # parse Teamname and remove leading and tailing spaces
+                                    team_name_unicode = smart_unicode(team_name_raw.strip())
 
-                                if not Team.objects.filter(name=team):
-                                    t = Team(name=team)
-                                    t.save()
-                                    count += 1
-                                    print(u"Team {0} created".format(t.__str__()))
-                                else:
-                                    print(u"Team {0} already in DB".format(Team.objects.filter(name=team).first().__str__()))
+                                    if not Team.objects.filter(name=team_name_unicode):
+                                        t = Team(name=team_name_unicode)
+                                        t.save()
+                                        count += 1
+                                        print(u"Team {0} created".format(t.__str__()))
+                                    else:
+                                        print(u"Team {0} already in DB".format(Team.objects.filter(name=team_name_unicode).first().__str__()))
+                                except Exception as e:
+                                    raise Exception('Error while parsing Teamname {}: {}'.format(team_name_raw, e.__str__()))
                             else:
                                 print(u"Less than 5 columns, must be finals table or similar. --> ignore")
                     except Exception as e:
