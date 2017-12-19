@@ -144,6 +144,7 @@ class GameList(generics.ListCreateAPIView):
     Todo: document.
     """
     queryset = Game.objects.all()
+    filter_fields = ['competition', 'current_season']
     serializer_class = GameSerializer
 
 
