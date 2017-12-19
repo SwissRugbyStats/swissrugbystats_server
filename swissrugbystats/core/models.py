@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# encoding=utf8
 from __future__ import unicode_literals
 from django.conf import settings
 from django.db import models
@@ -344,7 +345,7 @@ class Team(models.Model):
         return None
 
     def __str__(self):
-        return self.name
+        return u"{}".format(self.name)
 
 
 class Venue(models.Model):
@@ -352,6 +353,9 @@ class Venue(models.Model):
     Todo: document.
     """
     name = models.CharField(max_length=100)
+    address = models.TextField(verbose_name="Address", null=True, blank=True)
+    longitude = models.CharField(verbose_name="Longitude", null=True, blank=True)
+    latitude = models.CharField(verbose_name="Latitude", null=True, blank=True)
     history = HistoricalRecords()
 
     def __str__(self):
