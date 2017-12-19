@@ -144,7 +144,7 @@ class GameList(generics.ListCreateAPIView):
     Todo: document.
     """
     queryset = Game.objects.all()
-    filter_fields = ['competition', 'current_season']
+    filter_fields = ['competition']
     serializer_class = GameSerializer
 
 
@@ -178,7 +178,7 @@ class TeamList(generics.ListCreateAPIView):
     """
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
-    filter_fields = ['name', 'club']
+    filter_fields = ['name', 'club', 'current_season']
     ordering = ['name']
 
 
