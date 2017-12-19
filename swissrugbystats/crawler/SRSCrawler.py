@@ -75,10 +75,14 @@ class SRSCrawler(object):
                 except Exception as e:
                     print(e)
 
-    def start(self, season=settings.CURRENT_SEASON, deep_crawl=False):
+    def start(self,
+              season=settings.CURRENT_SEASON,
+              deep_crawl=False,
+              competition_filter=[]
+              ):
         current_season = Season.objects.get(id=season)
 
-        self.log(u"Update started for season {}.\n    deep crawl = {}".format(current_season, deep_crawl))
+        self.log(u"Update started for season {}.\n    deep crawl = {}\n     competition_filter = {}".format(current_season, deep_crawl, competition_filter))
 
         # get current timestamp to calculate time needed for script exec
         start_time = datetime.now()
@@ -92,23 +96,30 @@ class SRSCrawler(object):
         else:
             print("    deep_crawl = False (default) - not following pagination")
 
+        print("    competition_filter = {}".format(competition_filter))
+
         print("")
         print("------------------------------------------------------------------")
         print("")
 
+        # competitions to crawl
+        competitions = Competition.objects.all()
+        if current_season:
+            competitions = Competition.objects.filter(season=current_season)
+        if competition_filter:
+            competitions = Competition.objects.filter(pk__in=competition_filter)
+
         # update team table
         print("crawl Teams")
         self.crawl_teams(
-            [(c.league.shortcode, c.get_league_url(), c.id) for c in Competition.objects.filter(season=current_season)])
+            [(c.league.shortcode, c.get_league_url(), c.id) for c in competitions])
 
         # update game table with fixtures
-        print(u"current season:" + str(settings.CURRENT_SEASON))
-        self.crawl_fixtures([(c.league.shortcode, c.get_fixtures_url(), c.id) for c in
-                                                 Competition.objects.filter(season=current_season)], deep_crawl)
+        print(u"current season:".format(settings.CURRENT_SEASON))
+        self.crawl_fixtures([(c.league.shortcode, c.get_fixtures_url(), c.id) for c in competitions], deep_crawl)
 
         # update game table with results
-        self.crawl_results([(c.league.shortcode, c.get_results_url(), c.id) for c in
-                                              Competition.objects.filter(season=current_season)], deep_crawl)
+        self.crawl_results([(c.league.shortcode, c.get_results_url(), c.id) for c in competitions], deep_crawl)
 
         results_log = u"""
                 Crawling completed.\n
