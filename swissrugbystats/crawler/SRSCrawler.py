@@ -4,7 +4,7 @@ from datetime import datetime
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils import timezone
-from django.utils.encoding import smart_unicode
+from django.utils.encoding import smart_text
 import logging
 import requests
 from swissrugbystats.core.models import Competition, Team, Season, Game, GameParticipation, Venue, Referee
@@ -178,7 +178,7 @@ class SRSCrawler(object):
                                 team_name_raw = cells[1].find(text=True)
                                 try:
                                     # parse Teamname and remove leading and tailing spaces
-                                    team_name_unicode = smart_unicode(team_name_raw.strip())
+                                    team_name_unicode = smart_text(team_name_raw.strip())
 
                                     if not Team.objects.filter(name=team_name_unicode):
                                         t = Team(name=team_name_unicode)

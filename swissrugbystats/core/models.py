@@ -5,7 +5,7 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django_resized import ResizedImageField
-from django.utils.encoding import smart_unicode, python_2_unicode_compatible
+from django.utils.encoding import smart_text, python_2_unicode_compatible
 from swissrugbystats import settings
 from simple_history.models import HistoricalRecords
 
@@ -48,7 +48,7 @@ class Club(models.Model):
         return u", ".join([unicode(a) for a in self.associations.all()])
 
     def __str__(self):
-        return smart_unicode(self.name) or u''
+        return smart_text(self.name) or u''
 
 
 @python_2_unicode_compatible
@@ -80,7 +80,7 @@ class League(models.Model):
         return u"{}{}/{}{}".format(settings.ARCHIVE_BASE_URL, season_slug, self.shortcode, settings.RESULTS_URL_ENDING)
 
     def __str__(self):
-        return smart_unicode(self.name)
+        return smart_text(self.name)
 
 @python_2_unicode_compatible
 class Season(models.Model):
@@ -92,7 +92,7 @@ class Season(models.Model):
     history = HistoricalRecords()
 
     def __str__(self):
-        return smart_unicode(self.name)
+        return smart_text(self.name)
 
 
 @python_2_unicode_compatible
@@ -350,7 +350,7 @@ class Team(models.Model):
         return None
 
     def __str__(self):
-        return smart_unicode(self.name) or u''
+        return smart_text(self.name) or u''
 
 @python_2_unicode_compatible
 class Venue(models.Model):
@@ -364,7 +364,7 @@ class Venue(models.Model):
     history = HistoricalRecords()
 
     def __str__(self):
-        smart_unicode(self.name)
+        smart_text(self.name)
 
 @python_2_unicode_compatible
 class Referee(models.Model):
@@ -375,7 +375,7 @@ class Referee(models.Model):
     history = HistoricalRecords()
 
     def __str__(self):
-        smart_unicode(self.name)
+        smart_text(self.name)
 
 @python_2_unicode_compatible
 class GameParticipation(models.Model):
