@@ -76,7 +76,7 @@ class League(models.Model):
         return u"{}{}/{}{}".format(settings.ARCHIVE_BASE_URL, season_slug, self.shortcode, settings.RESULTS_URL_ENDING)
 
     def __str__(self):
-        return self.name
+        return u"{}".format(self.name)
 
 
 class Season(models.Model):
@@ -88,7 +88,7 @@ class Season(models.Model):
     history = HistoricalRecords()
 
     def __str__(self):
-        return self.name
+        return u"{}".format(self.name)
 
 
 class Competition(models.Model):
@@ -344,7 +344,7 @@ class Team(models.Model):
         return None
 
     def __str__(self):
-        return self.name
+        return u"{}".format(self.name)
 
 
 class Venue(models.Model):
@@ -358,7 +358,7 @@ class Venue(models.Model):
     history = HistoricalRecords()
 
     def __str__(self):
-        return self.name
+        return u"{}".format(self.name)
 
 
 class Referee(models.Model):
@@ -369,7 +369,7 @@ class Referee(models.Model):
     history = HistoricalRecords()
 
     def __str__(self):
-        return self.name
+        return u"{}".format(self.name)
 
 
 class GameParticipation(models.Model):
