@@ -3,7 +3,8 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.utils import timezone, python_2_unicode_compatible, smart_unicode
+from django.utils import timezone
+from django.utils.encoding import smart_unicode, python_2_unicode_compatible
 import logging
 import requests
 from swissrugbystats.core.models import Competition, Team, Season, Game, GameParticipation, Venue, Referee
