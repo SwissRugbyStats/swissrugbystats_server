@@ -353,8 +353,8 @@ class Venue(models.Model):
     """
     name = models.CharField(max_length=100)
     address = models.TextField(verbose_name="Address", null=True, blank=True)
-    longitude = models.CharField(verbose_name="Longitude", null=True, blank=True)
-    latitude = models.CharField(verbose_name="Latitude", null=True, blank=True)
+    longitude = models.CharField(verbose_name="Longitude", null=True, blank=True, max_length=255)
+    latitude = models.CharField(verbose_name="Latitude", null=True, blank=True, max_length=255)
     history = HistoricalRecords()
 
     def __str__(self):
