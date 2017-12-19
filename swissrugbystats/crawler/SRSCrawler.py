@@ -366,6 +366,7 @@ class SRSCrawler(object):
                             count += 1
 
                     except Exception as e:
+                        msg = u'Type: {}, Args: {}, Str: {}'.format(e.__name__, e.args, e.__str__())
                         CrawlerLogMessage.objects.create(
                             message_type=CrawlerLogMessage.ERROR,
                             message=e.__str__()

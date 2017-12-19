@@ -88,7 +88,8 @@ class Season(models.Model):
     Todo: document.
     """
     name = models.CharField(max_length=50, null=True)
-    fsr_url_slug = models.CharField(max_length=50, unique=True, null=True, blank=True)
+    fsr_url_slug = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    is_current = models.BooleanField(default=False)
     history = HistoricalRecords()
 
     def __str__(self):
