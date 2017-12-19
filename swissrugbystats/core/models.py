@@ -46,7 +46,7 @@ class Club(models.Model):
         return u", ".join([unicode(a) for a in self.associations.all()])
 
     def __str__(self):
-        return u"{}".format(self.name)
+        return smart_unicode(self.name)
 
 
 class League(models.Model):
@@ -77,7 +77,7 @@ class League(models.Model):
         return u"{}{}/{}{}".format(settings.ARCHIVE_BASE_URL, season_slug, self.shortcode, settings.RESULTS_URL_ENDING)
 
     def __str__(self):
-        return u"{}".format(self.name)
+        return smart_unicode(self.name)
 
 
 class Season(models.Model):
@@ -89,7 +89,7 @@ class Season(models.Model):
     history = HistoricalRecords()
 
     def __str__(self):
-        return u"{}".format(self.name)
+        smart_unicode(self.name)
 
 
 class Competition(models.Model):
@@ -156,7 +156,7 @@ class Team(models.Model):
             if self.club:
                 if self.club.logo:
                     return u"{}{}".format(settings.BASE_URL, self.club.logo.url)
-        
+
         return self.fsr_logo
 
     def update_statistics(self):
@@ -359,7 +359,7 @@ class Venue(models.Model):
     history = HistoricalRecords()
 
     def __str__(self):
-        return u"{}".format(self.name)
+        smart_unicode(self.name)
 
 
 class Referee(models.Model):
@@ -370,7 +370,7 @@ class Referee(models.Model):
     history = HistoricalRecords()
 
     def __str__(self):
-        return u"{}".format(self.name)
+        smart_unicode(self.name)
 
 
 class GameParticipation(models.Model):
