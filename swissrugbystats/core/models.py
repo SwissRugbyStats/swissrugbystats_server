@@ -45,7 +45,7 @@ class Club(models.Model):
         return u", ".join([unicode(a) for a in self.associations.all()])
 
     def __str__(self):
-        return self.name
+        return u"{}".format(self.name)
 
 
 class League(models.Model):
