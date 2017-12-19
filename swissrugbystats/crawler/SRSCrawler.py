@@ -369,7 +369,7 @@ class SRSCrawler(object):
                         msg = u'Type: {}, Args: {}, Str: {}'.format(e.__name__, e.args, e.__str__())
                         CrawlerLogMessage.objects.create(
                             message_type=CrawlerLogMessage.ERROR,
-                            message=e.__str__()
+                            message=u"crawl_results_per_league, {}".format(msg)
                         )
             if deep_crawl:
                 # recursively parse all next sites if there are any
@@ -386,9 +386,10 @@ class SRSCrawler(object):
                                 self.crawl_results(nextUrl)
 
         except Exception as e:
+            msg = u'Type: {}, Args: {}, Str: {}'.format(e.__name__, e.args, e.__str__())
             CrawlerLogMessage.objects.create(
                 message_type=CrawlerLogMessage.ERROR,
-                message=e.__str__()
+                message=u"crawl_results_per_league, {}".format(msg)
             )
 
         if lock:
@@ -514,7 +515,7 @@ class SRSCrawler(object):
                 except Exception as e:
                     CrawlerLogMessage.objects.create(
                         message_type=CrawlerLogMessage.ERROR,
-                        message=e.__str__()
+                        message="crawl_fixtures_per_league, {}".format(e.__str__())
                     )
             if deep_crawl:
                 # recursively parse all next sites if there are any
@@ -530,7 +531,7 @@ class SRSCrawler(object):
         except Exception as e:
             CrawlerLogMessage.objects.create(
                 message_type=CrawlerLogMessage.ERROR,
-                message=e.__str__()
+                message=u"crawl_fixture_per_league, {}".format(e.__str__())
             )
 
         if lock:
