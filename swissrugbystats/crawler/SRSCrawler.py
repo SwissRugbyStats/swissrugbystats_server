@@ -176,6 +176,7 @@ class SRSCrawler(object):
                             # check if we are looking at the season table and not a playdown / playoff / finals table
                             if len(cells) > 5:
                                 team_name_raw = cells[1].find(text=True)
+                                print("Found {}".format(team_name_raw))
                                 try:
                                     # parse Teamname and remove leading and tailing spaces
                                     team_name_unicode = smart_text(team_name_raw.strip())
