@@ -178,7 +178,7 @@ class TeamList(generics.ListCreateAPIView):
     """
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
-    filter_fields = ['name', 'club', 'current_season']
+    filter_fields = ['name', 'club', 'current_competition']
     ordering = ['name']
 
 
