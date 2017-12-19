@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.utils import timezone
+from django.utils import timezone, python_2_unicode_compatible, smart_unicode
 import logging
 import requests
 from swissrugbystats.core.models import Competition, Team, Season, Game, GameParticipation, Venue, Referee
@@ -18,6 +18,7 @@ from swissrugbystats.crawler.models import CrawlerLogMessage
 # TODO: possibility to get old seasons (like 2013/2014)
 # TODO: concurrency
 
+@python_2_unicode_compatible
 class SRSCrawler(object):
     """
     Todo: document.
