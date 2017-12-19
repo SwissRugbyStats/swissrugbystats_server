@@ -10,6 +10,7 @@ from swissrugbystats import settings
 from simple_history.models import HistoricalRecords
 
 
+@python_2_unicode_compatible
 class Association(models.Model):
     """
     Represents an association.
@@ -50,6 +51,7 @@ class Club(models.Model):
         return smart_unicode(self.name) or u''
 
 
+@python_2_unicode_compatible
 class League(models.Model):
     """
     Todo: document.
@@ -80,7 +82,7 @@ class League(models.Model):
     def __str__(self):
         return smart_unicode(self.name)
 
-
+@python_2_unicode_compatible
 class Season(models.Model):
     """
     Todo: document.
@@ -90,9 +92,10 @@ class Season(models.Model):
     history = HistoricalRecords()
 
     def __str__(self):
-        smart_unicode(self.name)
+        return smart_unicode(self.name)
 
 
+@python_2_unicode_compatible
 class Competition(models.Model):
     """
     Todo: document.
@@ -349,7 +352,7 @@ class Team(models.Model):
     def __str__(self):
         return smart_unicode(self.name) or u''
 
-
+@python_2_unicode_compatible
 class Venue(models.Model):
     """
     Todo: document.
@@ -363,7 +366,7 @@ class Venue(models.Model):
     def __str__(self):
         smart_unicode(self.name)
 
-
+@python_2_unicode_compatible
 class Referee(models.Model):
     """
     Todo: document.
@@ -374,7 +377,7 @@ class Referee(models.Model):
     def __str__(self):
         smart_unicode(self.name)
 
-
+@python_2_unicode_compatible
 class GameParticipation(models.Model):
     """
     Todo: document.
@@ -401,7 +404,7 @@ class GameParticipation(models.Model):
     def __str__(self):
         return u"{} {} ({}/{}/{})".format(self.team.name, self.score, self.tries, self.redCards, self.points)
 
-
+@python_2_unicode_compatible
 class Game(models.Model):
     """
     Todo: document.
@@ -457,7 +460,7 @@ class Game(models.Model):
 
         return points
 
-
+@python_2_unicode_compatible
 class Favorite(models.Model):
     """
     Todo: document.
