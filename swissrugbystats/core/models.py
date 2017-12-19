@@ -460,7 +460,6 @@ class Game(models.Model):
 
         return points
 
-@python_2_unicode_compatible
 class Favorite(models.Model):
     """
     Todo: document.
