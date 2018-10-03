@@ -1,13 +1,20 @@
-from swissrugbystats.api.serializer import *
+from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
+from django.contrib.auth import get_user_model
+from django.core.mail import send_mail
+from django.shortcuts import get_object_or_404
+from rest_auth.registration.views import SocialLoginView
 from rest_framework import generics, permissions, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from django.shortcuts import get_object_or_404
-from django.core.mail import send_mail
+
 from swissrugbystats.api.http_errors import ResourceAlreadyExists
-from django.contrib.auth import get_user_model
-from django_filters import rest_framework as filters
+from swissrugbystats.api.serializer import *
+
+
+class FacebookLogin(SocialLoginView):
+    adapter_class = FacebookOAuth2Adapter
+
 
 @api_view(('GET',))
 def api_root(request, format=None):
@@ -26,7 +33,8 @@ def api_root(request, format=None):
         },
         '/game-participations': {
             reverse('game-participations', request=request, format=format): 'list of all game-participations',
-            "{}/<id>".format(reverse('game-participations', request=request, format=format)): 'game-participations detail',
+            "{}/<id>".format(
+                reverse('game-participations', request=request, format=format)): 'game-participations detail',
         },
         '/clubs': {
             reverse('clubs', request=request, format=format): 'list of all clubs',
@@ -37,8 +45,10 @@ def api_root(request, format=None):
             "{}/<team-id>".format(reverse('teams', request=request, format=format)): {
                 "{}/<team-id>".format(reverse('teams', request=request, format=format)): 'team-details',
                 "{}/<team-id>/games".format(reverse('teams', request=request, format=format)): {
-                    "{}/<team-id>/games".format(reverse('teams', request=request, format=format)): 'all games by team-id',
-                    "{}/<team-id>/games/season/<season-id>".format(reverse('teams', request=request, format=format)): 'all games by team and season id',
+                    "{}/<team-id>/games".format(
+                        reverse('teams', request=request, format=format)): 'all games by team-id',
+                    "{}/<team-id>/games/season/<season-id>".format(
+                        reverse('teams', request=request, format=format)): 'all games by team and season id',
                     "{}/<team-id>/games/next".format(reverse('teams', request=request, format=format)): 'next game',
                     "{}/<team-id>/games/last".format(reverse('teams', request=request, format=format)): 'last game',
                 }
@@ -46,7 +56,7 @@ def api_root(request, format=None):
         },
         '/players': {
             '/': reverse('players', request=request, format=format),
-            '/{id}' : 'player details'
+            '/{id}': 'player details'
         },
         '/referees': {
             '/': reverse('referees', request=request, format=format),
@@ -197,7 +207,6 @@ class GameSchedule(generics.ListCreateAPIView):
     serializer_class = GameSerializer
 
     def get_queryset(self):
-
         queryset = Team.objects.all()
 
         # Perform the lookup filtering.
@@ -264,7 +273,6 @@ class NextGameByTeamId(generics.RetrieveUpdateAPIView):
     serializer_class = GameSerializer
 
     def get_object(self):
-
         queryset = self.filter_queryset(self.get_queryset())
 
         # Perform the lookup filtering.
@@ -284,7 +292,6 @@ class LastGameByTeamId(generics.RetrieveUpdateAPIView):
     serializer_class = GameSerializer
 
     def get_object(self):
-
         queryset = self.filter_queryset(self.get_queryset())
 
         # Perform the lookup filtering.
@@ -331,7 +338,8 @@ class CreateUser(generics.CreateAPIView):
                     **user_data
                 )
                 text = 'Thanks for registering on swissrugbystats.ch! You can now log in and add your favorite teams.'
-                send_mail('Thanks for registering', text, 'christian.glatthard@rugbygear.ch', [u_email], fail_silently=False)
+                send_mail('Thanks for registering', text, 'christian.glatthard@rugbygear.ch', [u_email],
+                          fail_silently=False)
                 return Response(UserSerializer(instance=user).data, status=status.HTTP_201_CREATED)
             else:
                 return Response(serialized._errors, status=status.HTTP_400_BAD_REQUEST)
@@ -352,7 +360,7 @@ class CreateFavorite(generics.ListCreateAPIView):
         u = self.request.user
         tid = serializer.data['team']
         t = Team.objects.get(id=tid)
-        #f = Favorite(team=t, user=u)
+        # f = Favorite(team=t, user=u)
         favs = Favorite.objects.filter(team=t, user=u)
         if len(favs) > 0:
             raise ResourceAlreadyExists()

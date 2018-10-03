@@ -26,6 +26,8 @@ TODO:
 - [ ] migrate data
 - [x] django-jet
 - [ ] crawler cronjob (jet dashboard?)
+- [ ] document crawler API
+- [ ] setup email config
 
 
 main components
@@ -87,3 +89,8 @@ Open your crontab for editing with `crontab -e` and add the following lines:
     # get latest data from suisserugby.com
     0 3 * * * /path/to/script/update_srs.sh
 
+
+### Oauth Login notes
+
+- https://django-allauth.readthedocs.io/
+- https://django-rest-auth.readthedocs.io/

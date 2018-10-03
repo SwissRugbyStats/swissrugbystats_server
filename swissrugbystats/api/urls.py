@@ -1,14 +1,14 @@
 from django.conf.urls import url
-from django.conf.urls.i18n import i18n_patterns
 from rest_framework.urlpatterns import format_suffix_patterns
+from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
+
 from swissrugbystats.api import views
 from swissrugbystats.api.crawler import views as crawler_views
-from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 
 urlpatterns = [
     url(r'^$', views.api_root),
 
-    #url(r'^config/?$', views.ConfigurationVariableList.as_view(), name="config"),
+    # url(r'^config/?$', views.ConfigurationVariableList.as_view(), name="config"),
 
     url(r'^leagues/?$', views.LeagueList.as_view(), name="leagues"),
     url(r'^leagues/(?P<pk>[0-9]+)/?$', views.LeagueDetail.as_view(), name='leagues_detail'),
@@ -54,6 +54,8 @@ urlpatterns = [
     # JWT Authentication
     url(r'^api-token-auth/?', obtain_jwt_token),
     url(r'^api-token-refresh/?', refresh_jwt_token),
+
+    url(r'^rest-auth/facebook/$', views.FacebookLogin.as_view(), name='fb_login')
 
 ]
 

@@ -11,9 +11,13 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 from datetime import timedelta
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 PROJECT_DIR = os.path.join(BASE_DIR, 'swissrugbystats')
 BASE_URL = os.environ.get('BASE_URL', "http://api.swissrugbystats.ch")
+
+# TODO: Email backend settings for allauth
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Import email settings in the form of
 '''
@@ -48,25 +52,32 @@ ALLOWED_HOSTS = [
     'swissrugbystats-backend.herokuapp.com'
 ]
 
-
 # Application definition
 
 INSTALLED_APPS = (
     'jet',
     'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.sites',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # restframework
     'rest_framework',
+    'rest_framework.authtoken',
     'django_filters',
     'corsheaders',
     # oauth2
-    'oauth2_provider',
-    'social_django',
-    'rest_framework_social_oauth2',
+    # 'oauth2_provider',
+    # 'social_django',
+    # 'rest_framework_social_oauth2',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.google',
+    'rest_auth',
     # swissrugbystats apps
     'swissrugbystats.core',
     'swissrugbystats.coach',
@@ -88,11 +99,9 @@ MIDDLEWARE_CLASSES = (
     'simple_history.middleware.HistoryRequestMiddleware',
 )
 
-
 ROOT_URLCONF = 'swissrugbystats.urls'
 
 WSGI_APPLICATION = 'swissrugbystats.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
@@ -124,7 +133,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
@@ -136,7 +144,6 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(PROJECT_DIR, "media")
-
 
 TEMPLATES = [
     {
@@ -152,8 +159,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 # oauth
-                'social_django.context_processors.backends',
-                'social_django.context_processors.login_redirect',
+                # 'social_django.context_processors.backends',
+                # 'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -174,22 +181,25 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
-        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
-        'rest_framework_social_oauth2.authentication.SocialAuthentication'
+        # 'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+        # 'rest_framework_social_oauth2.authentication.SocialAuthentication'
     ),
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
 }
 
 AUTHENTICATION_BACKENDS = (
     # Facebook OAuth2
-    'social_core.backends.facebook.FacebookAppOAuth2',
-    'social_core.backends.facebook.FacebookOAuth2',
+    # 'social_core.backends.facebook.FacebookAppOAuth2',
+    # 'social_core.backends.facebook.FacebookOAuth2',
 
     # django-rest-framework-social-oauth2
-    'rest_framework_social_oauth2.backends.DjangoOAuth2',
+    # 'rest_framework_social_oauth2.backends.DjangoOAuth2',
 
     # Django
     'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
 )
 
 # Facebook configuration
@@ -203,14 +213,13 @@ SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
 }
 
 # choose the user model
-#AUTH_USER_MODEL = 'swissrugby.MyUser'
+# AUTH_USER_MODEL = 'swissrugby.MyUser'
 AUTH_USER_MODEL = 'auth.User'
 
 # Django Resized
 DJANGORESIZED_DEFAULT_SIZE = [1920, 1080]
 DJANGORESIZED_DEFAULT_QUALITY = 75
 DJANGORESIZED_DEFAULT_KEEP_META = True
-
 
 # custom global vars, can be overwritten by env
 CURRENT_SEASON = os.environ.get('CURRENT_SEASON', 1)
@@ -220,3 +229,5 @@ FIXTURES_URL_ENDING = os.environ.get("FIXTURES_URL_ENDING", "/lt/fixtures.html")
 RESULTS_URL_ENDING = os.environ.get("RESULTS_URL_ENDING", "/lt/results.html")
 LEAGUE_URL_ENDING = os.environ.get("LEAGUE_URL_ENDING", ".html")
 SLACK_WEBHOOK_URL = os.environ.get("SLACK_WEBHOOK_URL", "")
+
+SITE_ID = 1
