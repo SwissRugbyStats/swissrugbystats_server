@@ -13,6 +13,4 @@ urlpatterns = [
                   url(r'^jet/', include('jet.urls', 'jet')),  # Django JET URLS
                   url(r'^admin/', include(admin.site.urls)),
 
-                  url(r'^rest-auth/', include('rest_auth.urls')),
-                  url(r'^accounts/', include('allauth.urls')),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

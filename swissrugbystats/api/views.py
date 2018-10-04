@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
-from rest_auth.registration.views import SocialLoginView
 from rest_framework import generics, permissions, status
 from rest_framework import response, schemas
 from rest_framework.decorators import api_view, renderer_classes
@@ -14,10 +12,6 @@ from rest_framework_swagger.renderers import OpenAPIRenderer, SwaggerUIRenderer
 
 from swissrugbystats.api.http_errors import ResourceAlreadyExists
 from swissrugbystats.api.serializer import *
-
-
-class FacebookLogin(SocialLoginView):
-    adapter_class = FacebookOAuth2Adapter
 
 
 @api_view()
@@ -355,9 +349,9 @@ class CreateUser(generics.CreateAPIView):
         u_email = serializer.data['username']
         if u_email is not None:
             VALID_USER_FIELDS = [f.name for f in get_user_model()._meta.fields]
-            serialized = UserSerializer(data=self.request.DATA)
+            serialized = UserSerializer(data=self.request.data)
             if serialized.is_valid():
-                user_data = {field: data for (field, data) in self.request.DATA.items() if field in VALID_USER_FIELDS}
+                user_data = {field: data for (field, data) in self.request.data.items() if field in VALID_USER_FIELDS}
                 user_data.update(email=u_email)
                 user = get_user_model().objects.create_user(
                     **user_data

@@ -1,13 +1,15 @@
-from django.conf.urls import url
+from django.conf.urls import url, include
 from rest_framework.urlpatterns import format_suffix_patterns
-from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 
 from swissrugbystats.api import views
-from swissrugbystats.api.crawler import views as crawler_views
 
 urlpatterns = [
     url(r'^$', views.api_root),
     url(r'^swagger/$', views.schema_view),
+
+    # get urls from sub modules
+    url(r'^', include('swissrugbystats.api.auth.urls')),
+    url(r'^', include('swissrugbystats.api.crawler.urls')),
 
     # url(r'^config/?$', views.ConfigurationVariableList.as_view(), name="config"),
 
@@ -47,16 +49,6 @@ urlpatterns = [
     url(r'^users/?$', views.CreateUser.as_view(), name='create-user'),
     # url(r'^users/changePW$', views.CreateUser.as_view(), name='create-user'),
     url(r'^favorites/?$', views.CreateFavorite.as_view(), name='create-favorite'),
-
-    url(r'^crawler/logs/?$', crawler_views.CrawlerLogMessageList.as_view(), name='crawler-logs'),
-    url(r'^crawler/logs/(?P<pk>[0-9]+)/?$', crawler_views.CrawlerLogMessageDetail.as_view(), name='crawler-log-detail'),
-    url(r'^crawler/start/?$', crawler_views.start, name='crawler-start'),
-
-    # JWT Authentication
-    url(r'^api-token-auth/?', obtain_jwt_token),
-    url(r'^api-token-refresh/?', refresh_jwt_token),
-
-    url(r'^rest-auth/facebook/$', views.FacebookLogin.as_view(), name='fb_login')
 
 ]
 
