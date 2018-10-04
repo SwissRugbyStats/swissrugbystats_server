@@ -46,6 +46,7 @@ if 'DEBUG' in os.environ and os.environ['DEBUG'] == 'True':
     DEBUG = True
 
 ALLOWED_HOSTS = [
+    'swissrugbystats.ch',
     'api.swissrugbystats.ch',
     'api3.swissrugbystats.ch',
     'localhost',
@@ -55,7 +56,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = (
-    'jet',
+    # 'jet',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.sites',
