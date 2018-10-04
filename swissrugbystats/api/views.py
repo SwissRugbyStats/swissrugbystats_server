@@ -1,12 +1,16 @@
+# -*- coding: utf-8 -*-
 from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from rest_auth.registration.views import SocialLoginView
 from rest_framework import generics, permissions, status
-from rest_framework.decorators import api_view
+from rest_framework import response, schemas
+from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.renderers import CoreJSONRenderer
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from rest_framework_swagger.renderers import OpenAPIRenderer, SwaggerUIRenderer
 
 from swissrugbystats.api.http_errors import ResourceAlreadyExists
 from swissrugbystats.api.serializer import *
@@ -16,6 +20,18 @@ class FacebookLogin(SocialLoginView):
     adapter_class = FacebookOAuth2Adapter
 
 
+@api_view()
+@renderer_classes([SwaggerUIRenderer, OpenAPIRenderer, CoreJSONRenderer])
+def schema_view(request):
+    '''
+    Swagger Documentation of the Swiss Rugby Stats API.
+    :param request:
+    :return:
+    '''
+    generator = schemas.SchemaGenerator(title='Swiss Rugby Stats API', urlconf='swissrugbystats.api.urls')
+    return response.Response(generator.get_schema(request=request))
+
+
 @api_view(('GET',))
 def api_root(request, format=None):
     """
@@ -23,6 +39,7 @@ def api_root(request, format=None):
     Feel free to use this API. I would love to see what you did with it.
     """
     return Response({
+        '/swagger': 'A swagger UI of the API',
         '/leagues': {
             reverse('leagues', request=request, format=format): 'list of all league objects',
             "{}/<id>".format(reverse('leagues', request=request, format=format)): 'league details'
@@ -151,7 +168,8 @@ class CompetitionList(generics.ListCreateAPIView):
 
 class GameList(generics.ListCreateAPIView):
     """
-    Todo: document.
+    Get a list of all the games.
+    You can filter by competition.
     """
     queryset = Game.objects.all()
     filter_fields = ['competition']
@@ -160,7 +178,7 @@ class GameList(generics.ListCreateAPIView):
 
 class GameDetail(generics.RetrieveUpdateAPIView):
     """
-    Todo: document.
+    Get details of a specific game.
     """
     queryset = Game.objects.all()
     serializer_class = GameDetailSerializer
@@ -168,7 +186,7 @@ class GameDetail(generics.RetrieveUpdateAPIView):
 
 class GameParticipationList(generics.ListCreateAPIView):
     """
-    Todo: document.
+    Get all the game participations.
     """
     queryset = GameParticipation.objects.all()
     serializer_class = GameParticipationSerializer
@@ -176,7 +194,7 @@ class GameParticipationList(generics.ListCreateAPIView):
 
 class GameParticipationDetail(generics.RetrieveUpdateAPIView):
     """
-    Todo: document.
+    Get details of a specific game participation.
     """
     queryset = GameParticipation.objects.all()
     serializer_class = GameParticipationSerializer
@@ -184,7 +202,8 @@ class GameParticipationDetail(generics.RetrieveUpdateAPIView):
 
 class TeamList(generics.ListCreateAPIView):
     """
-    Todo: document.
+    Get a list of all the teams.
+    You can filte rby name, club and current competition.
     """
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
@@ -194,7 +213,7 @@ class TeamList(generics.ListCreateAPIView):
 
 class TeamDetail(generics.RetrieveUpdateAPIView):
     """
-    Todo: document.
+    Get details of a specific team.
     """
     queryset = Team.objects.all()
     serializer_class = TeamInsightSerializer
@@ -202,7 +221,7 @@ class TeamDetail(generics.RetrieveUpdateAPIView):
 
 class GameSchedule(generics.ListCreateAPIView):
     """
-    Todo: document.
+    Get the game schedule of a specific team.
     """
     serializer_class = GameSerializer
 
@@ -223,7 +242,7 @@ class GameSchedule(generics.ListCreateAPIView):
 
 class RefereeList(generics.ListCreateAPIView):
     """
-    Todo: document.
+    Get a list of all the referees.
     """
     queryset = Referee.objects.all()
     serializer_class = RefereeSerializer
@@ -233,7 +252,7 @@ class RefereeList(generics.ListCreateAPIView):
 
 class RefereeDetail(generics.RetrieveUpdateAPIView):
     """
-    Todo: document.
+    Get the details of a referee.
     """
     queryset = Referee.objects.all()
     serializer_class = VenueSerializer
@@ -241,7 +260,7 @@ class RefereeDetail(generics.RetrieveUpdateAPIView):
 
 class VenueList(generics.ListCreateAPIView):
     """
-    Todo: document.
+    Get a list of all the venues.
     """
     queryset = Venue.objects.all()
     serializer_class = VenueSerializer
@@ -250,7 +269,7 @@ class VenueList(generics.ListCreateAPIView):
 
 class VenueDetail(generics.RetrieveUpdateAPIView):
     """
-    Todo: document.
+    Get the details of a specific venue.
     """
     queryset = Venue.objects.all()
     serializer_class = VenueSerializer
@@ -258,7 +277,7 @@ class VenueDetail(generics.RetrieveUpdateAPIView):
 
 class SeasonList(generics.ListCreateAPIView):
     """
-    Todo: document.
+    Get a list of all the seasons.
     """
     queryset = Season.objects.all()
     serializer_class = SeasonSerializer
@@ -267,7 +286,7 @@ class SeasonList(generics.ListCreateAPIView):
 
 class NextGameByTeamId(generics.RetrieveUpdateAPIView):
     """
-    Todo: document.
+    Get the next game of a specific team.
     """
     queryset = Team.objects.all()
     serializer_class = GameSerializer
@@ -288,6 +307,9 @@ class NextGameByTeamId(generics.RetrieveUpdateAPIView):
 
 
 class LastGameByTeamId(generics.RetrieveUpdateAPIView):
+    """
+    Get the last game played by a specific team.
+    """
     queryset = Team.objects.all()
     serializer_class = GameSerializer
 
@@ -309,7 +331,7 @@ class LastGameByTeamId(generics.RetrieveUpdateAPIView):
 @api_view(['GET'])
 def get_team_games_by_season(request, pk, season):
     """
-
+    Get all the games a team has in a specific season.
     :param request:
     :param pk:
     :param season:
@@ -322,6 +344,9 @@ def get_team_games_by_season(request, pk, season):
 
 
 class CreateUser(generics.CreateAPIView):
+    """
+    Create a user.
+    """
     permission_classes = (permissions.AllowAny,)
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
@@ -346,6 +371,9 @@ class CreateUser(generics.CreateAPIView):
 
 
 class CreateFavorite(generics.ListCreateAPIView):
+    """
+    Create a favourite.
+    """
     permission_classes = (permissions.IsAuthenticated,)
     queryset = Favorite.objects.all()
     serializer_class = FavoriteSerializer

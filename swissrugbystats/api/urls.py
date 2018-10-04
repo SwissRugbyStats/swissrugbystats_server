@@ -7,6 +7,7 @@ from swissrugbystats.api.crawler import views as crawler_views
 
 urlpatterns = [
     url(r'^$', views.api_root),
+    url(r'^swagger/$', views.schema_view),
 
     # url(r'^config/?$', views.ConfigurationVariableList.as_view(), name="config"),
 
