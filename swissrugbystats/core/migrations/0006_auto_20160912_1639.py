@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 import django.db.models.deletion
 import django_resized.forms
-
+from django.db.models import DO_NOTHING
 
 class Migration(migrations.Migration):
 
@@ -134,7 +134,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='team',
             name='current_competition',
-            field=models.ForeignKey(verbose_name='Aktueller Wettbewerb', blank=True, to='core.Competition', null=True),
+            field=models.ForeignKey(verbose_name='Aktueller Wettbewerb', blank=True, to='core.Competition', null=True, on_delete=DO_NOTHING),
         ),
         migrations.AddField(
             model_name='team',
@@ -174,6 +174,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='team',
             name='club',
-            field=models.ForeignKey(blank=True, to='core.Club', null=True),
+            field=models.ForeignKey(blank=True, to='core.Club', null=True, on_delete=DO_NOTHING),
         ),
     ]
