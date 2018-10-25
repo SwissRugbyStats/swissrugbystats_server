@@ -4,8 +4,8 @@ from rest_auth.registration.views import SocialAccountListView, SocialAccountDis
 from swissrugbystats.api.auth import views
 
 urlpatterns = [
-    path('rest-auth', include('rest_auth.urls')),
-    path('accounts', include('allauth.urls')),
+    path('rest-auth/', include('rest_auth.urls')),
+    path('accounts/', include('allauth.urls')),
 
     path('rest-auth/facebook', views.FacebookLogin.as_view(), name='fb_login'),
     path('rest-auth/twitter', views.TwitterLogin.as_view(), name='twitter_login'),
