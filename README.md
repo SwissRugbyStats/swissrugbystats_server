@@ -48,7 +48,13 @@ just run
 
 ### activate virtualenv
 
+Unix / Mac:
+
     source env/bin/activate
+    
+Windows:
+    
+    ./env/Scripts/activate
 
 ### run webcrawler
 without logging:
