@@ -1,4 +1,5 @@
 from swissrugbystats.crawler.crawler import AbstractCrawler
+from swissrugbystats.crawler.log.CrawlerLogger import CrawlerLogger
 from swissrugbystats.crawler.models import CrawlerLogMessage
 from swissrugbystats.crawler.parser import FSRLeagueParser
 
@@ -14,14 +15,17 @@ class TeamCrawler(AbstractCrawler):
         :return: count
         """
         count = 0
-        print("crawl {}".format(url[1]))
+        logger = CrawlerLogger.get_logger_for_class(cls)
+
+        logger.log("crawl {}".format(url[1]))
         try:
             tables = FSRLeagueParser.get_tables(url)
 
             for table in tables:
                 for row in table.findAll('tr'):
                     try:
-                        FSRLeagueParser.parse_row(row)
+                        if FSRLeagueParser.parse_row(row):
+                            count = count + 1
                     except Exception as e:
                         CrawlerLogMessage.objects.create(
                             message_type=CrawlerLogMessage.ERROR,

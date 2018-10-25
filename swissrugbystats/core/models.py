@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from datetime import datetime
+
 from django.conf import settings
 from django.db import models
 from django.db.models import Q
@@ -19,7 +20,8 @@ class Association(models.Model):
     """
     name = models.CharField(max_length=255, null=True, blank=True)
     abbreviation = models.CharField(max_length=10, null=False, unique=True)
-    parent_association = models.ForeignKey('self', verbose_name="Parent Association", related_name="child_associations", null=True, blank=True, on_delete=models.SET_NULL)
+    parent_association = models.ForeignKey('self', verbose_name="Parent Association", related_name="child_associations",
+                                           null=True, blank=True, on_delete=models.SET_NULL)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -34,7 +36,8 @@ class Club(models.Model):
     name = models.CharField(max_length=255, null=False)
     abbreviation = models.CharField(max_length=10, null=False)
     logo = ResizedImageField(size=[500, 500], upload_to='logos/', blank=True, null=True, verbose_name='Club logo')
-    description = models.TextField(null=True, blank=True, verbose_name='Description', help_text='Tell us something about your club.')
+    description = models.TextField(null=True, blank=True, verbose_name='Description',
+                                   help_text='Tell us something about your club.')
 
     email = models.CharField(max_length=255, null=True, blank=True, verbose_name='Main E-mail')
     website = models.CharField(max_length=255, null=True, blank=True, verbose_name='Website')
@@ -67,10 +70,10 @@ class League(models.Model):
         return u"{}{}{}".format(settings.COMPETITIONS_BASE_URL, self.shortcode, settings.LEAGUE_URL_ENDING)
 
     def get_fixtures_url(self):
-            return u"{}{}{}".format(settings.COMPETITIONS_BASE_URL, self.shortcode, settings.FIXTURES_URL_ENDING)
+        return u"{}{}{}".format(settings.COMPETITIONS_BASE_URL, self.shortcode, settings.FIXTURES_URL_ENDING)
 
     def get_results_url(self):
-            return u"{}{}{}".format(settings.COMPETITIONS_BASE_URL, self.shortcode, settings.RESULTS_URL_ENDING)
+        return u"{}{}{}".format(settings.COMPETITIONS_BASE_URL, self.shortcode, settings.RESULTS_URL_ENDING)
 
     def get_archive_league_url(self, season_slug):
         return u"{}{}/{}{}".format(settings.ARCHIVE_BASE_URL, season_slug, self.shortcode, settings.LEAGUE_URL_ENDING)
@@ -83,6 +86,7 @@ class League(models.Model):
 
     def __str__(self):
         return u"{}".format(self.name)
+
 
 @python_2_unicode_compatible
 class Season(models.Model):
@@ -110,7 +114,6 @@ class Competition(models.Model):
     unique_together = ("league", "season")
 
     def get_league_url(self):
-        print("get_league_url {}".format(self.__str__()))
         if self.season.id == int(settings.CURRENT_SEASON):
             return self.league.get_league_url()
         else:
@@ -139,7 +142,8 @@ class Team(models.Model):
     """
     name = models.CharField(max_length=50)
     fsr_logo = models.CharField(max_length=200, null=True, blank=True)
-    custom_logo = ResizedImageField(size=[500, 500], upload_to='logos/', blank=True, null=True, help_text='Custom team logo.')
+    custom_logo = ResizedImageField(size=[500, 500], upload_to='logos/', blank=True, null=True,
+                                    help_text='Custom team logo.')
     current_competition = models.ForeignKey(Competition, null=True, blank=True, verbose_name='Aktueller Wettbewerb')
     club = models.ForeignKey(Club, null=True, blank=True)
 
@@ -194,7 +198,6 @@ class Team(models.Model):
 
         return score
 
-
     def get_point_count(self):
         """
 
@@ -244,11 +247,11 @@ class Team(models.Model):
         wins = 0
 
         for g in [x for x in games if x.host.team == self]:
-            if g.get_host_points() >= 4:
+            if g.get_host_points() and g.get_host_points() >= 4:
                 wins += 1
 
         for g in [x for x in games if x.guest.team == self]:
-            if g.get_guest_points() >= 4:
+            if g.get_guest_points() and g.get_guest_points() >= 4:
                 wins += 1
 
         return wins
@@ -294,7 +297,7 @@ class Team(models.Model):
 
         :return:
         """
-        #return GameParticipation.objects.filter(Q(team=self) & Q(score__isnull=False)).count()
+        # return GameParticipation.objects.filter(Q(team=self) & Q(score__isnull=False)).count()
         games = Game.objects.all()
         count = 0
 
@@ -323,7 +326,8 @@ class Team(models.Model):
         :return:
         """
         gps = GameParticipation.objects.filter(Q(team=self))
-        games = Game.objects.filter(competition__season=season).filter(Q(host__in=gps) | Q(guest__in=gps)).order_by('date')
+        games = Game.objects.filter(competition__season=season).filter(Q(host__in=gps) | Q(guest__in=gps)).order_by(
+            'date')
         return games
 
     def get_next_game(self):
@@ -355,6 +359,7 @@ class Team(models.Model):
     def __str__(self):
         return u"{}".format(self.name)
 
+
 @python_2_unicode_compatible
 class Venue(models.Model):
     """
@@ -369,6 +374,7 @@ class Venue(models.Model):
     def __str__(self):
         return u"{}".format(self.name)
 
+
 @python_2_unicode_compatible
 class Referee(models.Model):
     """
@@ -379,6 +385,7 @@ class Referee(models.Model):
 
     def __str__(self):
         return u"{}".format(self.name)
+
 
 @python_2_unicode_compatible
 class GameParticipation(models.Model):
@@ -406,6 +413,7 @@ class GameParticipation(models.Model):
 
     def __str__(self):
         return u"{} {} ({}/{}/{})".format(self.team.name, self.score, self.tries, self.redCards, self.points)
+
 
 @python_2_unicode_compatible
 class Game(models.Model):
@@ -462,6 +470,7 @@ class Game(models.Model):
             points += 1
 
         return points
+
 
 class Favorite(models.Model):
     """

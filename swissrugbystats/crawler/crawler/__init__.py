@@ -1,4 +1,4 @@
-from AbstractCrawler import AbstractCrawler
-from TeamCrawler import TeamCrawler
-from FixtureCrawler import FixtureCrawler
-from ResultCrawler import ResultCrawler
+from swissrugbystats.crawler.crawler.AbstractCrawler import AbstractCrawler
+from swissrugbystats.crawler.crawler.SRSCrawler import SRSCrawler
+from swissrugbystats.crawler.crawler.SRSCrawlerConcurrent import SRSCrawlerConcurrent
+

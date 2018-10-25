@@ -35,9 +35,5 @@ class FSRAbstractParser(object):
         raise NotImplementedError('must define parseRow to use this base class')
 
     @staticmethod
-    def create_or_update(team):
-        raise NotImplementedError('must define parseRow to use this base class')
-
-    @staticmethod
     def get_request_headers():
         return {'User-Agent': 'Mozilla 5.0'}

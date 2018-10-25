@@ -2,8 +2,7 @@
 import datetime
 from django.conf import settings
 from swissrugbystats.core.models import Team
-from swissrugbystats.crawler.ConcurrentSRSCrawler import SRSAsyncCrawler
-from swissrugbystats.crawler.SRSCrawler import SRSCrawler
+from swissrugbystats.crawler.crawler import SRSCrawler, SRSCrawlerConcurrent
 
 
 def update_statistics(log_to_db=True):
@@ -12,10 +11,17 @@ def update_statistics(log_to_db=True):
     :param log_to_db:
     :return:
     """
-    crawler = SRSCrawler(enable_logging=log_to_db)
+    crawler = SRSCrawler()
     teams = Team.objects.all()
 
-    crawler.log("Statistics update started.")
+    start_msg = u"""
+
+------------------------------------------------------------------
+Statistics update started.
+------------------------------------------------------------------
+        
+        """
+    crawler.log(start_msg)
 
     # get current timestamp to calculate time needed for script exec
     start_time = datetime.datetime.now()
@@ -27,10 +33,17 @@ def update_statistics(log_to_db=True):
         except Exception as e:
             print(u"Exception! {}".format(e))
 
-    statistic_success_message = u"Statistics update complete.\n{0} team statistics updated\nTime needed: {1}".format(teams.count(),(datetime.datetime.now() - start_time))
+    end_msg = u"""
 
-    print(statistic_success_message)
-    crawler.log(statistic_success_message)
+------------------------------------------------------------------
+Statistics update complete.\n
+    {0} team statistics updated\n
+    Time needed: {1}
+------------------------------------------------------------------
+        
+        """.format(teams.count(),(datetime.datetime.now() - start_time))
+
+    crawler.log(end_msg)
 
 
 def crawl_and_update(deep_crawl=True, season=settings.CURRENT_SEASON, async=False, log_to_db=True):
@@ -42,8 +55,8 @@ def crawl_and_update(deep_crawl=True, season=settings.CURRENT_SEASON, async=Fals
     :param log_to_db:
     :return:
     """
-    if (async):
-        crawler = SRSAsyncCrawler(enable_logging=log_to_db)
+    if async:
+        crawler = SRSCrawlerConcurrent(enable_logging=log_to_db)
     else:
         crawler = SRSCrawler(enable_logging=log_to_db)
 

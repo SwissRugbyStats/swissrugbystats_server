@@ -8,9 +8,10 @@ class AbstractCrawler(object):
         :param follow_pagination:
         :return:
         """
+        count = 0
         for url in urls:
-            cls.crawl_per_league(url, follow_pagination)
-        # return self.statistics['teams']
+            count = count + cls.crawl_per_league(url, follow_pagination)
+        return count
         # raise NotImplementedError('must define crawl to use this base class')
 
     @classmethod

@@ -6,27 +6,21 @@ from bs4 import BeautifulSoup
 from django.utils import timezone
 
 from swissrugbystats.core.models import Team, Game, GameParticipation, Venue
+from swissrugbystats.crawler.log.CrawlerLogger import CrawlerLogger
 from swissrugbystats.crawler.parser import FSRAbstractParser
 
 
 class FSRFixtureParser(FSRAbstractParser):
 
     @staticmethod
-    def create_or_update(team):
-        """
-
-        :param team:
-        :return:
-        """
-        pass
-
-    @staticmethod
-    def parse_row(row):
+    def parse_row(row, competition):
         """
 
         :param row:
-        :return:
+        :return: boolean
         """
+        logger = CrawlerLogger.get_logger_for_class(FSRFixtureParser)
+
         cells = row.findAll('td')
         if len(cells) > 0:
 
@@ -38,16 +32,16 @@ class FSRFixtureParser(FSRAbstractParser):
             if not host:
                 logging.error(u"Hostteam not found: ".format(teams2[0].strip()))
                 logging.error(row)
-                print(u"Hostteam not found: ".format(teams2[0].strip()))
-                return
+                logger.log(u"Hostteam not found: ".format(teams2[0].strip()))
+                return False
             else:
                 host = host[0]
             guest = Team.objects.filter(name=teams2[1].strip())
             if not guest:
                 logging.error(u"Guestteam not found: ".format(teams2[1].strip()))
                 logging.error(row)
-                print(u"Guestteam not found: ".format(teams2[1].strip()))
-                return
+                logger.log(u"Guestteam not found: ".format(teams2[1].strip()))
+                return False
             else:
                 guest = guest[0]
 
@@ -87,7 +81,7 @@ class FSRFixtureParser(FSRAbstractParser):
             if not Venue.objects.filter(name=venueName):
                 venue = Venue()
                 venue.name = venueName
-                print("Venue " + venueName + " created")
+                logger.log("Venue " + venueName + " created")
             else:
                 venue = Venue.objects.filter(name=venueName)[0]
 
@@ -105,7 +99,7 @@ class FSRFixtureParser(FSRAbstractParser):
 
             game.save()
 
-            print(u"GameFixture {} created / updated".format(Game.objects.get(id=game.id)))
+            logger.log(u"GameFixture {} created / updated".format(Game.objects.get(id=game.id)))
 
             # increment game counter
-            # count += 1
+            return True

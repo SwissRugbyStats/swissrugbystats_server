@@ -1,5 +1,6 @@
 from swissrugbystats.core.models import Competition
 from swissrugbystats.crawler.crawler import AbstractCrawler
+from swissrugbystats.crawler.log.CrawlerLogger import CrawlerLogger
 from swissrugbystats.crawler.models import CrawlerLogMessage
 from swissrugbystats.crawler.parser import FSRAbstractParser, FSRResultParser
 
@@ -17,15 +18,18 @@ class ResultCrawler(AbstractCrawler):
         :return:
         """
         count = 0
+        logger = CrawlerLogger.get_logger_for_class(cls)
+
         try:
-            print(url)
+            logger.log("crawl per league {}".format(url))
             tables = FSRAbstractParser.get_tables(url)
             competition = Competition.objects.get(id=url[2])
 
             for table in tables:
                 for row in table.findAll('tr'):
                     try:
-                        FSRResultParser.parse_row(row, competition)
+                        if FSRResultParser.parse_row(row, competition):
+                            count = count + 1
 
                     except Exception as e:
                         msg = u'ResultCrawler: Exception: {}'.format(e)
@@ -40,16 +44,14 @@ class ResultCrawler(AbstractCrawler):
                     current = pagination.find('span',
                                               attrs={'class': 'current'})
                     if current and int(current.find(text=True)) == 1:
-                        print(u"Follow pagination, {} pages.".format(
-                            len(pagination)))
+                        logger.log(u"Follow pagination, {} pages.".format(len(pagination)))
                         for page in pagination.findAll('a', attrs={'class': 'inactive'}):
-                            print(u"Page: {}, Current: {}".format(
-                                int(page.find(text=True)),
-                                int(current.find(text=True))))
+                            logger.log(u"Page: {}, Current: {}".format(int(page.find(text=True)),
+                                                                       int(current.find(text=True))))
                             if int(page.find(text=True)) > int(current.find(text=True)):
                                 nextUrl = [(competition.league.shortcode, page['href'], competition.id)]
-                                print(u"visit {}".format(nextUrl))
-                                cls.crawl(nextUrl)
+                                logger.log(u"visit {}".format(nextUrl))
+                                count = count + cls.crawl(nextUrl)
 
         except Exception as e:
             msg = u'Type: {}, Args: {}, Str: {}'.format(e.__name__, e.args, e.__str__())
