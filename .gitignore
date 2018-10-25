@@ -1,6 +1,7 @@
 .idea/
 settings_email.py
 env/
+venv/
 win_env/
 *.pyc
 *.pyo

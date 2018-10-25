@@ -1,0 +1,2 @@
+from swissrugbystats.crawler.log.CrawlerLogger import CrawlerLogger
+from swissrugbystats.crawler.log.CrawlerLogMixin import CrawlerLogMixin

@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import threading
-from swissrugbystats.crawler.SRSCrawler import SRSCrawler
+from swissrugbystats.crawler.crawler.SRSCrawler import SRSCrawler
 
-class SRSAsyncCrawler(SRSCrawler):
+
+class SRSCrawlerConcurrent(SRSCrawler):
     """
+    TODO: not using proper functions anymore
     TODO: document, fix bugs.
     TODO: Can be further improved by not blocking results / fixtures by eachother.
     """
@@ -22,7 +24,6 @@ class SRSAsyncCrawler(SRSCrawler):
             t.join()
         return self.statistics['teams']
 
-
     def crawl_results(self, league_results_urls, deep_crawl=False):
         """
         :param league_results_urls:    list of tuples [(league_shortcode, league_url), ..]
@@ -39,7 +40,6 @@ class SRSAsyncCrawler(SRSCrawler):
         for t in threads:
             t.join()
         return self.statistics['results']
-
 
     def crawl_fixtures(self, league_fixtures_urls, deep_crawl=False):
         """
