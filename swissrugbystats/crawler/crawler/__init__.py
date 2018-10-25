@@ -1,0 +1,4 @@
+from AbstractCrawler import AbstractCrawler
+from TeamCrawler import TeamCrawler
+from FixtureCrawler import FixtureCrawler
+from ResultCrawler import ResultCrawler

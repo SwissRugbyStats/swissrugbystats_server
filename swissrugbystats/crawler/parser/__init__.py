@@ -1,0 +1,4 @@
+from FSRAbstractParser import FSRAbstractParser
+from FSRLeagueParser import FSRLeagueParser
+from FSRFixtureParser import FSRFixtureParser
+from FSRResultParser import FSRResultParser
