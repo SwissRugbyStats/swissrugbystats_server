@@ -5,7 +5,7 @@ from datetime import datetime
 
 from django.conf import settings
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, DO_NOTHING, CASCADE
 from django.utils.encoding import python_2_unicode_compatible
 from django_resized import ResizedImageField
 from simple_history.models import HistoricalRecords
@@ -107,8 +107,8 @@ class Competition(models.Model):
     """
     Todo: document.
     """
-    league = models.ForeignKey(League, verbose_name="League", related_name='league_competitions')
-    season = models.ForeignKey(Season, verbose_name="Season", related_name='season_competitions')
+    league = models.ForeignKey(League, verbose_name="League", related_name='league_competitions', on_delete=CASCADE)
+    season = models.ForeignKey(Season, verbose_name="Season", related_name='season_competitions', on_delete=CASCADE)
     history = HistoricalRecords()
 
     unique_together = ("league", "season")
@@ -144,8 +144,9 @@ class Team(models.Model):
     fsr_logo = models.CharField(max_length=200, null=True, blank=True)
     custom_logo = ResizedImageField(size=[500, 500], upload_to='logos/', blank=True, null=True,
                                     help_text='Custom team logo.')
-    current_competition = models.ForeignKey(Competition, null=True, blank=True, verbose_name='Aktueller Wettbewerb')
-    club = models.ForeignKey(Club, null=True, blank=True)
+    current_competition = models.ForeignKey(Competition, null=True, blank=True, verbose_name='Aktueller Wettbewerb',
+                                            on_delete=DO_NOTHING)
+    club = models.ForeignKey(Club, null=True, blank=True, on_delete=models.SET_NULL)
 
     point_count = models.IntegerField(blank=True, null=True)
     score_count = models.IntegerField(blank=True, null=True)
@@ -392,7 +393,7 @@ class GameParticipation(models.Model):
     """
     Todo: document.
     """
-    team = models.ForeignKey(Team, verbose_name="Team", related_name="Team_set")
+    team = models.ForeignKey(Team, verbose_name="Team", related_name="Team_set", on_delete=CASCADE)
     score = models.IntegerField(verbose_name="Score", blank=True, null=True)
     tries = models.IntegerField(verbose_name="Tries", blank=True, null=True)
     redCards = models.IntegerField(verbose_name="Red Cards", blank=True, null=True)
@@ -422,12 +423,13 @@ class Game(models.Model):
     """
     fsrID = models.CharField(max_length=10, blank=True, null=True, verbose_name="FSR ID")
     fsrUrl = models.CharField(max_length=100, blank=True, null=True, verbose_name="FSR Url")
-    competition = models.ForeignKey(Competition, verbose_name="Competition", related_name="competition_games")
-    venue = models.ForeignKey(Venue, blank=True, null=True, verbose_name="Venue")
-    referee = models.ForeignKey(Referee, blank=True, null=True, verbose_name="Referee")
+    competition = models.ForeignKey(Competition, verbose_name="Competition", related_name="competition_games",
+                                    on_delete=DO_NOTHING)
+    venue = models.ForeignKey(Venue, blank=True, null=True, verbose_name="Venue", on_delete=models.SET_NULL)
+    referee = models.ForeignKey(Referee, blank=True, null=True, verbose_name="Referee", on_delete=models.SET_NULL)
     date = models.DateTimeField(verbose_name="KickOff")
-    host = models.ForeignKey(GameParticipation, verbose_name="Host Participation", related_name="hostTeam_set")
-    guest = models.ForeignKey(GameParticipation, verbose_name="Guest Participation", related_name="guestTeam_set")
+    host = models.ForeignKey(GameParticipation, verbose_name="Host Participation", related_name="hostTeam_set", on_delete=CASCADE)
+    guest = models.ForeignKey(GameParticipation, verbose_name="Guest Participation", related_name="guestTeam_set", on_delete=CASCADE)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -476,6 +478,6 @@ class Favorite(models.Model):
     """
     Todo: document.
     """
-    team = models.ForeignKey(Team, verbose_name="Team", related_name="Team")
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="User", related_name="Owner")
+    team = models.ForeignKey(Team, verbose_name="Team", related_name="Team", on_delete=CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="User", related_name="Owner", on_delete=CASCADE)
     history = HistoricalRecords()

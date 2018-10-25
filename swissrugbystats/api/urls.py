@@ -1,54 +1,55 @@
-from django.conf.urls import url, include
+from django.urls import path, include
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from swissrugbystats.api import views
 
 urlpatterns = [
-    url(r'^$', views.api_root),
-    url(r'^swagger/$', views.schema_view),
+    path(r'', views.api_root),
+    path(r'swagger', views.schema_view),
 
     # get urls from sub modules
-    url(r'^', include('swissrugbystats.api.auth.urls')),
-    url(r'^', include('swissrugbystats.api.crawler.urls')),
+    path('', include('swissrugbystats.api.auth.urls')),
+    path('', include('swissrugbystats.api.crawler.urls')),
 
-    # url(r'^config/?$', views.ConfigurationVariableList.as_view(), name="config"),
+    # re_path('config', views.ConfigurationVariableList.as_view(), name="config"),
 
-    url(r'^leagues/?$', views.LeagueList.as_view(), name="leagues"),
-    url(r'^leagues/(?P<pk>[0-9]+)/?$', views.LeagueDetail.as_view(), name='leagues_detail'),
+    path('leagues', views.LeagueList.as_view(), name="leagues"),
+    path('leagues/<int:pk>', views.LeagueDetail.as_view(), name='leagues_detail'),
 
-    url(r'^games/?$', views.GameList.as_view(), name="games"),
-    url(r'^games/(?P<pk>[0-9]+)/?$', views.GameDetail.as_view()),
+    path('games', views.GameList.as_view(), name="games"),
+    path('games/<int:pk>', views.GameDetail.as_view()),
 
-    url(r'^gameparticipations/?$', views.GameParticipationList.as_view(), name="game-participations"),
-    url(r'^gameparticipations/(?P<pk>[0-9]+)/?$', views.GameParticipationDetail.as_view()),
+    path('gameparticipations', views.GameParticipationList.as_view(), name="game-participations"),
+    path('gameparticipations/<int:pk>', views.GameParticipationDetail.as_view()),
 
-    url(r'^clubs/?$', views.ClubList.as_view(), name="clubs"),
-    url(r'^clubs/(?P<pk>[0-9]+)/?$', views.ClubDetail.as_view()),
+    path('clubs', views.ClubList.as_view(), name="clubs"),
+    path('clubs/<int:pk>', views.ClubDetail.as_view()),
 
-    url(r'^teams/?$', views.TeamList.as_view(), name="teams"),
-    url(r'^teams/(?P<pk>[0-9]+)/?$', views.TeamDetail.as_view()),
+    path('teams', views.TeamList.as_view(), name="teams"),
+    path('teams/<int:pk>', views.TeamDetail.as_view()),
 
-    url(r'^teams/(?P<pk>[0-9]+)/games/?$', views.GameSchedule.as_view(), name="game-schedule"),
-    url(r'^teams/(?P<pk>[0-9]+)/games/next/?$', views.NextGameByTeamId.as_view(), name="next-game"),
-    url(r'^teams/(?P<pk>[0-9]+)/games/last/?$', views.LastGameByTeamId.as_view(), name="last-game"),
-    url(r'^teams/(?P<pk>[0-9]+)/games/season/(?P<season>[0-9]+)/?$', views.get_team_games_by_season, name="last-game"),
+    path('teams/<int:pk>/games', views.GameSchedule.as_view(), name="game-schedule"),
+    path('teams/<int:pk>/games/next', views.NextGameByTeamId.as_view(), name="next-game"),
+    path('teams/<int:pk>/games/last', views.LastGameByTeamId.as_view(), name="last-game"),
+    path('teams/<int:pk>/games/season/<int:season>', views.get_team_games_by_season,
+         name="last-game"),
 
-    url(r'^players/?$', views.PlayerList.as_view(), name="players"),
-    url(r'^players/(?P<pk>[0-9]+)/?$', views.PlayerDetail.as_view()),
+    path('players', views.PlayerList.as_view(), name="players"),
+    path('players/<int:pk>', views.PlayerDetail.as_view()),
 
-    url(r'^referees/?$', views.RefereeList.as_view(), name="referees"),
-    url(r'^referees/(?P<pk>[0-9]+)/?$', views.RefereeDetail.as_view()),
+    path('referees', views.RefereeList.as_view(), name="referees"),
+    path('referees/<int:pk>', views.RefereeDetail.as_view()),
 
-    url(r'^seasons/?$', views.SeasonList.as_view(), name="seasons"),
+    path('seasons', views.SeasonList.as_view(), name="seasons"),
 
-    url(r'^competitions/?$', views.CompetitionList.as_view(), name="competitions"),
+    path('competitions', views.CompetitionList.as_view(), name="competitions"),
 
-    url(r'^venues/?$', views.VenueList.as_view(), name="venues"),
-    url(r'^venues/(?P<pk>[0-9]+)/?$', views.VenueDetail.as_view()),
+    path('venues', views.VenueList.as_view(), name="venues"),
+    path('venues/<int:pk>', views.VenueDetail.as_view()),
 
-    url(r'^users/?$', views.CreateUser.as_view(), name='create-user'),
-    # url(r'^users/changePW$', views.CreateUser.as_view(), name='create-user'),
-    url(r'^favorites/?$', views.CreateFavorite.as_view(), name='create-favorite'),
+    path('users', views.CreateUser.as_view(), name='create-user'),
+    # re_path('users/changePW$', views.CreateUser.as_view(), name='create-user'),
+    path('favorites', views.CreateFavorite.as_view(), name='create-favorite'),
 
 ]
 

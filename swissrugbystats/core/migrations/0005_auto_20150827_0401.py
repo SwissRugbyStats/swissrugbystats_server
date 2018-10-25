@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+from django.db.models import DO_NOTHING
 
 
 class Migration(migrations.Migration):
@@ -20,7 +21,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='association',
             name='parent_association',
-            field=models.ForeignKey(related_name='child_associations', verbose_name=b'Parent Association', blank=True, to='core.Association', null=True),
+            field=models.ForeignKey(related_name='child_associations', verbose_name=b'Parent Association', blank=True, to='core.Association', null=True, on_delete=DO_NOTHING),
             preserve_default=True,
         ),
         migrations.AlterField(
