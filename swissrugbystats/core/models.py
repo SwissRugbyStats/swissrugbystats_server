@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
 from datetime import datetime
 from django.conf import settings
 from django.db import models
 from django.db.models import Q
-from django_resized import ResizedImageField
 from django.utils.encoding import smart_text, python_2_unicode_compatible
-from swissrugbystats import settings
+from django_resized import ResizedImageField
 from simple_history.models import HistoricalRecords
+
+from swissrugbystats import settings
 
 
 @python_2_unicode_compatible
@@ -45,7 +47,7 @@ class Club(models.Model):
     history = HistoricalRecords()
 
     def get_associations(self):
-        return u", ".join([a for a in self.associations.all()])
+        return u", ".join([a.__str__() for a in self.associations.all()])
 
     def __str__(self):
         return smart_text(self.name) or u''
