@@ -1,7 +1,6 @@
 from swissrugbystats.core.models import Competition
 from swissrugbystats.crawler.crawler import AbstractCrawler
 from swissrugbystats.crawler.log.CrawlerLogger import CrawlerLogger
-from swissrugbystats.crawler.models import CrawlerLogMessage
 from swissrugbystats.crawler.parser import FSRAbstractParser, FSRFixtureParser
 
 
@@ -30,28 +29,12 @@ class FixtureCrawler(AbstractCrawler):
                         count = count + 1
 
                 except Exception as e:
-                    CrawlerLogMessage.objects.create(
-                        message_type=CrawlerLogMessage.ERROR,
-                        message="crawl_fixtures_per_league, {}".format(
-                            e.__str__())
-                    )
+                    logger.error(e)
             if follow_pagination:
-                # recursively parse all next sites if there are any
-                pagination = FSRAbstractParser.get_pagination(url)
-                if pagination:
-                    current = pagination.find('span',
-                                              attrs={'class': 'current'})
-                    if current and int(current.find(text=True)) == 1:
-                        logger.log(u"Follow pagination, {} pages.".format(len(pagination)))
-                        for page in pagination.findAll('a', attrs={'class': 'inactive'}):
-                            if int(page.find(text=True)) > current:
-                                nextUrl = [(competition.league.shortcode, page['href'], competition.id)]
-                                count = count + cls.crawl(nextUrl)
+                count = count + FixtureCrawler.follow_pagination(url, competition)
+
         except Exception as e:
-            CrawlerLogMessage.objects.create(
-                message_type=CrawlerLogMessage.ERROR,
-                message=u"crawl_fixture_per_league, {}".format(e.__str__())
-            )
+            logger.error(e)
 
         # TODO: statistics
         # if lock:

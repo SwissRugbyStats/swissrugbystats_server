@@ -27,16 +27,10 @@ class TeamCrawler(AbstractCrawler):
                         if FSRLeagueParser.parse_row(row):
                             count = count + 1
                     except Exception as e:
-                        CrawlerLogMessage.objects.create(
-                            message_type=CrawlerLogMessage.ERROR,
-                            message=u"crawl_teams_per_league, {}".format(e.__str__())
-                        )
+                        logger.error(e)
+
         except Exception as e:
-            print(u"exception {}".format(e))
-            CrawlerLogMessage.objects.create(
-                message_type=CrawlerLogMessage.ERROR,
-                message=u"crawl_teams_per_league, {}".format(e.__str__())
-            )
+            logger.error(e)
 
         # TODO: statistics
         # if lock:

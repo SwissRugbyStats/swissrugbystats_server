@@ -1,4 +1,7 @@
+import logging
+
 from django.conf import settings
+from django.urls import reverse
 
 from swissrugbystats.crawler.models import CrawlerLogMessage
 
@@ -26,7 +29,7 @@ class CrawlerLogger(object):
         :return:
         """
 
-        msg = u'[{}]: {}'.format(self.classname, msg)
+        msg = u'[{}]:(INFO) {}'.format(self.classname, msg)
 
         print(msg)
 
@@ -55,3 +58,20 @@ class CrawlerLogger(object):
 
                 except Exception as e:
                     print(e)
+
+    def error(self, msg, db=True, slack=False):
+        """
+
+        :param self:
+        :param msg:
+        :param db:
+        :param slack:
+        :return:
+        """
+
+        msg = u'[{}]:(ERROR): {}'.format(self.classname, msg)
+
+        logging.error(msg)
+
+        if db:
+            CrawlerLogMessage.objects.create(message_type=CrawlerLogMessage.ERROR, message=msg)
