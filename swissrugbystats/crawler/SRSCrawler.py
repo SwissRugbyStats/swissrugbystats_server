@@ -5,8 +5,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 
 from swissrugbystats.core.models import Competition, Season
-from swissrugbystats.crawler.crawler import TeamCrawler, ResultCrawler, \
-    FixtureCrawler
+from swissrugbystats.crawler.crawler import TeamCrawler, ResultCrawler, FixtureCrawler
 from swissrugbystats.crawler.models import CrawlerLogMessage
 
 
@@ -26,7 +25,7 @@ class SRSCrawler(object):
     """
 
     def __init__(self, headers={'User-Agent': 'Mozilla 5.0'},
-        enable_logging=True):
+                 enable_logging=True):
         """
         Create SRSCrawler instance.
         :param headers: HTTP Headers to send with.
@@ -81,10 +80,10 @@ class SRSCrawler(object):
                     print(e)
 
     def start(self,
-        season=settings.CURRENT_SEASON,
-        deep_crawl=False,
-        competition_filter=[]
-    ):
+              season=settings.CURRENT_SEASON,
+              deep_crawl=False,
+              competition_filter=[]
+              ):
         # TODO: what to do if no season present?
         current_season = Season.objects.get(id=season)
 
