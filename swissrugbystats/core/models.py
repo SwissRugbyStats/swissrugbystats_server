@@ -45,7 +45,7 @@ class Club(models.Model):
     history = HistoricalRecords()
 
     def get_associations(self):
-        return u", ".join([unicode(a) for a in self.associations.all()])
+        return u", ".join([a for a in self.associations.all()])
 
     def __str__(self):
         return smart_text(self.name) or u''
