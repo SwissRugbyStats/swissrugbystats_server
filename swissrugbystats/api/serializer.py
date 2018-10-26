@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
-from rest_framework import serializers
-from swissrugbystats.coach.models import Player
-from swissrugbystats.core.models import Club, Competition, League, Team, Game, GameParticipation, Referee, Venue, Season, Favorite
-from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
+from rest_framework import serializers
+
+from swissrugbystats.coach.models import Player
+from swissrugbystats.core.models import Club, Competition, League, Team, Game, GameParticipation, Referee, Venue, \
+    Season, Favorite
+
 
 class PlayerSerializer(serializers.ModelSerializer):
     """
@@ -35,16 +38,6 @@ class LeagueSerializer(serializers.ModelSerializer):
         model = League
 
 
-class CompetitionSerializer(serializers.ModelSerializer):
-    """
-    Todo: document.
-    """
-
-    class Meta:
-        fields = '__all__'
-        model = Competition
-
-
 class SeasonSerializer(serializers.ModelSerializer):
     """
     Todo: document.
@@ -53,6 +46,18 @@ class SeasonSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Season
+
+
+class CompetitionSerializer(serializers.ModelSerializer):
+    """
+    Todo: document.
+    """
+    league = LeagueSerializer(many=False, read_only=True)
+    season = SeasonSerializer(many=False, read_only=True)
+
+    class Meta:
+        fields = '__all__'
+        model = Competition
 
 
 class TeamSerializer(serializers.ModelSerializer):
@@ -81,6 +86,7 @@ class RefereeSerializer(serializers.ModelSerializer):
     """
     Todo: document.
     """
+
     class Meta:
         fields = '__all__'
         model = Referee
@@ -90,6 +96,7 @@ class VenueSerializer(serializers.ModelSerializer):
     """
     Todo: document.
     """
+
     class Meta:
         fields = '__all__'
         model = Venue
@@ -142,6 +149,7 @@ class UserSerializer(serializers.ModelSerializer):
     """
     Todo: document.
     """
+
     class Meta:
         model = get_user_model()
         fields = ('username', 'password', 'first_name', 'last_name')
@@ -151,6 +159,7 @@ class UserSerializer2(serializers.ModelSerializer):
     """
     Todo: document.
     """
+
     class Meta:
         model = User
         fields = ('id', 'username')
@@ -160,6 +169,7 @@ class FavoriteSerializer(serializers.ModelSerializer):
     """
     Todo: document.
     """
+
     # team = TeamSerializer(many=False, read_only=True)
 
     class Meta:
