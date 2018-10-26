@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions, status
@@ -160,6 +159,14 @@ class CompetitionList(generics.ListCreateAPIView):
     filter_fields = ['season', 'league']
 
 
+class CompetitionDetail(generics.RetrieveUpdateAPIView):
+    """
+    Get a competition.
+    """
+    queryset = Competition.objects.all()
+    serializer_class = CompetitionSerializer
+
+
 class GameList(generics.ListCreateAPIView):
     """
     Get a list of all the games.
@@ -197,7 +204,7 @@ class GameParticipationDetail(generics.RetrieveUpdateAPIView):
 class TeamList(generics.ListCreateAPIView):
     """
     Get a list of all the teams.
-    You can filte rby name, club and current competition.
+    You can filter by name, club and current competition.
     """
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
@@ -376,7 +383,7 @@ class CreateFavorite(generics.ListCreateAPIView):
         if self.request.method == "POST":
             return FavoriteSerializer
         elif self.request.method == "GET":
-            return FavoriteDetailSerializer
+            return FavoriteDetailSerializerm
 
     def perform_create(self, serializer):
         u = self.request.user

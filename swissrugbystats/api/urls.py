@@ -43,6 +43,7 @@ urlpatterns = [
     path('seasons', views.SeasonList.as_view(), name="seasons"),
 
     path('competitions', views.CompetitionList.as_view(), name="competitions"),
+    path('competitions/<int:pk>', views.CompetitionDetail.as_view(), name="competitions"),
 
     path('venues', views.VenueList.as_view(), name="venues"),
     path('venues/<int:pk>', views.VenueDetail.as_view()),
