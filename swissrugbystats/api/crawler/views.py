@@ -70,7 +70,7 @@ def crawl_game(request, pk):
 
             game = Game.objects.get(pk=pk)
 
-            return Response(GameSerializer(instance=game), status=status.HTTP_200_OK)
+            return Response(GameSerializer(instance=game).data, status=status.HTTP_200_OK)
         else:
             return Response(
                 {"description": "Start the crawler by calling this endpoint via post."}, status.HTTP_200_OK)
