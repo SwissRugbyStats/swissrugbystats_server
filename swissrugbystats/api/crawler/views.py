@@ -68,7 +68,7 @@ def crawl_game(request, pk):
             except Game.DoesNotExist as e:
                 return Response({"Error": "There was an error. Game does not exist."}, status.HTTP_404_NOT_FOUND)
 
-            game = Game.objects.get(pk)
+            game = Game.objects.get(pk=pk)
 
             return Response(GameSerializer(instance=game), status=status.HTTP_200_OK)
         else:
