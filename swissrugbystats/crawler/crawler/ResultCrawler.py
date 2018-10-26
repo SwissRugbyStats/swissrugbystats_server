@@ -1,7 +1,7 @@
 from swissrugbystats.core.models import Competition
-from swissrugbystats.crawler.crawler import AbstractCrawler
+from swissrugbystats.crawler.crawler.AbstractCrawler import AbstractCrawler
 from swissrugbystats.crawler.log.CrawlerLogger import CrawlerLogger
-from swissrugbystats.crawler.parser import FSRAbstractParser, FSRResultParser
+from swissrugbystats.crawler.parser.FSRResultParser import FSRResultParser
 
 
 class ResultCrawler(AbstractCrawler):
@@ -21,7 +21,7 @@ class ResultCrawler(AbstractCrawler):
 
         try:
             logger.log("crawl per league {}".format(url))
-            tables = FSRAbstractParser.get_tables(url)
+            tables = cls.get_tables(url)
             competition = Competition.objects.get(id=url[2])
 
             for table in tables:
@@ -34,7 +34,7 @@ class ResultCrawler(AbstractCrawler):
                         logger.error(e)
 
             if follow_pagination:
-                count = count + ResultCrawler.follow_pagination(url, competition)
+                count = count + cls.follow_pagination(url, competition)
 
         except Exception as e:
             logger.error(e)

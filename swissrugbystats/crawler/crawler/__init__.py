@@ -1,4 +1,0 @@
-from swissrugbystats.crawler.crawler.AbstractCrawler import AbstractCrawler
-from swissrugbystats.crawler.crawler.SRSCrawler import SRSCrawler
-from swissrugbystats.crawler.crawler.SRSCrawlerConcurrent import SRSCrawlerConcurrent
-

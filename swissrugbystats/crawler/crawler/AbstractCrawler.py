@@ -1,8 +1,40 @@
-from swissrugbystats.crawler.log import CrawlerLogger
-from swissrugbystats.crawler.parser import FSRAbstractParser
+import requests
+from bs4 import BeautifulSoup
+
+from swissrugbystats.crawler.log.CrawlerLogger import CrawlerLogger
 
 
 class AbstractCrawler(object):
+
+    @classmethod
+    def get_request_headers(cls):
+        return {'User-Agent': 'Mozilla 5.0'}
+
+    @classmethod
+    def get_soup(cls, url):
+        r = requests.get(url[1], headers=cls.get_request_headers())
+        return BeautifulSoup(r.text, "html.parser")
+
+    @classmethod
+    def get_pagination(cls, url):
+        soup = cls.get_soup(url)
+        return soup.find('div', attrs={'class': 'pagination'})
+
+    @classmethod
+    def get_table(cls, url):
+        soup = AbstractCrawler.get_soup(url)
+        return soup.find('table', attrs={'class': 'table'})
+
+    @classmethod
+    def get_tables(cls, url):
+        soup = cls.get_soup(url)
+        if soup:
+            tables = soup.findAll('table', attrs={'class': 'table'})
+            print(u"{} tables found.".format(len(tables)))
+            return tables
+        else:
+            return []
+        # raise NotImplementedError('must define get_tables to use this base class')
 
     @classmethod
     def crawl(cls, urls, follow_pagination=False):
@@ -40,7 +72,7 @@ class AbstractCrawler(object):
         count = 0
 
         # recursively parse all next sites if there are any
-        pagination = FSRAbstractParser.get_pagination(url)
+        pagination = cls.get_pagination(url)
         if pagination:
             current = pagination.find('span', attrs={'class': 'current'})
 

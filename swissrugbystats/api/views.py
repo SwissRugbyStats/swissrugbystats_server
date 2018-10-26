@@ -383,7 +383,7 @@ class CreateFavorite(generics.ListCreateAPIView):
         if self.request.method == "POST":
             return FavoriteSerializer
         elif self.request.method == "GET":
-            return FavoriteDetailSerializerm
+            return FavoriteDetailSerializer
 
     def perform_create(self, serializer):
         u = self.request.user

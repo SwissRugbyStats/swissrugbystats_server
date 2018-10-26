@@ -1,6 +1,6 @@
 from swissrugbystats.core.models import Team
 from swissrugbystats.crawler.log.CrawlerLogger import CrawlerLogger
-from swissrugbystats.crawler.parser import FSRAbstractParser
+from swissrugbystats.crawler.parser.FSRAbstractParser import FSRAbstractParser
 
 
 class FSRLeagueParser(FSRAbstractParser):

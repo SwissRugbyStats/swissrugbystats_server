@@ -1,7 +1,7 @@
 from swissrugbystats.core.models import Competition
-from swissrugbystats.crawler.crawler import AbstractCrawler
+from swissrugbystats.crawler.crawler.AbstractCrawler import AbstractCrawler
 from swissrugbystats.crawler.log.CrawlerLogger import CrawlerLogger
-from swissrugbystats.crawler.parser import FSRAbstractParser, FSRFixtureParser
+from swissrugbystats.crawler.parser.FSRFixtureParser import FSRFixtureParser
 
 
 class FixtureCrawler(AbstractCrawler):
@@ -11,8 +11,7 @@ class FixtureCrawler(AbstractCrawler):
         """
             Fetch all fixtures of a specific league.
             :param url: url to fetch fixtures from
-            :param deep_crawl: deep_crawl: follow pagination?
-            :param lock: ?
+            :param follow_pagination: deep_crawl: follow pagination?
             :return: number of fetched fixtures
         """
         count = 0
@@ -20,7 +19,7 @@ class FixtureCrawler(AbstractCrawler):
 
         try:
             logger.log("crawl per league {}".format(url))
-            table = FSRAbstractParser.get_table(url)
+            table = cls.get_table(url)
             competition = Competition.objects.get(id=url[2])
 
             for row in table.findAll('tr'):
@@ -31,7 +30,7 @@ class FixtureCrawler(AbstractCrawler):
                 except Exception as e:
                     logger.error(e)
             if follow_pagination:
-                count = count + FixtureCrawler.follow_pagination(url, competition)
+                count = count + cls.follow_pagination(url, competition)
 
         except Exception as e:
             logger.error(e)

@@ -1,5 +1,5 @@
 from swissrugbystats.core.models import Team, Venue, Game, GameParticipation, Referee
-from swissrugbystats.crawler.log import CrawlerLogger
+from swissrugbystats.crawler.log.CrawlerLogger import CrawlerLogger
 
 
 class FSRGameParser(object):

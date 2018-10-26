@@ -1,6 +1,6 @@
-from swissrugbystats.crawler.crawler import AbstractCrawler
+from swissrugbystats.crawler.crawler.AbstractCrawler import AbstractCrawler
 from swissrugbystats.crawler.log.CrawlerLogger import CrawlerLogger
-from swissrugbystats.crawler.parser import FSRLeagueParser
+from swissrugbystats.crawler.parser.FSRLeagueParser import FSRLeagueParser
 
 
 class TeamCrawler(AbstractCrawler):
@@ -18,7 +18,7 @@ class TeamCrawler(AbstractCrawler):
 
         logger.log("crawl {}".format(url[1]))
         try:
-            tables = FSRLeagueParser.get_tables(url)
+            tables = cls.get_tables(url)
 
             for table in tables:
                 for row in table.findAll('tr'):

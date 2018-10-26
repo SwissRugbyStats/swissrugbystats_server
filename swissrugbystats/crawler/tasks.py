@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 import datetime
+
 from django.conf import settings
-from swissrugbystats.core.models import Team
-from swissrugbystats.crawler.crawler import SRSCrawler, SRSCrawlerConcurrent
+
+from swissrugbystats.core.models import Team, Game
+from swissrugbystats.crawler.crawler.GameCrawler import GameCrawler
+from swissrugbystats.crawler.crawler.SRSCrawler import SRSCrawler
+from swissrugbystats.crawler.crawler.SRSCrawlerConcurrent import SRSCrawlerConcurrent
 
 
 def update_statistics(log_to_db=True):
@@ -41,7 +45,7 @@ Statistics update complete.\n
     Time needed: {1}
 ------------------------------------------------------------------
         
-        """.format(teams.count(),(datetime.datetime.now() - start_time))
+        """.format(teams.count(), (datetime.datetime.now() - start_time))
 
     crawler.log(end_msg)
 
@@ -63,3 +67,14 @@ def crawl_and_update(deep_crawl=True, season=settings.CURRENT_SEASON, async=Fals
     crawler.start(season, deep_crawl)
 
     update_statistics(log_to_db)
+
+
+def crawl_game(gameId):
+    """
+
+    :param gameId:
+    :return:
+    """
+    game = Game.objects.get(pk=gameId)
+    if game:
+        GameCrawler.crawl_single_url(game.fsrUrl)

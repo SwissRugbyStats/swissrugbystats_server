@@ -1,4 +1,0 @@
-from swissrugbystats.crawler.parser.FSRAbstractParser import FSRAbstractParser
-from swissrugbystats.crawler.parser.FSRLeagueParser import FSRLeagueParser
-from swissrugbystats.crawler.parser.FSRFixtureParser import FSRFixtureParser
-from swissrugbystats.crawler.parser.FSRResultParser import FSRResultParser
