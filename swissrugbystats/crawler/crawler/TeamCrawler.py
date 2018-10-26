@@ -1,13 +1,12 @@
 from swissrugbystats.crawler.crawler import AbstractCrawler
 from swissrugbystats.crawler.log.CrawlerLogger import CrawlerLogger
-from swissrugbystats.crawler.models import CrawlerLogMessage
 from swissrugbystats.crawler.parser import FSRLeagueParser
 
 
 class TeamCrawler(AbstractCrawler):
 
     @classmethod
-    def crawl_per_league(cls, url, follow_pagination=False):
+    def crawl_single_url(cls, url, follow_pagination=False):
         """
         Fetch all the teams that are participating in a league.
         :param url:

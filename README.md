@@ -20,13 +20,13 @@ TODO:
 - [x] Postgres instead of sqlite in PROD
 - [ ] Postgres instead of sqlite in DEV
 - [x] global vars from os.environ
-- [ ] easier way to start crawler
+- [x] easier way to start crawler
 - [x] REST Endpoint to start crawler
-- [ ] Refactor crawler
+- [x] Refactor crawler
 - [ ] migrate data
 - [x] django-jet
 - [ ] crawler cronjob (jet dashboard?)
-- [ ] document crawler API
+- [x] document crawler API
 - [ ] setup email config
 
 
