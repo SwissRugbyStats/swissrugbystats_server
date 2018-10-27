@@ -85,6 +85,12 @@ def api_root(request, format=None):
         },
         '/crawler': {
             '/start': reverse('crawler-start', request=request, format=format),
+            '/game': {
+                '/id': 'crawl a single game'
+            },
+            '/competition': {
+                '/id': 'crawl a single competition'
+            },
             '/logs': {
                 '/': reverse('crawler-logs', request=request, format=format),
                 '/{id}': 'crawler log details'
