@@ -9,9 +9,15 @@ from rest_framework.reverse import reverse
 
 from swissrugbystats.api.crawler.serializer import CrawlerLogMessageSerializer
 from swissrugbystats.api.serializer import GameSerializer
-from swissrugbystats.core.models import Season, Game
+from swissrugbystats.core.models import Season, Game, Competition
 from swissrugbystats.crawler import tasks
 from swissrugbystats.crawler.models import CrawlerLogMessage
+
+
+def not_allowed_response():
+    return Response({
+        "Error": "You are not allowed to start the crawler. Please login with an account with according permissions."},
+        status.HTTP_403_FORBIDDEN)
 
 
 @api_view(['POST', 'GET'])
@@ -48,9 +54,7 @@ def start(request):
 
                 }}, status.HTTP_200_OK)
     else:
-        return Response({
-            "Error": "You are not allowed to start the crawler. Please login with an account with according permissions."},
-            status.HTTP_403_FORBIDDEN)
+        not_allowed_response()
 
 
 @api_view(['POST', 'GET'])
@@ -75,9 +79,44 @@ def crawl_game(request, pk):
             return Response(
                 {"description": "Start the crawler by calling this endpoint via post."}, status.HTTP_200_OK)
     else:
-        return Response({
-            "Error": "You are not allowed to start the crawler. Please login with an account with according permissions."},
-            status.HTTP_403_FORBIDDEN)
+        not_allowed_response()
+
+
+@api_view(['POST', 'GET'])
+def crawl_competition(request, pk):
+    """
+    Crawl a competition by id
+
+    """
+    if request.user.is_superuser:
+        if request.method == 'POST':
+            print("Crawler: crawl competition {}".format(pk))
+
+            competitions = Competition.objects.filter(pk=pk)
+
+            if not (competitions and len(competitions) > 0):
+                return Response({"Error": "There was an error. Competition does not exist."}, status.HTTP_404_NOT_FOUND)
+
+            deep = request.data.get('deep', False) == "True"
+            season = competitions[0].season.id
+            async = request.data.get('async', False) == "True"
+
+            t = threading.Thread(target=tasks.crawl_and_update, args=(deep, season, async, competitions))
+            t.start()
+
+            season_object = Season.objects.get(id=season)
+            success_msg = ("Crawler started in a separate thread for season {} "
+                           "and args deep_crawl={}, async={} competition_filter={}."
+                           "Check the crawler logs for results.").format(
+                season_object, deep, async, [competitions[0]])
+            crawler_logs_url = reverse('crawler-logs', request=request)
+
+            return Response({"Success": {"info": success_msg, "goto": crawler_logs_url}}, status=status.HTTP_200_OK)
+        else:
+            return Response(
+                {"description": "Start the crawler by calling this endpoint via post."}, status.HTTP_200_OK)
+    else:
+        not_allowed_response()
 
 
 class CrawlerLogMessageList(generics.ListCreateAPIView):
