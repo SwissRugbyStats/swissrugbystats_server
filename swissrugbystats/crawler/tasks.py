@@ -71,12 +71,11 @@ def crawl_and_update(deep_crawl=True, season=settings.CURRENT_SEASON, async=Fals
     update_statistics(log_to_db)
 
 
-def crawl_game(gameId):
+def crawl_game(game_id):
     """
 
     :param gameId:
     :return:
     """
-    game = Game.objects.get(pk=gameId)
-    if game:
-        GameCrawler.crawl_single_url(game.fsrUrl)
+    crawler = GameCrawler()
+    crawler.start(game_id)

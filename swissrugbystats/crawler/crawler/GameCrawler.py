@@ -1,12 +1,30 @@
 import requests
 from bs4 import BeautifulSoup
 
+from swissrugbystats.core.models import Game
 from swissrugbystats.crawler.crawler.AbstractCrawler import AbstractCrawler
+from swissrugbystats.crawler.log.CrawlerLogMixin import CrawlerLogMixin
 from swissrugbystats.crawler.log.CrawlerLogger import CrawlerLogger
 from swissrugbystats.crawler.parser.FSRGameParser import FSRGameParser
 
 
-class GameCrawler(AbstractCrawler):
+class GameCrawler(AbstractCrawler, CrawlerLogMixin):
+
+    def start(self, game_id):
+        self.log("""
+------------------------------------------
+Crawl Game by id {}
+------------------------------------------
+""".format(game_id), True, True)
+        game = Game.objects.get(pk=game_id)
+        if game:
+            GameCrawler.crawl_single_url(game.fsrUrl)
+        GameCrawler.crawl_single_url()
+        self.log("""
+------------------------------------------
+Game crawl ended successfully.
+------------------------------------------
+""".format(game_id), True, True)
 
     @classmethod
     def crawl_single_url(cls, url, follow_pagination=False):
