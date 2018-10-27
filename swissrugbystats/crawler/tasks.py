@@ -57,6 +57,7 @@ def crawl_and_update(deep_crawl=True, season=settings.CURRENT_SEASON, async=Fals
     :param deep_crawl:
     :param season:
     :param async:
+    :param competitions_filter:
     :param log_to_db:
     :return:
     """

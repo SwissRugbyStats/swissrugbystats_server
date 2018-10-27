@@ -100,15 +100,16 @@ def crawl_competition(request, pk):
             deep = request.data.get('deep', False) == "True"
             season = competitions[0].season.id
             async = request.data.get('async', False) == "True"
+            competition_filter = list(competitions)
 
-            t = threading.Thread(target=tasks.crawl_and_update, args=(deep, season, async, competitions))
+            t = threading.Thread(target=tasks.crawl_and_update, args=(deep, season, async, competition_filter))
             t.start()
 
             season_object = Season.objects.get(id=season)
             success_msg = ("Crawler started in a separate thread for season {} "
                            "and args deep_crawl={}, async={} competition_filter={}."
                            "Check the crawler logs for results.").format(
-                season_object, deep, async, [competitions[0]])
+                season_object, deep, async, competition_filter)
             crawler_logs_url = reverse('crawler-logs', request=request)
 
             return Response({"Success": {"info": success_msg, "goto": crawler_logs_url}}, status=status.HTTP_200_OK)

@@ -62,7 +62,7 @@ class SRSCrawler(CrawlerLogMixin):
     competition_filter = {}
 ------------------------------------------------------------------
         
-        """.format(self.get_classname(), season, current_season, competition_filter, deep_crawl)
+        """.format(self.get_classname(), season, current_season, deep_crawl, competition_filter)
 
         self.log(start_msg, True, True)
 
