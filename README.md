@@ -28,6 +28,7 @@ TODO:
 - [ ] crawler cronjob (jet dashboard?)
 - [x] document crawler API
 - [ ] setup email config
+- [x] migrate pip & virtualenv to pipenv
 
 
 main components
@@ -41,45 +42,39 @@ main components
 some notes
 ----------
 
-### setup the server
-just run
-
-    ./setup.sh
-
 ### activate virtualenv
 
-Unix / Mac:
+We recently migrated from pip and virtualenv to pipenv.
 
-    source env/bin/activate
-    
-Windows:
-    
-    ./env/Scripts/activate
+If you don't have pipenv installed yet, install it via
 
-### run webcrawler
+    pip install pipenv
+    
+Then run
+
+    pipenv install
+    
+to setup the virtualenv and install all the packages.
+
+To activate the virtualenv in the shell, just run
+
+    pipenv shell
+  
+
+### run webcrawler (might be outdated)
 without logging:
 
     python manage.py crawl_and_update > /dev/null 2> /dev/null &
 
-### update team statistics
+### update team statistics (might be outdated)
 
     python manage.py update_statistics
 
 ### export packages to requirements.txt
 
-    pip freeze -l -> requirements.txt
+    pipenv lock -> requirements.txt
 
-### install packages from requirements.txt
-
-    pip install -r requirements.txt
-
-### create virtualenv and install dependencies from requirements.txt
-
-    virtualenv --no-site-packages --distribute ./env && source ./env/bin/activate && pip install -r requirements.txt
-    
-source: [https://stackoverflow.com/questions/6590688/is-it-bad-to-have-my-virtualenv-directory-inside-my-git-repository/6590783#6590783]()
-
-### setup cronjob for the crawler
+### setup cronjob for the crawler (might be outdated)
 Create a script that runs your crawler, i.e. named update_srs.sh with the following content
 
     srsdir="/path/to/your/installation"
