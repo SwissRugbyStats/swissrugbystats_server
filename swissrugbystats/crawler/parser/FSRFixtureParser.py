@@ -1,3 +1,5 @@
+from typing import Any
+
 from swissrugbystats.crawler.crawler.GameCrawler import GameCrawler
 from swissrugbystats.crawler.log.CrawlerLogger import CrawlerLogger
 from swissrugbystats.crawler.parser.FSRAbstractParser import FSRAbstractParser
@@ -6,7 +8,7 @@ from swissrugbystats.crawler.parser.FSRAbstractParser import FSRAbstractParser
 class FSRFixtureParser(FSRAbstractParser):
 
     @staticmethod
-    def parse_row(row, competition=None):
+    def parse_row(row: Any, competition: Any = None) -> bool:
         """
 
         :param row:

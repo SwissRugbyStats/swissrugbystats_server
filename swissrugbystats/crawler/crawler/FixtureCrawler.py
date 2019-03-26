@@ -7,7 +7,7 @@ from swissrugbystats.crawler.parser.FSRFixtureParser import FSRFixtureParser
 class FixtureCrawler(AbstractCrawler):
 
     @classmethod
-    def crawl_single_url(cls, url, follow_pagination=False):
+    def crawl_single_url(cls, url: str, follow_pagination: bool = False) -> int:
         """
             Fetch all fixtures of a specific league.
             :param url: url to fetch fixtures from

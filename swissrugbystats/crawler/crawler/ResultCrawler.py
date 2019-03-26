@@ -7,7 +7,7 @@ from swissrugbystats.crawler.parser.FSRResultParser import FSRResultParser
 class ResultCrawler(AbstractCrawler):
 
     @classmethod
-    def crawl_single_url(cls, url, follow_pagination=False):
+    def crawl_single_url(cls, url: str, follow_pagination: bool = False) -> int:
         """
         Fetch all the results of a specific league.
 

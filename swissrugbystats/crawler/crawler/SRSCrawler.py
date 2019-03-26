@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
+from typing import List
 
 from django.conf import settings
 
@@ -25,7 +26,7 @@ class SRSCrawler(CrawlerLogMixin):
     Todo: document.
     """
 
-    def __init__(self, headers={'User-Agent': 'Mozilla 5.0'}, enable_logging=True):
+    def __init__(self, headers={'User-Agent': 'Mozilla 5.0'}, enable_logging: bool = True):
         """
         Create SRSCrawler instance.
         :param headers: HTTP Headers to send with.
@@ -41,21 +42,21 @@ class SRSCrawler(CrawlerLogMixin):
         self.log_to_db = enable_logging
 
     @classmethod
-    def get_classname(cls):
+    def get_classname(cls) -> str:
         return cls.__name__
 
     def start(self,
-              season=settings.CURRENT_SEASON,
-              deep_crawl=False,
-              competition_filter=[]
+              season: int = settings.CURRENT_SEASON,
+              deep_crawl: bool = False,
+              competition_filter: List[int] = []
               ):
         # TODO: what to do if no season present?
-        current_season = Season.objects.get(id=season)
+        current_season: int = Season.objects.get(id=season)
 
         # get current timestamp to calculate time needed for script exec
         start_time = datetime.now()
 
-        start_msg = u"""
+        start_msg: str = u"""
 ------------------------------------------------------------------
 {}: Getting data from suisserugby.com for season {} {}
     deep_crawl = {} (default: True) - following pagination or not
@@ -88,7 +89,7 @@ class SRSCrawler(CrawlerLogMixin):
             [(c.league.shortcode, c.get_results_url(), c.id) for c in
              competitions], deep_crawl)
 
-        end_msg = u"""
+        end_msg: str = u"""
 
 ------------------------------------------------------------------
 Crawling completed.\n

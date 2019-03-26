@@ -6,7 +6,7 @@ from swissrugbystats.crawler.parser.FSRAbstractParser import FSRAbstractParser
 class FSRLeagueParser(FSRAbstractParser):
 
     @staticmethod
-    def parse_row(row):
+    def parse_row(row: str) -> bool:
         """
 
         :param row:

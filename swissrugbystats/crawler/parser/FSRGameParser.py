@@ -1,3 +1,5 @@
+from typing import Any, List
+
 from swissrugbystats.core.models import Team, Venue, Game, GameParticipation, Referee
 from swissrugbystats.crawler.log.CrawlerLogger import CrawlerLogger
 
@@ -5,15 +7,15 @@ from swissrugbystats.crawler.log.CrawlerLogger import CrawlerLogger
 class FSRGameParser(object):
 
     @staticmethod
-    def getHostTeamLogo(row):
+    def getHostTeamLogo(row: Any) -> Any:
         return row.findAll('td')[0].find('img')['src']
 
     @staticmethod
-    def getGuestTeamLogo(row):
+    def getGuestTeamLogo(row: Any) -> Any:
         return row.findAll('td')[2].find('img')['src']
 
     @staticmethod
-    def parseTeams(rows):
+    def parseTeams(rows: List[Any]) -> Any:
         """
 
         :param rows:
@@ -41,7 +43,7 @@ class FSRGameParser(object):
         return host, guest
 
     @staticmethod
-    def get_game(fsr_url, host, guest):
+    def get_game(fsr_url: str, host: Team, guest: Team) -> (Game, GameParticipation, GameParticipation):
         # check if game is already stored, if so, update the existing one
         if not Game.objects.filter(fsrUrl=fsr_url):
             return Game(), GameParticipation(team=host), GameParticipation(team=guest)
@@ -50,7 +52,7 @@ class FSRGameParser(object):
             return game, game.host, game.guest
 
     @staticmethod
-    def parse_rows(rows, fsr_url):
+    def parse_rows(rows: List[Any], fsr_url: str) -> bool:
         """
         Row contents (3 cols):
 
@@ -69,6 +71,7 @@ class FSRGameParser(object):
         7:  Host Bonus points       | 'Bonus'       | Guest Bonus points
 
         :param rows:
+        :param fsr_url:
         :return:
         """
         logger = CrawlerLogger.get_logger_for_class(FSRGameParser)

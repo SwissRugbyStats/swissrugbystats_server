@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import threading
+from typing import List
+
 from swissrugbystats.crawler.crawler.SRSCrawler import SRSCrawler
 
 
@@ -10,7 +12,7 @@ class SRSCrawlerConcurrent(SRSCrawler):
     TODO: Can be further improved by not blocking results / fixtures by eachother.
     """
 
-    def crawl_teams(self, league_urls):
+    def crawl_teams(self, league_urls: List[str]):
         """
         TODO: write doc.
         """
@@ -24,7 +26,7 @@ class SRSCrawlerConcurrent(SRSCrawler):
             t.join()
         return self.statistics['teams']
 
-    def crawl_results(self, league_results_urls, deep_crawl=False):
+    def crawl_results(self, league_results_urls: List[str], deep_crawl: bool = False):
         """
         :param league_results_urls:    list of tuples [(league_shortcode, league_url), ..]
         :param deep_crawl:  defaults to False. Set True to follow pagination
@@ -41,7 +43,7 @@ class SRSCrawlerConcurrent(SRSCrawler):
             t.join()
         return self.statistics['results']
 
-    def crawl_fixtures(self, league_fixtures_urls, deep_crawl=False):
+    def crawl_fixtures(self, league_fixtures_urls: List[str], deep_crawl: bool = False):
         """
         Fetch all the fixtures asynchronously and add the AsynchronousResults to fixture_tasks
         :param league_fixtures_urls:
