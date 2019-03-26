@@ -27,7 +27,7 @@ Game crawl ended successfully.
 """.format(game_id), True, True)
 
     @classmethod
-    def crawl_single_url(cls, url, follow_pagination=False):
+    def crawl_single_url(cls, url: str, follow_pagination: bool = False) -> bool:
         """
         TODO: logs?
         :param url:

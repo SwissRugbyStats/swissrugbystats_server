@@ -6,7 +6,7 @@ from swissrugbystats.crawler.parser.FSRLeagueParser import FSRLeagueParser
 class TeamCrawler(AbstractCrawler):
 
     @classmethod
-    def crawl_single_url(cls, url, follow_pagination=False):
+    def crawl_single_url(cls, url: str, follow_pagination: bool = False) -> int:
         """
         Fetch all the teams that are participating in a league.
         :param url:

@@ -1,3 +1,5 @@
+from typing import List, Any
+
 import requests
 from bs4 import BeautifulSoup
 
@@ -7,26 +9,26 @@ from swissrugbystats.crawler.log.CrawlerLogger import CrawlerLogger
 class AbstractCrawler(object):
 
     @classmethod
-    def get_request_headers(cls):
+    def get_request_headers(cls) -> Any:
         return {'User-Agent': 'Mozilla 5.0'}
 
     @classmethod
-    def get_soup(cls, url):
+    def get_soup(cls, url: str) -> Any:
         r = requests.get(url[1], headers=cls.get_request_headers())
         return BeautifulSoup(r.text, "html.parser")
 
     @classmethod
-    def get_pagination(cls, url):
+    def get_pagination(cls, url: str) -> Any:
         soup = cls.get_soup(url)
         return soup.find('div', attrs={'class': 'pagination'})
 
     @classmethod
-    def get_table(cls, url):
+    def get_table(cls, url: str) -> Any:
         soup = AbstractCrawler.get_soup(url)
         return soup.find('table', attrs={'class': 'table'})
 
     @classmethod
-    def get_tables(cls, url):
+    def get_tables(cls, url: str) -> List[Any]:
         soup = cls.get_soup(url)
         if soup:
             tables = soup.findAll('table', attrs={'class': 'table'})
@@ -37,7 +39,7 @@ class AbstractCrawler(object):
         # raise NotImplementedError('must define get_tables to use this base class')
 
     @classmethod
-    def crawl(cls, urls, follow_pagination=False):
+    def crawl(cls, urls: List[str], follow_pagination: bool = False) -> int:
         """
         TODO: check that urls is a list
         :param urls:
@@ -51,7 +53,7 @@ class AbstractCrawler(object):
         # raise NotImplementedError('must define crawl to use this base class')
 
     @classmethod
-    def crawl_single_url(cls, url, follow_pagination=False):
+    def crawl_single_url(cls, url: str, follow_pagination : bool = False) -> Any:
         """
 
         :param url:
@@ -61,7 +63,7 @@ class AbstractCrawler(object):
         raise NotImplementedError('must define crawl_per_league to use this base class')
 
     @classmethod
-    def follow_pagination(cls, url, competition):
+    def follow_pagination(cls, url: str, competition: int) -> int:
         """
 
         :param url:

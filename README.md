@@ -33,10 +33,10 @@ TODO:
 main components
 ---------------
 
-- api: json-API to access data
-- crawler: Webcrawler to get teams, fixtures and results from suisserugby.com
-- swissrugby: back- and frontend for the webapplication
-- docs: documentation
+- **api:** json-API to access data
+- **crawler:** Webcrawler to get teams, fixtures and results from suisserugby.com
+- **swissrugby:** back- and frontend for the webapplication
+- **docs:** documentation
 
 some notes
 ----------
