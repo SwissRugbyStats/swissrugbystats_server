@@ -101,6 +101,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
+    'rollbar.contrib.django.middleware.RollbarNotifierMiddleware',
 ]
 
 ROOT_URLCONF = 'swissrugbystats.urls'
@@ -123,6 +124,13 @@ else:
             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         }
     }
+
+ROLLBAR = {
+    'access_token': os.environ.get('ROLLBAR_ACCESS_TOKEN', ''),
+    'environment': 'development' if DEBUG else 'production',
+    'branch': 'master',
+    'root': PROJECT_DIR,
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
