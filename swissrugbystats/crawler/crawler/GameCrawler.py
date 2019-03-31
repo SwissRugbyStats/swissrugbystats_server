@@ -10,7 +10,7 @@ from swissrugbystats.crawler.parser.FSRGameParser import FSRGameParser
 
 class GameCrawler(AbstractCrawler, CrawlerLogMixin):
 
-    def start(self, game_id):
+    def start(self, game_id: int):
         self.log("""
 ------------------------------------------
 Crawl Game by id {}
@@ -19,7 +19,9 @@ Crawl Game by id {}
         game = Game.objects.get(pk=game_id)
         if game:
             GameCrawler.crawl_single_url(game.fsrUrl)
-        GameCrawler.crawl_single_url()
+        else:
+            self.log("Game {} not found.".format(game_id))
+
         self.log("""
 ------------------------------------------
 Game crawl ended successfully.
