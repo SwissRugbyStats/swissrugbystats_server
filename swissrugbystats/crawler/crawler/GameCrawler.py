@@ -20,7 +20,7 @@ Crawl Game by id {}
         if game:
             GameCrawler.crawl_single_url(game.fsrUrl)
         else:
-            self.log("Game {} not found.".format(game_id))
+            self.log("Game {} not found. Abort.".format(game_id))
 
         self.log("""
 ------------------------------------------
