@@ -104,81 +104,88 @@ class FSRGameParser(object):
             host.fsr_logo = FSRGameParser.get_host_team_logo(rows[1])
             guest.fsr_logo = FSRGameParser.getGuestTeamLogo(rows[1])
 
-            if len(rows) > 3:
-                # parse date and set timezone
-                date = rows[2].findAll('td')[1].find(text=True)
-                d1 = timezone.get_current_timezone().localize(datetime.strptime(date, '%d.%m.%Y %H:%M'))
-                d2 = d1.strftime('%Y-%m-%d %H:%M%z')
-                game.date = d2
+        if len(rows) > 3:
+            # parse date and set timezone
+            date = rows[2].findAll('td')[1].find(text=True)
+            d1 = timezone.get_current_timezone().localize(datetime.strptime(date, '%d.%m.%Y %H:%M'))
+            d2 = d1.strftime('%Y-%m-%d %H:%M%z')
+            game.date = d2
 
-                # TODO: set fsrId
-                # game.fsrID = cells[0].find(text=True)
+            # TODO: set fsrId
+            # game.fsrID = cells[0].find(text=True)
 
-                # set fsrUrl
-                game.fsrUrl = fsr_url
+            # set fsrUrl
+            game.fsrUrl = fsr_url
 
-                # set competition
-                game.competition = competition
+            # set competition
+            game.competition = competition
 
-                # get venue
-                venue_name = rows[3].findAll('td')[1].find(text=True)  # venue
-                if not Venue.objects.filter(name=venue_name):
-                    venue = Venue()
-                    venue.name = venue_name
-                    logger.log(u"Venue {} created".format(venue_name))
-                else:
-                    venue = Venue.objects.filter(name=venue_name)[0]
+            # get venue
+            venue_name = rows[3].findAll('td')[1].find(text=True)  # venue
+            if not Venue.objects.filter(name=venue_name):
+                venue = Venue()
+                venue.name = venue_name
+                logger.log(u"Venue {} created".format(venue_name))
+            else:
+                venue = Venue.objects.filter(name=venue_name)[0]
 
-            # if there are more rows than the score row, check for Forfait
-            if len(rows) > score_row:
-                if rows[score_row].findAll('td')[1].find(text=True).strip() == "Forfait":
-                    score_row += 1
-                    # save forfait in db
-                    if rows[score_row].findAll('td')[0].find(text=True).strip() != "":
-                        logger.log("host forfait")
-                        host_participation.forfait = True
-                    elif rows[score_row].findAll('td')[2].find(text=True).strip() != "":
-                        logger.log("guest forfait")
-                        guest_participation.forfait = True
+        # if there are more rows than the score row, check for Forfait
+        if len(rows) > score_row:
+            if rows[score_row].findAll('td')[1].find(text=True).strip() == "Forfait":
+                score_row += 1
+                # save forfait in db
+                if rows[score_row].findAll('td')[0].find(text=True).strip() != "":
+                    logger.log("host forfait")
+                    host_participation.forfait = True
+                elif rows[score_row].findAll('td')[2].find(text=True).strip() != "":
+                    logger.log("guest forfait")
+                    guest_participation.forfait = True
 
-                # get the score
-                host_participation.score = int(rows[score_row].findAll('td')[0].find(text=True))  # score host
-                guest_participation.score = int(rows[score_row].findAll('td')[2].find(text=True))  # score guest
+            # get the score
+            host_participation.score = int(rows[score_row].findAll('td')[0].find(text=True))  # score host
+            guest_participation.score = int(rows[score_row].findAll('td')[2].find(text=True))  # score guest
 
-                # get tries, cards and referee
-                if len(rows) >= score_row + 1:
-                    host_participation.tries = int(rows[score_row + 1].findAll('td')[0].find(text=True))  # tries host
-                    guest_participation.tries = int(rows[score_row + 1].findAll('td')[2].find(text=True))  # tries guest
-                    if len(rows) >= score_row + 2:
-                        host_participation.redCards = int(
-                            rows[score_row + 2].findAll('td')[0].find(text=True))  # red cards host
-                        guest_participation.redCards = int(
-                            rows[score_row + 2].findAll('td')[2].find(text=True))  # red cards guest
+            # get tries, cards and referee
+        if len(rows) >= score_row + 1:
+            host_participation.tries = int(rows[score_row + 1].findAll('td')[0].find(text=True))  # tries host
+            guest_participation.tries = int(rows[score_row + 1].findAll('td')[2].find(text=True))  # tries guest
 
-                        # referee is not always there
-                        if len(rows) >= score_row + 5:
-                            ref_name = rows[score_row + 4].findAll('td')[1].find(text=True).strip()  # referee
-                            # TODO: save performance by not reassigning referee if already set
-                            if not Referee.objects.filter(name=ref_name):
-                                referee = Referee()
-                                referee.name = ref_name
-                                logger.log(u"Referee {} created".format(ref_name))
-                            else:
-                                referee = Referee.objects.filter(name=ref_name)[0]
-                            referee.save()
-                            game.referee = referee
+        if len(rows) >= score_row + 2:
+            host_participation.redCards = int(
+                rows[score_row + 2].findAll('td')[0].find(text=True))  # red cards host
+            guest_participation.redCards = int(
+                rows[score_row + 2].findAll('td')[2].find(text=True))  # red cards guest
 
-        host.save()
-        guest.save()
-        host_participation.team = host
-        host_participation.save()
-        guest_participation.team = guest
-        guest_participation.save()
-        game.host = host_participation
-        game.guest = guest_participation
+        # referee is not always there
+        if len(rows) >= score_row + 5:
+            ref_name = rows[score_row + 4].findAll('td')[1].find(text=True).strip()  # referee
+            # TODO: save performance by not reassigning referee if already set
+            if not Referee.objects.filter(name=ref_name):
+                referee = Referee()
+                referee.name = ref_name
+                logger.log(u"Referee {} created".format(ref_name))
+            else:
+                referee = Referee.objects.filter(name=ref_name)[0]
+            referee.save()
+            game.referee = referee
 
-        venue.save()
-        game.venue = venue
+        if host and host_participation:
+            host.save()
+            host_participation.team = host
+            host_participation.save()
+
+        if guest and guest_participation:
+            guest.save()
+            guest_participation.team = guest
+            guest_participation.save()
+
+        if host_participation and guest_participation:
+            game.host = host_participation
+            game.guest = guest_participation
+
+        if venue:
+            venue.save()
+            game.venue = venue
 
         game.save()
 
