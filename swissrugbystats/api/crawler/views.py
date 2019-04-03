@@ -54,7 +54,7 @@ def start(request):
 
                 }}, status.HTTP_200_OK)
     else:
-        not_allowed_response()
+        return not_allowed_response()
 
 
 @api_view(['POST', 'GET'])
@@ -79,7 +79,7 @@ def crawl_game(request, pk):
             return Response(
                 {"description": "Start the crawler by calling this endpoint via post."}, status.HTTP_200_OK)
     else:
-        not_allowed_response()
+        return not_allowed_response()
 
 
 @api_view(['POST', 'GET'])
@@ -117,7 +117,7 @@ def crawl_competition(request, pk):
             return Response(
                 {"description": "Start the crawler by calling this endpoint via post."}, status.HTTP_200_OK)
     else:
-        not_allowed_response()
+        return not_allowed_response()
 
 
 class CrawlerLogMessageList(generics.ListCreateAPIView):
