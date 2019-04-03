@@ -1,3 +1,7 @@
+import sys
+
+import rollbar
+
 from swissrugbystats.core.models import Competition
 from swissrugbystats.crawler.crawler.AbstractCrawler import AbstractCrawler
 from swissrugbystats.crawler.log.CrawlerLogger import CrawlerLogger
@@ -29,11 +33,13 @@ class FixtureCrawler(AbstractCrawler):
 
                 except Exception as e:
                     logger.error(e)
+                    rollbar.report_exc_info(sys.exc_info())
             if follow_pagination:
                 count = count + cls.follow_pagination(url, competition)
 
         except Exception as e:
             logger.error(e)
+            rollbar.report_exc_info(sys.exc_info())
 
         # TODO: statistics
         # if lock:

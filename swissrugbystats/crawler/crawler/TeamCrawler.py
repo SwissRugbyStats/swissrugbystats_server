@@ -1,3 +1,5 @@
+import rollbar
+import sys
 from swissrugbystats.crawler.crawler.AbstractCrawler import AbstractCrawler
 from swissrugbystats.crawler.log.CrawlerLogger import CrawlerLogger
 from swissrugbystats.crawler.parser.FSRLeagueParser import FSRLeagueParser
@@ -27,9 +29,11 @@ class TeamCrawler(AbstractCrawler):
                             count = count + 1
                     except Exception as e:
                         logger.error(e)
+                        rollbar.report_exc_info(sys.exc_info())
 
         except Exception as e:
             logger.error(e)
+            rollbar.report_exc_info(sys.exc_info())
 
         # TODO: statistics
         # if lock:

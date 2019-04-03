@@ -1,3 +1,5 @@
+import rollbar
+import sys
 import requests
 from bs4 import BeautifulSoup
 
@@ -52,6 +54,7 @@ Game crawl ended successfully.
                 return True
 
         except Exception as e:
+            rollbar.report_exc_info(sys.exc_info())
             logger.log(e)
 
         return False
