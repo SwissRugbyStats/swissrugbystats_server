@@ -1,7 +1,7 @@
-import rollbar
 import sys
+
 import rollbar
-import sys
+
 from swissrugbystats.core.models import Competition
 from swissrugbystats.crawler.crawler.AbstractCrawler import AbstractCrawler
 from swissrugbystats.crawler.log.CrawlerLogger import CrawlerLogger

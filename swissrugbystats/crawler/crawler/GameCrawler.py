@@ -43,7 +43,7 @@ Game crawl ended successfully.
         logger = CrawlerLogger.get_logger_for_class(cls)
 
         try:
-            logger.log("Crawl Game Details: " + url)
+            logger.log("Crawl Game Details: " + url + ". Competition: " + competition)
 
             # make new request to game detail page
             r = requests.get(url, headers=cls.get_request_headers())

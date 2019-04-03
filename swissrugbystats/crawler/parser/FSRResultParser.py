@@ -21,7 +21,7 @@ class FSRResultParser(FSRAbstractParser):
                 # check if game is already stored, if so, update the existing one
                 fsr_url = cells[0].find('a')['href']
 
-                return GameCrawler.crawl_single_url(fsr_url)
+                return GameCrawler.crawl_single_url(fsr_url, competition)
 
         except Exception as e:
             logger.error(e)
