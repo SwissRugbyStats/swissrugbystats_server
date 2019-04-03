@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 from swissrugbystats.api.crawler.serializer import CrawlerLogMessageSerializer
-from swissrugbystats.api.serializer import GameSerializer
+from swissrugbystats.api.serializer import GameDetailSerializer
 from swissrugbystats.core.models import Season, Game, Competition
 from swissrugbystats.crawler import tasks
 from swissrugbystats.crawler.models import CrawlerLogMessage
@@ -74,7 +74,7 @@ def crawl_game(request, pk):
 
             game = Game.objects.get(pk=pk)
 
-            return Response(GameSerializer(instance=game).data, status=status.HTTP_200_OK)
+            return Response(GameDetailSerializer(instance=game).data, status=status.HTTP_200_OK)
         else:
             return Response(
                 {"description": "Start the crawler by calling this endpoint via post."}, status.HTTP_200_OK)
