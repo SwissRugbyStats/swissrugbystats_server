@@ -5,10 +5,12 @@ from simple_history.admin import SimpleHistoryAdmin
 
 # custom AdminModels
 
+
 class TeamAdmin(SimpleHistoryAdmin):
     list_display = ('__str__', 'club', 'current_competition')
     search_fields = ['name', 'club__name']
     list_filter = ['club', 'current_competition']
+
 
 class ClubAdmin(SimpleHistoryAdmin):
     list_display = ('__str__', 'get_associations', 'website')
@@ -38,8 +40,9 @@ class FavoriteAdmin(SimpleHistoryAdmin):
 
 
 class LeagueAdmin(SimpleHistoryAdmin):
-    list_display = ['name', 'shortcode', 'description']
-    list_editable = ['shortcode']
+    list_display = ['name', 'shortcode', 'description', 'archived']
+    list_editable = ['shortcode', 'description', 'archived']
+    list_filter = ['archived']
     search_fields = ['name', 'shortcode', 'description']
 
 
