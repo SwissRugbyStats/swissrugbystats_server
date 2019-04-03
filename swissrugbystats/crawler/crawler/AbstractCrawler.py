@@ -67,7 +67,7 @@ class AbstractCrawler(object):
         raise NotImplementedError('must define crawl_by_url to use this base class')
 
     @classmethod
-    def crawl_competition(cls, competition: Competition, follow_pagination: bool = False) -> any:
+    def crawl_competition(cls, competition: Competition, follow_pagination: bool = False) -> int:
         """
         Starts crawling on a competition.
         :param competition:
