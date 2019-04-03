@@ -10,13 +10,7 @@ from swissrugbystats.crawler.parser.FSRLeagueParser import FSRLeagueParser
 class TeamCrawler(AbstractCrawler):
 
     @classmethod
-    def crawl_competition(cls, competition: Competition, follow_pagination: bool = False) -> any:
-        """
-        Fetch all the teams that are participating in a league.
-        :param competition:
-        :param follow_pagination:
-        :return:
-        """
+    def crawl_by_url(cls, competition: Competition, url: str):
         count = 0
         logger = CrawlerLogger.get_logger_for_class(cls)
 
@@ -45,3 +39,15 @@ class TeamCrawler(AbstractCrawler):
         #     self.statistics['teams'] += count
 
         return count
+
+
+
+    @classmethod
+    def crawl_competition(cls, competition: Competition, follow_pagination: bool = False) -> any:
+        """
+        Fetch all the teams that are participating in a league.
+        :param competition:
+        :param follow_pagination:
+        :return:
+        """
+        cls.crawl_by_url(competition, None)
