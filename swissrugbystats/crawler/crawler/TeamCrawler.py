@@ -21,7 +21,7 @@ class TeamCrawler(AbstractCrawler):
             for table in tables:
                 for row in table.findAll('tr'):
                     try:
-                        if FSRLeagueParser.parse_row(row):
+                        if FSRLeagueParser.parse_row(row, competition):
                             count = count + 1
                     except Exception as e:
                         logger.error(e)
