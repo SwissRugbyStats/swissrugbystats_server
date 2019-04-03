@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, List
+from typing import List
 
 from django.utils import timezone
 
@@ -10,15 +10,15 @@ from swissrugbystats.crawler.log.CrawlerLogger import CrawlerLogger
 class FSRGameParser(object):
 
     @staticmethod
-    def getHostTeamLogo(row: Any) -> Any:
+    def get_host_team_logo(row: any) -> str:
         return row.findAll('td')[0].find('img')['src']
 
     @staticmethod
-    def getGuestTeamLogo(row: Any) -> str:
+    def getGuestTeamLogo(row: any) -> str:
         return row.findAll('td')[2].find('img')['src']
 
     @staticmethod
-    def parseTeams(rows: List[Any]) -> (Team, Team):
+    def parseTeams(rows: List[any]) -> (Team, Team):
         """
 
         :param rows:
@@ -55,7 +55,7 @@ class FSRGameParser(object):
             return game, game.host, game.guest
 
     @staticmethod
-    def parse_rows(rows: List[Any], fsr_url: str, competition: any) -> bool:
+    def parse_rows(rows: List[any], fsr_url: str, competition: any) -> bool:
         """
         Row contents (3 cols):
 
@@ -101,7 +101,7 @@ class FSRGameParser(object):
 
             game, host_participation, guest_participation = FSRGameParser.get_game(fsr_url, host, guest)
 
-            host.fsr_logo = FSRGameParser.getHostTeamLogo(rows[1])
+            host.fsr_logo = FSRGameParser.get_host_team_logo(rows[1])
             guest.fsr_logo = FSRGameParser.getGuestTeamLogo(rows[1])
 
             if len(rows) > 3:

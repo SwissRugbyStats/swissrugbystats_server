@@ -4,7 +4,7 @@ import requests
 import rollbar
 from bs4 import BeautifulSoup
 
-from swissrugbystats.core.models import Game
+from swissrugbystats.core.models import Game, Competition
 from swissrugbystats.crawler.crawler.AbstractCrawler import AbstractCrawler
 from swissrugbystats.crawler.log.CrawlerLogMixin import CrawlerLogMixin
 from swissrugbystats.crawler.log.CrawlerLogger import CrawlerLogger
@@ -14,6 +14,11 @@ from swissrugbystats.crawler.parser.FSRGameParser import FSRGameParser
 class GameCrawler(AbstractCrawler, CrawlerLogMixin):
 
     def start(self, game_id: int):
+        """
+        Crawl an existing game.
+        :param game_id:
+        :return:
+        """
         self.log("""
 ------------------------------------------
 Crawl Game by id {}
@@ -21,7 +26,7 @@ Crawl Game by id {}
 """.format(game_id), True, True)
         game = Game.objects.get(pk=game_id)
         if game:
-            GameCrawler.crawl_single_url(game.fsrUrl)
+            GameCrawler.crawl_by_url(game.competition, game.fsrUrl)
         else:
             self.log("Game {} not found. Abort.".format(game_id))
 
@@ -32,7 +37,17 @@ Game crawl ended successfully.
 """.format(game_id), True, True)
 
     @classmethod
-    def crawl_single_url(cls, url: str, competition: any = None, follow_pagination: bool = False) -> bool:
+    def crawl_competition(cls, competition: Competition, follow_pagination: bool = False) -> any:
+        """
+        Fetch all the teams that are participating in a league.
+        :param competition:
+        :param follow_pagination:
+        :return:
+        """
+        raise NotImplementedError('GameCrawler has no crawl_competition implementation')
+
+    @classmethod
+    def crawl_by_url(cls, competition: Competition, url: str) -> bool:
         """
         TODO: logs?
         :param url:

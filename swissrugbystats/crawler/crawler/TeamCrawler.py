@@ -1,5 +1,7 @@
 import rollbar
 import sys
+
+from swissrugbystats.core.models import Competition
 from swissrugbystats.crawler.crawler.AbstractCrawler import AbstractCrawler
 from swissrugbystats.crawler.log.CrawlerLogger import CrawlerLogger
 from swissrugbystats.crawler.parser.FSRLeagueParser import FSRLeagueParser
@@ -8,19 +10,19 @@ from swissrugbystats.crawler.parser.FSRLeagueParser import FSRLeagueParser
 class TeamCrawler(AbstractCrawler):
 
     @classmethod
-    def crawl_single_url(cls, url: str, follow_pagination: bool = False) -> int:
+    def crawl_competition(cls, competition: Competition, follow_pagination: bool = False) -> any:
         """
         Fetch all the teams that are participating in a league.
-        :param url:
+        :param competition:
         :param follow_pagination:
-        :return: count
+        :return:
         """
         count = 0
         logger = CrawlerLogger.get_logger_for_class(cls)
 
-        logger.log("crawl {}".format(url[1]))
+        logger.log("crawl {}".format(competition.__str__()))
         try:
-            tables = cls.get_tables(url)
+            tables = cls.get_tables(competition.get_league_url())
 
             for table in tables:
                 for row in table.findAll('tr'):
