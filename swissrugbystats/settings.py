@@ -37,6 +37,7 @@ SECRET_KEY = '6roh3)=1cp7vexm5^jbucmhwtif(p=f2j879vghfqrjm6z4qlb'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if 'PROD' in os.environ and os.environ['PROD'] == 'True':
+    PROD = True
     DEBUG = False
 
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -44,6 +45,7 @@ if 'PROD' in os.environ and os.environ['PROD'] == 'True':
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 else:
+    PROD = False
     DEBUG = True
 
 # even in prod debug can be enabled
@@ -111,7 +113,7 @@ WSGI_APPLICATION = 'swissrugbystats.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
-if 'PROD' in os.environ and os.environ['PROD'] == 'True':
+if PROD:
     import dj_database_url
 
     DATABASES = {
@@ -127,9 +129,11 @@ else:
 
 ROLLBAR = {
     'access_token': os.environ.get('ROLLBAR_ACCESS_TOKEN', ''),
-    'environment': 'development' if DEBUG else 'production',
+    'environment': 'development' if not PROD else 'production',
     'branch': 'master',
     'root': PROJECT_DIR,
+    'capture_ip': True,
+    'capture_username': True
 }
 
 # Internationalization
