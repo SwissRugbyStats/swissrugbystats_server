@@ -14,11 +14,11 @@ class FSRGameParser(object):
         return row.findAll('td')[0].find('img')['src']
 
     @staticmethod
-    def getGuestTeamLogo(row: Any) -> Any:
+    def getGuestTeamLogo(row: Any) -> str:
         return row.findAll('td')[2].find('img')['src']
 
     @staticmethod
-    def parseTeams(rows: List[Any]) -> Any:
+    def parseTeams(rows: List[Any]) -> (Team, Team):
         """
 
         :param rows:
@@ -55,7 +55,7 @@ class FSRGameParser(object):
             return game, game.host, game.guest
 
     @staticmethod
-    def parse_rows(rows: List[Any], fsr_url: str) -> bool:
+    def parse_rows(rows: List[Any], fsr_url: str, competition: any) -> bool:
         """
         Row contents (3 cols):
 
@@ -75,9 +75,22 @@ class FSRGameParser(object):
 
         :param rows:
         :param fsr_url:
+        :param competition:
         :return:
         """
         logger = CrawlerLogger.get_logger_for_class(FSRGameParser)
+
+        game: Game = None
+
+        host: Team = None
+        guest: Team = None
+
+        host_participation: GameParticipation = None
+        guest_participation: GameParticipation = None
+
+        venue: Venue = None
+
+        score_row: int = 4  # number of the row where the score should be located
 
         if len(rows) > 1:
 
@@ -104,53 +117,54 @@ class FSRGameParser(object):
                 # set fsrUrl
                 game.fsrUrl = fsr_url
 
-                # TODO: get & set competition
-                # game.competition = competition
+                # set competition
+                game.competition = competition
 
                 # get venue
-                venueName = rows[3].findAll('td')[1].find(text=True)  # venue
-                if not Venue.objects.filter(name=venueName):
+                venue_name = rows[3].findAll('td')[1].find(text=True)  # venue
+                if not Venue.objects.filter(name=venue_name):
                     venue = Venue()
-                    venue.name = venueName
-                    logger.log(u"Venue {} created".format(venueName))
+                    venue.name = venue_name
+                    logger.log(u"Venue {} created".format(venue_name))
                 else:
-                    venue = Venue.objects.filter(name=venueName)[0]
+                    venue = Venue.objects.filter(name=venue_name)[0]
 
-            scoreRow = 4
-
-            if len(rows) > scoreRow:
-                if rows[scoreRow].findAll('td')[1].find(text=True).strip() == "Forfait":
-                    scoreRow += 1
+            # if there are more rows than the score row, check for Forfait
+            if len(rows) > score_row:
+                if rows[score_row].findAll('td')[1].find(text=True).strip() == "Forfait":
+                    score_row += 1
                     # save forfait in db
-                    if rows[scoreRow].findAll('td')[0].find(text=True).strip() != "":
+                    if rows[score_row].findAll('td')[0].find(text=True).strip() != "":
                         logger.log("host forfait")
                         host_participation.forfait = True
-                    elif rows[scoreRow].findAll('td')[2].find(text=True).strip() != "":
+                    elif rows[score_row].findAll('td')[2].find(text=True).strip() != "":
                         logger.log("guest forfait")
                         guest_participation.forfait = True
 
-                host_participation.score = int(rows[scoreRow].findAll('td')[0].find(text=True))  # score host
-                guest_participation.score = int(rows[scoreRow].findAll('td')[2].find(text=True))  # score guest
+                # get the score
+                host_participation.score = int(rows[score_row].findAll('td')[0].find(text=True))  # score host
+                guest_participation.score = int(rows[score_row].findAll('td')[2].find(text=True))  # score guest
 
-                if len(rows) >= scoreRow + 1:
-                    host_participation.tries = int(rows[scoreRow + 1].findAll('td')[0].find(text=True))  # tries host
-                    guest_participation.tries = int(rows[scoreRow + 1].findAll('td')[2].find(text=True))  # tries guest
-                    if len(rows) >= scoreRow + 2:
+                # get tries, cards and referee
+                if len(rows) >= score_row + 1:
+                    host_participation.tries = int(rows[score_row + 1].findAll('td')[0].find(text=True))  # tries host
+                    guest_participation.tries = int(rows[score_row + 1].findAll('td')[2].find(text=True))  # tries guest
+                    if len(rows) >= score_row + 2:
                         host_participation.redCards = int(
-                            rows[scoreRow + 2].findAll('td')[0].find(text=True))  # red cards host
+                            rows[score_row + 2].findAll('td')[0].find(text=True))  # red cards host
                         guest_participation.redCards = int(
-                            rows[scoreRow + 2].findAll('td')[2].find(text=True))  # red cards guest
+                            rows[score_row + 2].findAll('td')[2].find(text=True))  # red cards guest
 
                         # referee is not always there
-                        if len(rows) >= scoreRow + 5:
-                            refName = rows[scoreRow + 4].findAll('td')[1].find(text=True).strip()  # referee
+                        if len(rows) >= score_row + 5:
+                            ref_name = rows[score_row + 4].findAll('td')[1].find(text=True).strip()  # referee
                             # TODO: save performance by not reassigning referee if already set
-                            if not Referee.objects.filter(name=refName):
+                            if not Referee.objects.filter(name=ref_name):
                                 referee = Referee()
-                                referee.name = refName
-                                logger.log(u"Referee {} created".format(refName))
+                                referee.name = ref_name
+                                logger.log(u"Referee {} created".format(ref_name))
                             else:
-                                referee = Referee.objects.filter(name=refName)[0]
+                                referee = Referee.objects.filter(name=ref_name)[0]
                             referee.save()
                             game.referee = referee
 

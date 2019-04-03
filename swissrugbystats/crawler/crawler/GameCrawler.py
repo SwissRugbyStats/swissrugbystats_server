@@ -1,6 +1,7 @@
-import rollbar
 import sys
+
 import requests
+import rollbar
 from bs4 import BeautifulSoup
 
 from swissrugbystats.core.models import Game
@@ -31,10 +32,11 @@ Game crawl ended successfully.
 """.format(game_id), True, True)
 
     @classmethod
-    def crawl_single_url(cls, url: str, follow_pagination: bool = False) -> bool:
+    def crawl_single_url(cls, url: str, competition: any = None, follow_pagination: bool = False) -> bool:
         """
         TODO: logs?
         :param url:
+        :param competition:
         :param follow_pagination:
         :return:
         """
@@ -50,7 +52,7 @@ Game crawl ended successfully.
 
             rows = game_detail_table.findAll('tr')
 
-            if FSRGameParser.parse_rows(rows, url):
+            if FSRGameParser.parse_rows(rows, url, competition):
                 return True
 
         except Exception as e:
