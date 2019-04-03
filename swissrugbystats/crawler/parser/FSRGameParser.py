@@ -1,5 +1,7 @@
 from typing import Any, List
 
+from django.utils import timezone
+
 from swissrugbystats.core.models import Team, Venue, Game, GameParticipation, Referee
 from swissrugbystats.crawler.log.CrawlerLogger import CrawlerLogger
 
@@ -89,6 +91,22 @@ class FSRGameParser(object):
             guest.fsr_logo = FSRGameParser.getGuestTeamLogo(rows[1])
 
             if len(rows) > 3:
+                # parse date and set timezone
+                date = rows[2].findAll('td')[1].find(text=True)
+                d1 = timezone.get_current_timezone().localize(datetime.strptime(date, '%d.%m.%Y %H:%M'))
+                d2 = d1.strftime('%Y-%m-%d %H:%M%z')
+                game.date = d2
+
+                # TODO: set fsrId
+                # game.fsrID = cells[0].find(text=True)
+
+                # set fsrUrl
+                game.fsrUrl = fsr_url
+
+                # TODO: get & set competition
+                # game.competition = competition
+
+                # get venue
                 venueName = rows[3].findAll('td')[1].find(text=True)  # venue
                 if not Venue.objects.filter(name=venueName):
                     venue = Venue()
