@@ -129,7 +129,7 @@ else:
 
 ROLLBAR = {
     'access_token': os.environ.get('ROLLBAR_ACCESS_TOKEN', ''),
-    'environment': 'development' if not PROD else 'production',
+    'environment': 'production' if PROD else 'development',
     'branch': 'master',
     'root': PROJECT_DIR,
     'capture_ip': True,
