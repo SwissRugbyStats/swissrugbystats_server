@@ -62,6 +62,8 @@ def crawl_game(request, pk):
     """
     Crawl a game by id
 
+    :param pk
+    :return: GameDetail in case of success
     """
     if request.user.is_superuser:
         if request.method == 'POST':
