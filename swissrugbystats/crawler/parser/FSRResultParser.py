@@ -1,3 +1,4 @@
+from swissrugbystats.core.models import Competition
 from swissrugbystats.crawler.crawler.GameCrawler import GameCrawler
 from swissrugbystats.crawler.log.CrawlerLogger import CrawlerLogger
 from swissrugbystats.crawler.parser.FSRAbstractParser import FSRAbstractParser
@@ -6,7 +7,7 @@ from swissrugbystats.crawler.parser.FSRAbstractParser import FSRAbstractParser
 class FSRResultParser(FSRAbstractParser):
 
     @staticmethod
-    def parse_row(row: str, competition: int = None) -> bool:
+    def parse_row(row: any, competition: Competition = None) -> bool:
         """
 
         :param row:
@@ -21,7 +22,7 @@ class FSRResultParser(FSRAbstractParser):
                 # check if game is already stored, if so, update the existing one
                 fsr_url = cells[0].find('a')['href']
 
-                return GameCrawler.crawl_single_url(fsr_url, competition)
+                return GameCrawler.crawl_by_url(competition, fsr_url)
 
         except Exception as e:
             logger.error(e)

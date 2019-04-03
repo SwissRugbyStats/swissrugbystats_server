@@ -11,31 +11,42 @@ from swissrugbystats.crawler.parser.FSRFixtureParser import FSRFixtureParser
 class FixtureCrawler(AbstractCrawler):
 
     @classmethod
-    def crawl_single_url(cls, url: str, follow_pagination: bool = False) -> int:
-        """
-            Fetch all fixtures of a specific league.
-            :param url: url to fetch fixtures from
-            :param follow_pagination: deep_crawl: follow pagination?
-            :return: number of fetched fixtures
-        """
+    def crawl_by_url(cls, competition: Competition, url: str) -> int:
         count = 0
         logger = CrawlerLogger.get_logger_for_class(cls)
 
+        table = cls.get_table(url)
+
+        for row in table.findAll('tr'):
+            try:
+                if FSRFixtureParser.parse_row(row, competition):
+                    count = count + 1
+
+            except Exception as e:
+                logger.error(e)
+                rollbar.report_exc_info(sys.exc_info())
+
+        return count
+
+    @classmethod
+    def crawl_competition(cls, competition: Competition, follow_pagination: bool = False) -> any:
+        """
+        Fetch all the teams that are participating in a league.
+        :param competition:
+        :param follow_pagination:
+        :return:
+        """
+        count = 0
+        logger = CrawlerLogger.get_logger_for_class(cls)
+        url = competition.get_fixtures_url()
+
         try:
             logger.log("crawl per league {}".format(url))
-            table = cls.get_table(url)
-            competition = Competition.objects.get(id=url[2])
 
-            for row in table.findAll('tr'):
-                try:
-                    if FSRFixtureParser.parse_row(row, competition):
-                        count = count + 1
+            count = count + cls.crawl_by_url(competition, url)
 
-                except Exception as e:
-                    logger.error(e)
-                    rollbar.report_exc_info(sys.exc_info())
             if follow_pagination:
-                count = count + cls.follow_pagination(url, competition)
+                count = count + cls.follow_pagination(competition, url)
 
         except Exception as e:
             logger.error(e)

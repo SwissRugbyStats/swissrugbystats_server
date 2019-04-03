@@ -3,6 +3,7 @@ from typing import List, Any
 import requests
 from bs4 import BeautifulSoup
 
+from swissrugbystats.core.models import Competition
 from swissrugbystats.crawler.log.CrawlerLogger import CrawlerLogger
 
 
@@ -41,35 +42,46 @@ class AbstractCrawler(object):
         # raise NotImplementedError('must define get_tables to use this base class')
 
     @classmethod
-    def crawl(cls, urls: List[str], follow_pagination: bool = False) -> int:
+    def crawl(cls, competitions: List[Competition], follow_pagination: bool = False) -> int:
         """
         TODO: check that urls is a list
-        :param urls:
+        :param competitions:
         :param follow_pagination:
         :return:
         """
-        count = 0
-        for url in urls:
-            count = count + cls.crawl_single_url(url, follow_pagination)
+        count: int = 0
+        for competition in competitions:
+            count = count + cls.crawl_competition(competition, follow_pagination)
         return count
         # raise NotImplementedError('must define crawl to use this base class')
 
     @classmethod
-    def crawl_single_url(cls, url: str, follow_pagination : bool = False) -> Any:
+    def crawl_by_url(cls, competition: Competition, url: str):
         """
-
+        Crawls exactly one URL.
+        Called by handle_pagination and crawl_competition.
+        :param competition:
         :param url:
+        :return:
+        """
+        raise NotImplementedError('must define crawl_by_url to use this base class')
+
+    @classmethod
+    def crawl_competition(cls, competition: Competition, follow_pagination: bool = False) -> any:
+        """
+        Starts crawling on a competition.
+        :param competition:
         :param follow_pagination:
         :return:
         """
-        raise NotImplementedError('must define crawl_per_league to use this base class')
+        raise NotImplementedError('must define crawl_competition to use this base class')
 
     @classmethod
-    def follow_pagination(cls, url: str, competition: int) -> int:
+    def follow_pagination(cls, competition: Competition, url: str) -> int:
         """
 
-        :param url:
         :param competition:
+        :param url:
         :return: number of objects created
         """
         logger = CrawlerLogger.get_logger_for_class(cls)
@@ -94,6 +106,5 @@ class AbstractCrawler(object):
                         logger.log(u"Next Page: {}, Current Page: {}".format(page_number, current_page_number))
 
                         if page_number > current_page_number:
-                            next_url = [(competition.league.shortcode, page['href'], competition.id)]
-                            count = count + cls.crawl(next_url)
+                            count = count + cls.crawl_by_url(competition, page['href'])
         return count

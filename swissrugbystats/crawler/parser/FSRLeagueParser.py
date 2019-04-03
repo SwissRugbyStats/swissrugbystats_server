@@ -1,4 +1,4 @@
-from swissrugbystats.core.models import Team
+from swissrugbystats.core.models import Team, Competition
 from swissrugbystats.crawler.log.CrawlerLogger import CrawlerLogger
 from swissrugbystats.crawler.parser.FSRAbstractParser import FSRAbstractParser
 
@@ -6,9 +6,10 @@ from swissrugbystats.crawler.parser.FSRAbstractParser import FSRAbstractParser
 class FSRLeagueParser(FSRAbstractParser):
 
     @staticmethod
-    def parse_row(row: str) -> bool:
+    def parse_row(row: any, competition: Competition) -> bool:
         """
 
+        :param competition:
         :param row:
         :return: Team
         """

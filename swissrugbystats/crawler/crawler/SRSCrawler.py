@@ -5,9 +5,9 @@ from typing import List
 from django.conf import settings
 
 from swissrugbystats.core.models import Competition, Season
-from swissrugbystats.crawler.crawler.TeamCrawler import TeamCrawler
-from swissrugbystats.crawler.crawler.ResultCrawler import ResultCrawler
 from swissrugbystats.crawler.crawler.FixtureCrawler import FixtureCrawler
+from swissrugbystats.crawler.crawler.ResultCrawler import ResultCrawler
+from swissrugbystats.crawler.crawler.TeamCrawler import TeamCrawler
 from swissrugbystats.crawler.log.CrawlerLogMixin import CrawlerLogMixin
 
 
@@ -75,19 +75,13 @@ class SRSCrawler(CrawlerLogMixin):
             competitions = Competition.objects.filter(pk__in=competition_filter)
 
         # update team table
-        self.statistics['teams'] = TeamCrawler.crawl(
-            [(c.league.shortcode, c.get_league_url(), c.id) for c in
-             competitions])
+        self.statistics['teams'] = TeamCrawler.crawl(competitions)
 
         # update game table with fixtures
-        self.statistics['fixtures'] = FixtureCrawler.crawl(
-            [(c.league.shortcode, c.get_fixtures_url(), c.id) for c in
-             competitions], deep_crawl)
+        self.statistics['fixtures'] = FixtureCrawler.crawl(competitions)
 
         # update game table with results
-        self.statistics['results'] = ResultCrawler.crawl(
-            [(c.league.shortcode, c.get_results_url(), c.id) for c in
-             competitions], deep_crawl)
+        self.statistics['results'] = ResultCrawler.crawl(competitions)
 
         end_msg: str = u"""
 
