@@ -11,7 +11,7 @@ from swissrugbystats.crawler.parser.FSRResultParser import FSRResultParser
 class ResultCrawler(AbstractCrawler):
 
     @classmethod
-    def crawl_by_url(cls, competition: Competition, url: str):
+    def crawl_by_url(cls, competition: Competition, url: str) -> int:
         count = 0
         logger = CrawlerLogger.get_logger_for_class(cls)
 
@@ -30,7 +30,7 @@ class ResultCrawler(AbstractCrawler):
         return count
 
     @classmethod
-    def crawl_competition(cls, competition: Competition, follow_pagination: bool = False) -> any:
+    def crawl_competition(cls, competition: Competition, follow_pagination: bool = False) -> int:
         # (cls, url: (str, str, int), follow_pagination: bool = False) -> int:
         """
         Fetch all the results of a specific league.

@@ -120,14 +120,20 @@ class FSRGameParser(object):
             # set competition
             game.competition = competition
 
+            print("get venue")
+
             # get venue
             venue_name = rows[3].findAll('td')[1].find(text=True)  # venue
+
+            print("venue name" + venue_name)
+
             if not Venue.objects.filter(name=venue_name):
                 venue = Venue()
                 venue.name = venue_name
                 logger.log(u"Venue {} created".format(venue_name))
             else:
                 venue = Venue.objects.filter(name=venue_name)[0]
+                print("venue already exists " + venue.__str__())
 
         # if there are more rows than the score row, check for Forfait
         if len(rows) > score_row:

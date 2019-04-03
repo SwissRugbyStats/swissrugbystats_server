@@ -29,7 +29,7 @@ class FixtureCrawler(AbstractCrawler):
         return count
 
     @classmethod
-    def crawl_competition(cls, competition: Competition, follow_pagination: bool = False) -> any:
+    def crawl_competition(cls, competition: Competition, follow_pagination: bool = False) -> int:
         """
         Fetch all the teams that are participating in a league.
         :param competition:
