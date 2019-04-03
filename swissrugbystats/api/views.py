@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import os
+
+import rollbar
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions, status
@@ -31,6 +34,11 @@ def api_root(request, format=None):
     Todo: complete available urls
     Feel free to use this API. I would love to see what you did with it.
     """
+
+    print('should report to rollbar', os.environ.get('ROLLBAR_ACCESS_TOKEN'))
+
+    rollbar.report_message('Got an IOError while trying to do_something()', 'warning')
+
     return Response({
         '/swagger': 'A swagger UI of the API',
         '/leagues': {

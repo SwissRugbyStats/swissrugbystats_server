@@ -2,6 +2,7 @@
 settings_email.py
 env/
 venv/
+.venv/
 win_env/
 *.pyc
 *.pyo
