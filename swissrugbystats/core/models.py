@@ -64,6 +64,7 @@ class League(models.Model):
     name = models.CharField(max_length=50, null=True)
     shortcode = models.CharField(max_length=50, unique=True, null=True, blank=True)
     description = models.TextField(blank=True, null=True)
+    archived = models.BooleanField(default=False, help_text='Check if league is not active anymore')
     history = HistoricalRecords()
 
     def get_league_url(self):
@@ -428,8 +429,10 @@ class Game(models.Model):
     venue = models.ForeignKey(Venue, blank=True, null=True, verbose_name="Venue", on_delete=models.SET_NULL)
     referee = models.ForeignKey(Referee, blank=True, null=True, verbose_name="Referee", on_delete=models.SET_NULL)
     date = models.DateTimeField(verbose_name="KickOff")
-    host = models.ForeignKey(GameParticipation, verbose_name="Host Participation", related_name="hostTeam_set", on_delete=CASCADE)
-    guest = models.ForeignKey(GameParticipation, verbose_name="Guest Participation", related_name="guestTeam_set", on_delete=CASCADE)
+    host = models.ForeignKey(GameParticipation, verbose_name="Host Participation", related_name="hostTeam_set",
+                             on_delete=CASCADE)
+    guest = models.ForeignKey(GameParticipation, verbose_name="Guest Participation", related_name="guestTeam_set",
+                              on_delete=CASCADE)
     history = HistoricalRecords()
 
     def __str__(self):
