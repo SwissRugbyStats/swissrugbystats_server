@@ -15,6 +15,8 @@ class AbstractCrawler(object):
     @classmethod
     def get_soup(cls, url: str) -> Any:
         r = requests.get(url[1], headers=cls.get_request_headers())
+        # raise exception in case of 404 or 500
+        r.raise_for_status()
         return BeautifulSoup(r.text, "html.parser")
 
     @classmethod
