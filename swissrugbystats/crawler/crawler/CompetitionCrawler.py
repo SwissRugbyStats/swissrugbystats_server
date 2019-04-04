@@ -1,5 +1,4 @@
-import os
-
+from swissrugbystats import settings
 from swissrugbystats.core.SeasonManager import SeasonManager
 from swissrugbystats.core.models import Competition, League
 from swissrugbystats.crawler.crawler.AbstractCrawler import AbstractCrawler
@@ -26,7 +25,7 @@ class CompetitionCrawler(AbstractCrawler):
         logger = CrawlerLogger.get_logger_for_class(cls)
         season = SeasonManager.get_current_season()
 
-        soup = cls.get_soup(os.environ.get('COMPETITIONS_BASE_URL'))
+        soup = cls.get_soup(settings.COMPETITIONS_BASE_URL)
 
         nested_nav = soup.find('ul', attrs={'class': 'nested_nav'})
 
