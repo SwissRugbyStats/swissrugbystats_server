@@ -115,22 +115,22 @@ class Competition(models.Model):
     unique_together = ("league", "season")
 
     def get_league_url(self):
-        if self.season.id == int(settings.CURRENT_SEASON):
-            return self.league.get_league_url()
-        else:
-            return self.league.get_archive_league_url(self.season.fsr_url_slug)
+        # if self.season.id == int(settings.CURRENT_SEASON.id):
+        return self.league.get_league_url()
+        # else:
+        #    return self.league.get_archive_league_url(self.season.fsr_url_slug)
 
     def get_fixtures_url(self):
-        if self.season.id == int(settings.CURRENT_SEASON):
-            return self.league.get_fixtures_url()
-        else:
-            return self.league.get_archive_fixtures_url(self.season.fsr_url_slug)
+        # if self.season.id == int(settings.CURRENT_SEASON.id):
+        return self.league.get_fixtures_url()
+        # else:
+        #    return self.league.get_archive_fixtures_url(self.season.fsr_url_slug)
 
     def get_results_url(self):
-        if self.season.id == int(settings.CURRENT_SEASON):
-            return self.league.get_results_url()
-        else:
-            return self.league.get_archive_results_url(self.season.fsr_url_slug)
+        # if self.season.id == int(settings.CURRENT_SEASON.id):
+        return self.league.get_results_url()
+        # else:
+        # return self.league.get_archive_results_url(self.season.fsr_url_slug)
 
     def __str__(self):
         return u"{} ({})".format(self.league, self.season)

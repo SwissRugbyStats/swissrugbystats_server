@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import threading
 
-from django.conf import settings
 from rest_framework import status, generics
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -9,6 +8,7 @@ from rest_framework.reverse import reverse
 
 from swissrugbystats.api.crawler.serializer import CrawlerLogMessageSerializer
 from swissrugbystats.api.serializer import GameDetailSerializer
+from swissrugbystats.core.SeasonManager import SeasonManager
 from swissrugbystats.core.models import Season, Game, Competition
 from swissrugbystats.crawler import tasks
 from swissrugbystats.crawler.models import CrawlerLogMessage
@@ -33,13 +33,16 @@ def start(request):
             print("Crawler: start {}".format(request))
 
             deep = request.data.get('deep', False) == "True"
-            season = request.data.get('season', settings.CURRENT_SEASON)
+            season = request.data.get('season', None)
             async = request.data.get('async', False) == "True"
 
             t = threading.Thread(target=tasks.crawl_and_update, args=(deep, season, async))
             t.start()
 
-            season_object = Season.objects.get(id=season)
+            if season:
+                season_object = Season.objects.get(id=season)
+            else:
+                season_object = SeasonManager.get_current_season()
             success_msg = "Crawler started in a separate thread for season {} and args deep_crawl={}, async={}. Check the crawler logs for results.".format(
                 season_object, deep, async)
             crawler_logs_url = reverse('crawler-logs', request=request)
