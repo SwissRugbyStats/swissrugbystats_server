@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from swissrugbystats import settings
 from swissrugbystats.core.models import Season
 
 
@@ -23,8 +24,8 @@ class SeasonManager(object):
         if month_today < 8:
             season_year_start = season_year_start - 1
 
-        name = "{}-{}".format(season_year_start, season_year_start + 1)
-        fsr_url_slug = "season-{}".format(name)
+        name = "{}{}".format(season_year_start, settings.SEASON_NAME_SEPARATOR, season_year_start + 1)
+        fsr_url_slug = "{}{}".format(settings.SEASON_FSR_SLUG_PREFIX, name)
 
         matching_season = Season.objects.filter(fsr_url_slug=fsr_url_slug)
 
@@ -32,7 +33,8 @@ class SeasonManager(object):
             s = matching_season[0]
         else:
             s = Season()
-            s.fsr_url_slug = "season-{}".format(name)
+            s.fsr_url_slug = fsr_url_slug
+        s.is_current = True
         s.name = name
         s.save()
         return s

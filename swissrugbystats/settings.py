@@ -226,4 +226,6 @@ RESULTS_URL_ENDING = os.environ.get("RESULTS_URL_ENDING", "/lt/results.html")
 LEAGUE_URL_ENDING = os.environ.get("LEAGUE_URL_ENDING", ".html")
 SLACK_WEBHOOK_URL = os.environ.get("SLACK_WEBHOOK_URL", "")
 
+SEASON_NAME_SEPARATOR = "-"
+SEASON_FSR_SLUG_PREFIX = "saison-"
 SITE_ID = 1
