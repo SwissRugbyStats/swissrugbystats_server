@@ -33,6 +33,6 @@ class Command(BaseCommand):
             args['deep_crawl'] = True
         if options.get('season_ids'):
             for season in options.get('season_ids'):
-                tasks.crawl_and_update(season=season, **args)
+                tasks.crawl_and_update(season_id=season, **args)
         else:
             tasks.crawl_and_update(**args)

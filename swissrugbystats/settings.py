@@ -57,6 +57,7 @@ ALLOWED_HOSTS = [
     'api.swissrugbystats.ch',
     'api3.swissrugbystats.ch',
     'localhost',
+    '127.0.0.1',
     'swissrugbystats-backend.herokuapp.com',
     'swissrugbystats-frontend.herokuapp.com'
 ]
@@ -218,7 +219,6 @@ DJANGORESIZED_DEFAULT_QUALITY = 75
 DJANGORESIZED_DEFAULT_KEEP_META = True
 
 # custom global vars, can be overwritten by env
-CURRENT_SEASON = os.environ.get('CURRENT_SEASON', 1)
 COMPETITIONS_BASE_URL = os.environ.get("COMPETITIONS_BASE_URL", "http://www.suisserugby.com/competitions/")
 ARCHIVE_BASE_URL = os.environ.get("ARCHIVE_BASE_URL", "http://www.suisserugby.com/competitions/archiv/")
 FIXTURES_URL_ENDING = os.environ.get("FIXTURES_URL_ENDING", "/lt/fixtures.html")

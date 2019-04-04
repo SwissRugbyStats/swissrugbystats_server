@@ -2,9 +2,9 @@
 from datetime import datetime
 from typing import List
 
-from django.conf import settings
-
+from swissrugbystats.core.SeasonManager import SeasonManager
 from swissrugbystats.core.models import Competition, Season
+from swissrugbystats.crawler.crawler.CompetitionCrawler import CompetitionCrawler
 from swissrugbystats.crawler.crawler.FixtureCrawler import FixtureCrawler
 from swissrugbystats.crawler.crawler.ResultCrawler import ResultCrawler
 from swissrugbystats.crawler.crawler.TeamCrawler import TeamCrawler
@@ -46,12 +46,15 @@ class SRSCrawler(CrawlerLogMixin):
         return cls.__name__
 
     def start(self,
-              season: int = settings.CURRENT_SEASON,
+              season_id: int = None,
               deep_crawl: bool = False,
               competition_filter: List[int] = []
               ):
-        # TODO: what to do if no season present?
-        current_season: int = Season.objects.get(id=season)
+        if season_id:
+            season = Season.objects.get(id=season)
+
+        if not season_id or not season:
+            season = SeasonManager.get_current_season()
 
         # get current timestamp to calculate time needed for script exec
         start_time = datetime.now()
@@ -63,14 +66,17 @@ class SRSCrawler(CrawlerLogMixin):
     competition_filter = {}
 ------------------------------------------------------------------
         
-        """.format(self.get_classname(), season, current_season, deep_crawl, competition_filter)
+        """.format(self.get_classname(), season, season, deep_crawl, competition_filter)
 
         self.log(start_msg, True, True)
 
+        # first of, crawl competitions
+        CompetitionCrawler.crawl()
+
         # competitions to crawl
         competitions = Competition.objects.all()
-        if current_season:
-            competitions = Competition.objects.filter(season=current_season)
+        if season:
+            competitions = Competition.objects.filter(season=season)
         if competition_filter:
             competitions = Competition.objects.filter(pk__in=competition_filter)
 

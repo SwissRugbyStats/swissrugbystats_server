@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
-from swissrugbystats.core.models import Association, Club, Competition, Team, Game, League, Venue, Referee, GameParticipation, Season, Favorite
 from simple_history.admin import SimpleHistoryAdmin
+
+from swissrugbystats.core.models import Association, Club, Competition, Team, Game, League, Venue, Referee, \
+    GameParticipation, Season, Favorite
+
 
 # custom AdminModels
 
@@ -19,7 +22,7 @@ class ClubAdmin(SimpleHistoryAdmin):
 
 
 class CompetitionAdmin(SimpleHistoryAdmin):
-    list_display = ('__str__', )
+    list_display = ('__str__',)
     list_filter = ('league', 'season')
 
 
@@ -41,7 +44,7 @@ class FavoriteAdmin(SimpleHistoryAdmin):
 
 class LeagueAdmin(SimpleHistoryAdmin):
     list_display = ['name', 'shortcode', 'description', 'archived']
-    list_editable = ['shortcode', 'description', 'archived']
+    list_editable = ['shortcode', 'archived']
     list_filter = ['archived']
     search_fields = ['name', 'shortcode', 'description']
 

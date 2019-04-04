@@ -50,12 +50,12 @@ Statistics update complete.\n
     crawler.log(end_msg)
 
 
-def crawl_and_update(deep_crawl=True, season=settings.CURRENT_SEASON, async=False, competitions_filter=None,
+def crawl_and_update(deep_crawl=True, season_id=None, async=False, competitions_filter=None,
                      log_to_db=True):
     """
 
     :param deep_crawl:
-    :param season:
+    :param season_id:
     :param async:
     :param competitions_filter:
     :param log_to_db:
@@ -66,7 +66,7 @@ def crawl_and_update(deep_crawl=True, season=settings.CURRENT_SEASON, async=Fals
     else:
         crawler = SRSCrawler(enable_logging=log_to_db)
 
-    crawler.start(season, deep_crawl, competitions_filter)
+    crawler.start(season_id, deep_crawl, competitions_filter)
 
     update_statistics(log_to_db)
 
