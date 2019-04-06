@@ -11,6 +11,7 @@ from rest_framework_swagger.renderers import OpenAPIRenderer, SwaggerUIRenderer
 
 from swissrugbystats.api.http_errors import ResourceAlreadyExists
 from swissrugbystats.api.serializer import *
+from swissrugbystats.core.SeasonManager import SeasonManager
 
 
 @api_view()
@@ -74,7 +75,7 @@ def api_root(request, format=None):
         },
         '/seasons': {
             '/': reverse('seasons', request=request, format=format),
-            '/{id}': 'season details'
+            '/current': 'get current season'
         },
         '/venues': {
             '/': reverse('venues', request=request, format=format),
@@ -289,6 +290,16 @@ class SeasonList(generics.ListCreateAPIView):
     queryset = Season.objects.all()
     serializer_class = SeasonSerializer
     ordering = ['name']
+
+
+@api_view(['POST', 'GET'])
+def get_current_season(request):
+    """
+    Get the next game of a specific team.
+    """
+    season: Season = SeasonManager.get_current_season()
+
+    return Response(SeasonSerializer(instance=season).data, status=status.HTTP_200_OK)
 
 
 class NextGameByTeamId(generics.RetrieveUpdateAPIView):

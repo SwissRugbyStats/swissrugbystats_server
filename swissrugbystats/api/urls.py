@@ -41,6 +41,7 @@ urlpatterns = [
     path('referees/<int:pk>', views.RefereeDetail.as_view()),
 
     path('seasons', views.SeasonList.as_view(), name="seasons"),
+    path('seasons/current', views.get_current_season, name="seasons_current"),
 
     path('competitions', views.CompetitionList.as_view(), name="competitions"),
     path('competitions/<int:pk>', views.CompetitionDetail.as_view(), name="competitions"),
