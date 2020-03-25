@@ -73,6 +73,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # graphene (GraphQL)
+    'graphene_django',
     # restframework
     'rest_framework',
     'rest_framework.authtoken',
@@ -140,7 +142,7 @@ ROLLBAR = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
 
-LANGUAGE_CODE = 'de-ch'
+LANGUAGE_CODE = 'de'
 
 TIME_ZONE = 'Europe/Zurich'
 
@@ -200,6 +202,10 @@ REST_FRAMEWORK = {
         # 'rest_framework_social_oauth2.authentication.SocialAuthentication'
     ),
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
+}
+
+GRAPHENE = {
+    'SCHEMA': 'swissrugbystats.schema.schema'
 }
 
 AUTHENTICATION_BACKENDS = (
