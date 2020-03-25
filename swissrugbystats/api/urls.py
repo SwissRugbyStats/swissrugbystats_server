@@ -1,13 +1,14 @@
 from django.urls import path, include
 from rest_framework.urlpatterns import format_suffix_patterns
 from graphene_django.views import GraphQLView
+from django.views.decorators.csrf import csrf_exempt
 
 from swissrugbystats.api import views
 
 urlpatterns = [
     path(r'', views.api_root),
     path(r'swagger', views.schema_view),
-    path('graphql', GraphQLView.as_view(graphiql=True)),
+    path('graphql', csrf_exempt(GraphQLView.as_view(graphiql=True))),
 
     # get urls from sub modules
     path('', include('swissrugbystats.api.auth.urls')),
